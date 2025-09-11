@@ -190,15 +190,15 @@ export function SignInForm() {
                 onChangeText={setPassword}
               />
             </View>
-            <View className='min-h-[20px]'>
-              {error ? (
+            {error ? (
+              <View className='min-h-[20px]'>
                 <Text className='text-center text-red-600'>{error}</Text>
-              ) : null}
-            </View>
+              </View>
+            ) : null}
             <Button className='w-full' onPress={onSubmit}>
               <Text>Continuar</Text>
             </Button>
-            <View className='flex-row items-center'>
+            <View className='flex-row items-center justify-center'>
               <Text className='text-sm'>¿No tenés cuenta? </Text>
               <Pressable
                 onPress={() => {

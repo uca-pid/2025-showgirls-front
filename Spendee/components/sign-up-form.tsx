@@ -30,7 +30,7 @@ export function SignUpForm() {
     <View className='gap-6'>
       <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5'>
         <CardHeader>
-          <CardTitle className='text-center text-xl sm:text-left'>
+          <CardTitle className='text-center text-2xl sm:text-left'>
             Creá tu cuenta
           </CardTitle>
           <CardDescription className='text-center sm:text-left'>
@@ -43,7 +43,7 @@ export function SignUpForm() {
               <Label htmlFor='email'>Usuario</Label>
               <Input
                 id='email'
-                placeholder='m@example.com'
+                placeholder='mail@example.com'
                 keyboardType='email-address'
                 autoComplete='email'
                 autoCapitalize='none'
@@ -64,12 +64,24 @@ export function SignUpForm() {
                 onSubmitEditing={onSubmit}
               />
             </View>
+            <View className='gap-1.5'>
+              <View className='flex-row items-center'>
+                <Label htmlFor='password'>Confirmar contraseña</Label>
+              </View>
+              <Input
+                ref={passwordInputRef}
+                id='password'
+                secureTextEntry
+                returnKeyType='send'
+                onSubmitEditing={onSubmit}
+              />
+            </View>
             <Button className='w-full' onPress={onSubmit}>
               <Text>Continuar</Text>
             </Button>
           </View>
-          <Text className='text-center text-sm'>
-            ¿Ya tenés una cuenta?{" "}
+          <View className='flex-row items-center justify-center'>
+            <Text className='text-center text-sm'>¿Ya tenés una cuenta? </Text>
             <Pressable
               onPress={() => {
                 router.push("/sign-in/SignInPage")
@@ -79,7 +91,7 @@ export function SignUpForm() {
                 Ingresá
               </Text>
             </Pressable>
-          </Text>
+          </View>
           <View className='flex-row items-center'>
             <Separator className='flex-1' />
             <Text className='text-muted-foreground px-4 text-sm'>o</Text>
