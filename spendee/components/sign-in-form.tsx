@@ -202,7 +202,7 @@ export function SignInForm() {
               <Text className='text-sm'>¿No tenés cuenta? </Text>
               <Pressable
                 onPress={() => {
-                  // TODO: Navigate to sign up screen
+                  router.push("/sign-up/SignUpPage")
                 }}
               >
                 <Text className='text-sm underline underline-offset-4'>
