@@ -6,7 +6,16 @@ import React from "react"
 export default function RootLayout() {
   return (
     <>
-      <Stack />
+      <Stack
+        initialRouteName="index"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="sign-in/SignInPage" />
+        <Stack.Screen name="(tabs)" />
+      </Stack>
       <PortalHost />
     </>
   )

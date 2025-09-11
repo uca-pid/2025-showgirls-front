@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Text } from "@/components/ui/text"
+import { navigate } from "expo-router/build/global-state/routing"
 import * as React from "react"
 import { Pressable, type TextInput, View } from "react-native"
 
@@ -22,7 +23,7 @@ export function SignInForm() {
   }
 
   function onSubmit() {
-    // TODO: Submit form and navigate to protected screen if successful
+    navigate("/(tabs)")
   }
 
   return (
