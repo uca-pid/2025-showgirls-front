@@ -22,6 +22,8 @@ import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithCred
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google'; // Importación necesaria
 import * as AuthSession from 'expo-auth-session';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxpKMT14HpM-9uL24j2Pl-KH2t4QkDU-Y",
@@ -70,9 +72,48 @@ export function SignInForm() {
     setError('')
     setLoading(true)
     try {
-        console.log("Attempting to sign in with email:", email);
-        console.log("Password: ", password);
-          await signInWithEmailAndPassword(auth, email, password);
+          // signInWithEmailAndPassword returns a UserCredential
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          // Log the common profile fields you can use in the app
+          console.log('Firebase sign-in successful. user:', {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            providerData: user.providerData,
+          });
+
+          // Alternative source for current user after sign-in
+          console.log('auth.currentUser:', auth.currentUser);
+
+          // --- Persist credentials/profile ---
+          try {
+            // Try to get a fresh ID token (JWT) for secure storage
+            const idToken = await user.getIdToken();
+            if (idToken) {
+              await SecureStore.setItemAsync('jwt', idToken);
+              console.log('Saved JWT to SecureStore');
+            }
+          } catch (storeErr) {
+            console.error('Error saving JWT to SecureStore', storeErr);
+          }
+
+          try {
+            const publicProfile = {
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+            };
+            await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile));
+            console.log('Saved user profile to AsyncStorage');
+          } catch (storeErr) {
+            console.error('Error saving profile to AsyncStorage', storeErr);
+          }
+
+          // TODO: If you store extra profile data in Firestore, fetch it here.
+          // e.g. const profile = await getDoc(doc(firestore, 'users', user.uid));
           router.push('/(tabs)');
         } catch (firebaseLoginError) {
           console.error(firebaseLoginError);
