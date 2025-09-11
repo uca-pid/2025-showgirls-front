@@ -23,3 +23,4 @@ github-*.zip
 
 # Environment variables
 .env
+.DS_Store
