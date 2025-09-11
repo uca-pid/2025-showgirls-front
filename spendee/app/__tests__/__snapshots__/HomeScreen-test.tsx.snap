@@ -2,16 +2,45 @@
 
 exports[`<HomeScreen /> HomeScreen component renders correctly 1`] = `
 <View
-  style={
-    {
-      "alignItems": "center",
-      "flex": 1,
-      "justifyContent": "center",
-    }
-  }
+  className="flex-1 items-center justify-center bg-red-300"
 >
   <Text>
     Welcome!
   </Text>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+  >
+    <Text>
+      Go to login
+    </Text>
+  </View>
 </View>
 `;
