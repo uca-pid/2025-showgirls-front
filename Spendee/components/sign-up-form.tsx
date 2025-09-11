@@ -25,6 +25,9 @@ export function SignUpForm() {
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
+  function onPasswordSubmitEditing() {
+    passwordConfirmationInputRef.current?.focus()
+  }
 
   function onSubmit() {
     // TODO: Submit form and navigate to protected screen if successful
@@ -88,7 +91,7 @@ export function SignUpForm() {
                 id='password'
                 secureTextEntry={passwordVisible}
                 returnKeyType='next'
-                onSubmitEditing={onEmailSubmitEditing}
+                onSubmitEditing={onPasswordSubmitEditing}
               />
             </View>
             <View className='gap-1.5'>
@@ -110,8 +113,8 @@ export function SignUpForm() {
               </View>
               <Input
                 ref={passwordConfirmationInputRef}
-                id='password'
-                secureTextEntry
+                id='conf-password'
+                secureTextEntry={passwordConfVisible}
                 returnKeyType='send'
                 onSubmitEditing={onSubmit}
               />
