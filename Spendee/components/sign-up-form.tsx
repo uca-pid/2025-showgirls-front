@@ -14,9 +14,13 @@ import { Text } from "@/components/ui/text"
 import { router } from "expo-router"
 import * as React from "react"
 import { Pressable, TextInput, View } from "react-native"
+import { EyeIcon, EyeOffIcon } from "lucide-react-native"
 
 export function SignUpForm() {
+  const [passwordVisible, setPasswordVisible] = React.useState(false)
+  const [passwordConfVisible, setPasswordConfVisible] = React.useState(false)
   const passwordInputRef = React.useRef<TextInput>(null)
+  const passwordConfirmationInputRef = React.useRef<TextInput>(null)
 
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
@@ -24,6 +28,16 @@ export function SignUpForm() {
 
   function onSubmit() {
     // TODO: Submit form and navigate to protected screen if successful
+  }
+
+  function viewPassword(): void {
+    !passwordVisible ? setPasswordVisible(true) : setPasswordVisible(false)
+  }
+
+  function viewConfPassword(): void {
+    !passwordConfVisible
+      ? setPasswordConfVisible(true)
+      : setPasswordConfVisible(false)
   }
 
   return (
@@ -53,23 +67,49 @@ export function SignUpForm() {
               />
             </View>
             <View className='gap-1.5'>
-              <View className='flex-row items-center'>
+              <View className='flex-row items-center justify-between'>
                 <Label htmlFor='password'>Contraseña</Label>
+                {!passwordVisible ? (
+                  <EyeIcon
+                    size={20}
+                    color='white'
+                    onPress={() => viewPassword()}
+                  />
+                ) : (
+                  <EyeOffIcon
+                    size={20}
+                    color='white'
+                    onPress={() => viewPassword()}
+                  />
+                )}
               </View>
               <Input
                 ref={passwordInputRef}
                 id='password'
-                secureTextEntry
-                returnKeyType='send'
-                onSubmitEditing={onSubmit}
+                secureTextEntry={passwordVisible}
+                returnKeyType='next'
+                onSubmitEditing={onEmailSubmitEditing}
               />
             </View>
             <View className='gap-1.5'>
-              <View className='flex-row items-center'>
+              <View className='flex-row items-center justify-between'>
                 <Label htmlFor='password'>Confirmar contraseña</Label>
+                {!passwordConfVisible ? (
+                  <EyeIcon
+                    size={20}
+                    color='white'
+                    onPress={() => viewConfPassword()}
+                  />
+                ) : (
+                  <EyeOffIcon
+                    size={20}
+                    color='white'
+                    onPress={() => viewConfPassword()}
+                  />
+                )}
               </View>
               <Input
-                ref={passwordInputRef}
+                ref={passwordConfirmationInputRef}
                 id='password'
                 secureTextEntry
                 returnKeyType='send'
