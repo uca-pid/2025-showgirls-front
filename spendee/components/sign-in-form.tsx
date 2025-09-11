@@ -26,13 +26,13 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDxpKMT14HpM-9uL24j2Pl-KH2t4QkDU-Y",
-  authDomain: "spendee-7d662.firebaseapp.com",
-  projectId: "spendee-7d662",
-  storageBucket: "spendee-7d662.firebasestorage.app",
-  messagingSenderId: "849298436768",
-  appId: "1:849298436768:web:da32b00213cb9265378fc5",
-  measurementId: "G-QHX40KMZB0"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Inicializar Firebase
