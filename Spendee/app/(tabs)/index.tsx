@@ -1,17 +1,21 @@
 import React, {useState} from "react"
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Text, Button, StyleSheet, TouchableOpacity, Modal, TextInput } from "react-native"
 import { useRouter } from "expo-router"
 
 export default function HomePage() {
   const router = useRouter()
   const [balance, setBalance] = useState(0);
+  const [transaccion, setTransaccion] = useState(String);
+  const [amount, setAmount] = useState(String);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const addIncome = (amount = 1000) => {
-    setBalance(balance + amount);
-  };
-  
-  const addExpense = (amount = 500) => {
-    setBalance(balance - amount);
+  const handleTransaction = (amount: string) => {
+    const numericAmount = parseFloat(amount);
+    if (transaccion === 'income') {
+      setBalance(balance + numericAmount);
+    } else if (transaccion === 'expense') {
+      setBalance(balance - numericAmount);
+    }
   };
 
   return (
@@ -24,9 +28,10 @@ export default function HomePage() {
             ${balance}
           </Text>
       </View>
+
       <View className="flex-row space-x-4">
         <TouchableOpacity
-          onPress={() => addIncome()}
+          onPress={() => {setTransaccion('income'); setModalVisible(true)}}
           className="bg-green-500 rounded-2xl px-6 py-4 shadow"
         >
           <Text className="text-white font-semibold text-lg">
@@ -35,14 +40,53 @@ export default function HomePage() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => addExpense()}
-          className="bg-red-500 rounded-2xl px-6 py-4 shadow"
-        >
+          onPress={() => {setTransaccion('expense'); setModalVisible(true)}}
+          className="bg-red-500 rounded-2xl px-6 py-4 shadow">
           <Text className="text-white font-semibold text-lg">
             - Egreso
           </Text>
         </TouchableOpacity>
       </View>
+      
+      <Modal transparent={true} visible={modalVisible} animationType="slide">
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
+            <Text className="text-xl font-bold text-gray-800 mb-4">
+              {transaccion === "income" ? "Agregar Ingreso" : "Agregar Egreso"}
+            </Text>
+
+            <TextInput
+              placeholder="Ingrese monto"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={setAmount}
+              className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
+            />
+
+            <View className="flex-row justify-between">
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="bg-gray-400 rounded-xl px-5 py-3"
+              >
+                <Text className="text-white font-semibold">Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  handleTransaction(amount);
+                  setAmount("");
+                  setModalVisible(false);
+                }}
+                className="bg-blue-500 rounded-xl px-5 py-3"
+              >
+                <Text className="text-white font-semibold">Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+      </Modal>
+
     </View>
   )
 }
