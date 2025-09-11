@@ -14,16 +14,50 @@ import { Text } from "@/components/ui/text"
 import { navigate } from "expo-router/build/global-state/routing"
 import * as React from "react"
 import { Pressable, type TextInput, View } from "react-native"
+import { useState, useEffect } from 'react';
+import { router, useRouter } from 'expo-router';
+
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google'; // Importación necesaria
+import * as AuthSession from 'expo-auth-session';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDxpKMT14HpM-9uL24j2Pl-KH2t4QkDU-Y",
+  authDomain: "spendee-7d662.firebaseapp.com",
+  projectId: "spendee-7d662",
+  storageBucket: "spendee-7d662.firebasestorage.app",
+  messagingSenderId: "849298436768",
+  appId: "1:849298436768:web:da32b00213cb9265378fc5",
+  measurementId: "G-QHX40KMZB0"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 export function SignInForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
 
-  function onSubmit() {
-    navigate("/(tabs)")
+  async function onSubmit() {
+    try {
+        console.log("Attempting to sign in with email:", email);
+        console.log("Password: ", password);
+          await signInWithEmailAndPassword(auth, email, password);
+          router.push('/(tabs)');
+        } catch (firebaseLoginError) {
+          console.error(firebaseLoginError);
+        }
   }
 
   return (
@@ -53,6 +87,8 @@ export function SignInForm() {
                 onSubmitEditing={onEmailSubmitEditing}
                 returnKeyType='next'
                 submitBehavior='submit'
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
             <View className='gap-1.5'>
@@ -77,6 +113,8 @@ export function SignInForm() {
                 secureTextEntry
                 returnKeyType='send'
                 onSubmitEditing={onSubmit}
+                value={password}
+                onChangeText={setPassword}
               />
             </View>
             <Button className='w-full' onPress={onSubmit}>
@@ -106,3 +144,5 @@ export function SignInForm() {
     </View>
   )
 }
+
+
