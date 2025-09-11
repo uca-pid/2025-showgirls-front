@@ -45,11 +45,30 @@ export function SignInForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+    // <-- ADICIONADO: función para mapear errores de Firebase a mensajes amigables
+  function getFriendlyAuthMessage(err: any) {
+    console.log("Firebase Auth Error:", err.code, err.message);
+    const code = err?.code || ''
+    if (code.includes('auth/invalid-credential')) return 'Email o Contraseña incorrectos.'
+    if (code.includes('auth/too-many-requests')) return 'Demasiados intentos. Intenta más tarde.'
+    // fallback
+    return err?.message || 'Error al iniciar sesión. Intenta de nuevo.'
+  }
+     
+
+
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
 
   async function onSubmit() {
+    if (!email || !password) {
+      setError('Completa email y contraseña.')
+      return
+    }
+
+    setError('')
+    setLoading(true)
     try {
         console.log("Attempting to sign in with email:", email);
         console.log("Password: ", password);
@@ -57,6 +76,11 @@ export function SignInForm() {
           router.push('/(tabs)');
         } catch (firebaseLoginError) {
           console.error(firebaseLoginError);
+          const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError);
+          setError(friendlyMessage);
+        }
+        finally {
+          setLoading(false)
         }
   }
 
@@ -116,6 +140,9 @@ export function SignInForm() {
                 value={password}
                 onChangeText={setPassword}
               />
+            </View>
+            <View className='min-h-[20px]'>
+              {error ? <Text className='text-center text-red-600'>{error}</Text> : null}
             </View>
             <Button className='w-full' onPress={onSubmit}>
               <Text>Continuar</Text>
