@@ -1,6 +1,10 @@
 import React, {useState} from "react"
-import { View, Text, Button, StyleSheet, TouchableOpacity, Modal, TextInput } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from "react-native"
 import { useRouter } from "expo-router"
+import { Card, CardTitle, CardContent }  from "@/components/ui/card"
+import { Button }  from "@/components/ui/button"
+import { Dialog, DialogClose, DialogDescription, DialogTrigger, DialogTitle }  from "@/components/ui/dialog"
+
 
 export default function HomePage() {
   const router = useRouter()
@@ -22,30 +26,34 @@ export default function HomePage() {
     <View className="flex-1 bg-gray-100 items-center justify-center p-5">
       <Text className="text-lg font-semibold mb-4">Bienvenido a Spendee!</Text>
 
-      <View className="bg-white rounded-2xl shadow-lg p-6 mb-10 w-4/5 items-center">
-          <Text className="text-lg text-gray-500">Balance actual</Text>
-          <Text className="text-4xl font-bold text-green-600 mt-2">
-            ${balance}
-          </Text>
+      <View>
+        <Card className="w-72 mb-6 bg-gray-300 border-gray-300">
+          <CardTitle className="text-black text-center">Balance actual</CardTitle>
+          <CardContent>
+            <Text className="text-2xl font-bold text-black text-center">
+              ${balance}
+            </Text>
+          </CardContent>
+        </Card>
       </View>
 
-      <View className="flex-row space-x-4">
-        <TouchableOpacity
+      <View className="flex-row space-x-4 gap-4">
+        <Button
           onPress={() => {setTransaccion('income'); setModalVisible(true)}}
-          className="bg-green-500 rounded-2xl px-6 py-4 shadow"
-        >
-          <Text className="text-white font-semibold text-lg">
+          className="size-2xl bg-green-500">
+          <Text className="text-white font-bold">
             + Ingreso
           </Text>
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity
+        <Button
           onPress={() => {setTransaccion('expense'); setModalVisible(true)}}
-          className="bg-red-500 rounded-2xl px-6 py-4 shadow">
-          <Text className="text-white font-semibold text-lg">
+          className="size-2xl bg-red-500">
+          <Text className="text-white font-bold">
             - Egreso
-          </Text>
-        </TouchableOpacity>
+          </Text>  
+        </Button>
+        
       </View>
       
       <Modal transparent={true} visible={modalVisible} animationType="slide">
