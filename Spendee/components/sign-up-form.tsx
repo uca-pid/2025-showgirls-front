@@ -47,8 +47,6 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
 export function SignUpForm() {
-  const [passwordVisible, setPasswordVisible] = React.useState(false)
-  const [passwordConfVisible, setPasswordConfVisible] = React.useState(false)
   const passwordInputRef = React.useRef<TextInput>(null)
   const passwordConfirmationInputRef = React.useRef<TextInput>(null)
   const [email, setEmail] = useState("")
@@ -137,17 +135,6 @@ export function SignUpForm() {
       setLoading(false)
     }
   }
-
-  function viewPassword(): void {
-    !passwordVisible ? setPasswordVisible(true) : setPasswordVisible(false)
-  }
-
-  function viewConfPassword(): void {
-    !passwordConfVisible
-      ? setPasswordConfVisible(true)
-      : setPasswordConfVisible(false)
-  }
-
   return (
     <View className='gap-6 w-full'>
       <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5'>

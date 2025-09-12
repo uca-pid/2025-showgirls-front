@@ -57,7 +57,7 @@ export function SignInForm() {
     console.log("Firebase Auth Error:", err.code, err.message)
     const code = err?.code || ""
     if (code.includes("auth/invalid-credential"))
-      return "Email o Contraseña incorrectos."
+      return "Email o contraseña incorrectos."
     if (code.includes("auth/too-many-requests"))
       return "Demasiados intentos. Intenta más tarde."
     // fallback
@@ -190,11 +190,7 @@ export function SignInForm() {
                 onChangeText={setPassword}
               />
             </View>
-            {error ? (
-              <View className='min-h-[20px]'>
-                <Text className='text-center text-red-600'>{error}</Text>
-              </View>
-            ) : null}
+
             <Button className='w-full' onPress={onSubmit}>
               <Text>Continuar</Text>
             </Button>
