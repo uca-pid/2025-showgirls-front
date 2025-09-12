@@ -16,6 +16,7 @@ function Input({
   ...props
 }: TextInputProps & React.RefAttributes<TextInput>) {
   const [isPasswordVisible, setPasswordVisible] = useState(false)
+  const isPasswordInput = secureTextEntry === true
   const Icon = isPasswordVisible ? EyeOff : Eye
   return (
     <View className='relative items-end justify-center '>
@@ -39,17 +40,15 @@ function Input({
           }),
           className
         )}
-        secureTextEntry={!isPasswordVisible}
+        secureTextEntry={isPasswordInput ? !isPasswordVisible : false}
         {...props}
       />
-      {secureTextEntry !== undefined ? (
+      {isPasswordInput && (
         <View className='absolute p-4 z-100'>
           <Pressable onPress={() => setPasswordVisible((prev) => !prev)}>
             <Icon size={20} color='white' />
           </Pressable>
         </View>
-      ) : (
-        <></>
       )}
     </View>
   )
