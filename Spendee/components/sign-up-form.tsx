@@ -149,7 +149,7 @@ export function SignUpForm() {
   }
 
   return (
-    <View className='gap-6'>
+    <View className='gap-6 w-full'>
       <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5'>
         <CardHeader>
           <CardTitle className='text-center text-2xl sm:text-left'>
@@ -179,25 +179,12 @@ export function SignUpForm() {
             <View className='gap-1.5'>
               <View className='flex-row items-center justify-between'>
                 <Label htmlFor='password'>Contraseña</Label>
-                {!passwordVisible ? (
-                  <EyeIcon
-                    size={20}
-                    color='white'
-                    onPress={() => viewPassword()}
-                  />
-                ) : (
-                  <EyeOffIcon
-                    size={20}
-                    color='white'
-                    onPress={() => viewPassword()}
-                  />
-                )}
               </View>
               <Input
                 ref={passwordInputRef}
                 id='password'
-                secureTextEntry={!passwordVisible}
                 returnKeyType='next'
+                secureTextEntry
                 onSubmitEditing={onPasswordSubmitEditing}
                 value={password}
                 onChangeText={setPassword}
@@ -206,25 +193,12 @@ export function SignUpForm() {
             <View className='gap-1.5'>
               <View className='flex-row items-center justify-between'>
                 <Label htmlFor='password'>Confirmar contraseña</Label>
-                {!passwordConfVisible ? (
-                  <EyeIcon
-                    size={20}
-                    color='white'
-                    onPress={() => viewConfPassword()}
-                  />
-                ) : (
-                  <EyeOffIcon
-                    size={20}
-                    color='white'
-                    onPress={() => viewConfPassword()}
-                  />
-                )}
               </View>
               <Input
                 ref={passwordConfirmationInputRef}
                 id='conf-password'
-                secureTextEntry={passwordConfVisible}
                 returnKeyType='send'
+                secureTextEntry
                 onSubmitEditing={onSubmit}
                 value={passwordConfirmation}
                 onChangeText={setPasswordConfirmation}
