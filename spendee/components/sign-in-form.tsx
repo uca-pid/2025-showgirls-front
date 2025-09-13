@@ -29,6 +29,7 @@ import * as Google from "expo-auth-session/providers/google" // Importación nec
 import * as AuthSession from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import Toast from "react-native-toast-message"
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -58,6 +59,8 @@ export function SignInForm() {
     const code = err?.code || ""
     if (code.includes("auth/invalid-credential"))
       return "Email o contraseña incorrectos."
+    if (code.includes("auth/invalid-email"))
+      return "Email o contraseña incorrectos."
     if (code.includes("auth/too-many-requests"))
       return "Demasiados intentos. Intenta más tarde."
     // fallback
@@ -70,7 +73,7 @@ export function SignInForm() {
 
   async function onSubmit() {
     if (!email || !password) {
-      setError("Completa email y contraseña.")
+      showErrorToast("Completá email y contraseña")
       return
     }
 
@@ -125,12 +128,19 @@ export function SignInForm() {
       // e.g. const profile = await getDoc(doc(firestore, 'users', user.uid));
       router.push("/(tabs)")
     } catch (firebaseLoginError) {
-      console.error(firebaseLoginError)
       const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
       setError(friendlyMessage)
+      showErrorToast(friendlyMessage)
     } finally {
       setLoading(false)
     }
+  }
+  const showErrorToast = (title: string, description?: string) => {
+    Toast.show({
+      type: "danger",
+      text1: title,
+      text2: description,
+    })
   }
 
   return (
@@ -153,7 +163,7 @@ export function SignInForm() {
               <Label htmlFor='email'>Usuario</Label>
               <Input
                 id='email'
-                placeholder='m@example.com'
+                placeholder='mail@example.com'
                 keyboardType='email-address'
                 autoComplete='email'
                 autoCapitalize='none'

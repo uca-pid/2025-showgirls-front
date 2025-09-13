@@ -31,6 +31,7 @@ import * as Google from "expo-auth-session/providers/google" // Importación nec
 import * as AuthSession from "expo-auth-session"
 import * as SecureStore from "expo-secure-store"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import Toast from "react-native-toast-message"
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -76,18 +77,21 @@ export function SignUpForm() {
 
   async function onSubmit() {
     if (!email || !password || !passwordConfirmation) {
-      setError("Completa email y contraseña y confirmación.")
+      setError("Completá todos los campos.")
+      showErrorToast("Completá todos los campos.")
       return
     }
 
     if (password !== passwordConfirmation) {
       setError("Las contraseñas no coinciden.")
+      showErrorToast("Las contraseñas no coinciden.")
       return
     }
 
     // basic password length check
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.")
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.")
+      showErrorToast("La contraseña debe tener al menos 8 caracteres.")
       return
     }
 
@@ -130,10 +134,19 @@ export function SignUpForm() {
     } catch (err) {
       const friendlyMessage = getFriendlyAuthMessage(err)
       setError(friendlyMessage)
+      showErrorToast(friendlyMessage)
       console.log("SignUp error", err)
     } finally {
       setLoading(false)
     }
+  }
+
+  const showErrorToast = (title: string, description?: string) => {
+    Toast.show({
+      type: "danger",
+      text1: title,
+      text2: description,
+    })
   }
   return (
     <View className='gap-6 w-full'>
