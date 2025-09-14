@@ -25,6 +25,7 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth"
 import * as WebBrowser from "expo-web-browser"
 import * as Google from "expo-auth-session/providers/google" // Importación necesaria
@@ -49,6 +50,7 @@ const auth = getAuth(app)
 
 export function SignUpForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
+  const emailInputRef = React.useRef<TextInput>(null)
   const passwordConfirmationInputRef = React.useRef<TextInput>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -66,6 +68,11 @@ export function SignUpForm() {
       return "Demasiados intentos. Intenta más tarde."
     // fallback
     return err?.message || "Error al iniciar sesión. Intenta de nuevo."
+  }
+
+  const [name, setName] = useState("")
+  function onNameSubmitEditing() {
+    emailInputRef.current?.focus()
   }
 
   function onEmailSubmitEditing() {
@@ -104,6 +111,10 @@ export function SignUpForm() {
         password
       )
       const user = userCredential.user
+      //agregar displayName
+      if (name) {
+        await updateProfile(user, { displayName: name })
+      }
 
       // Persist JWT (id token) securely and public profile in AsyncStorage
       try {
@@ -162,8 +173,24 @@ export function SignUpForm() {
         <CardContent className='gap-6'>
           <View className='gap-6'>
             <View className='gap-1.5'>
+              <Label htmlFor='email'>Nombre</Label>
+              <Input
+                id='name'
+                placeholder='name'
+                keyboardType='default'
+                autoComplete='name'
+                autoCapitalize='words'
+                onSubmitEditing={onNameSubmitEditing}
+                returnKeyType='next'
+                submitBehavior='submit'
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+            <View className='gap-1.5'>
               <Label htmlFor='email'>Usuario</Label>
               <Input
+                ref={emailInputRef}
                 id='email'
                 placeholder='mail@example.com'
                 keyboardType='email-address'
