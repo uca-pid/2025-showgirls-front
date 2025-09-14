@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Text } from "@/components/ui/text"
-import { navigate } from "expo-router/build/global-state/routing"
 import * as React from "react"
-import { Pressable, type TextInput, View } from "react-native"
+import { Pressable, TextInput, View } from "react-native"
+import { EyeIcon, EyeOffIcon } from "lucide-react-native"
+
 import { useState, useEffect } from "react"
 import { router, useRouter } from "expo-router"
 
@@ -23,6 +24,8 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithCredential,
+  createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth"
 import * as WebBrowser from "expo-web-browser"
 import * as Google from "expo-auth-session/providers/google" // Importación necesaria
@@ -45,96 +48,110 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
-export function SignInForm() {
+export function SignUpForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
+  const emailInputRef = React.useRef<TextInput>(null)
+  const passwordConfirmationInputRef = React.useRef<TextInput>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [passwordConfirmation, setPasswordConfirmation] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  // <-- ADICIONADO: función para mapear errores de Firebase a mensajes amigables
   function getFriendlyAuthMessage(err: any) {
     console.log("Firebase Auth Error:", err.code, err.message)
     const code = err?.code || ""
     if (code.includes("auth/invalid-credential"))
-      return "Email o contraseña incorrectos."
-    if (code.includes("auth/invalid-email"))
-      return "Email o contraseña incorrectos."
+      return "Email o Contraseña incorrectos."
     if (code.includes("auth/too-many-requests"))
       return "Demasiados intentos. Intenta más tarde."
     // fallback
     return err?.message || "Error al iniciar sesión. Intenta de nuevo."
   }
 
+  const [name, setName] = useState("")
+  function onNameSubmitEditing() {
+    emailInputRef.current?.focus()
+  }
+
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
+  function onPasswordSubmitEditing() {
+    passwordConfirmationInputRef.current?.focus()
+  }
 
   async function onSubmit() {
-    if (!email || !password) {
-      showErrorToast("Completá email y contraseña")
+    if (!email || !password || !passwordConfirmation) {
+      setError("Completá todos los campos.")
+      showErrorToast("Completá todos los campos.")
+      return
+    }
+
+    if (password !== passwordConfirmation) {
+      setError("Las contraseñas no coinciden.")
+      showErrorToast("Las contraseñas no coinciden.")
+      return
+    }
+
+    // basic password length check
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.")
+      showErrorToast("La contraseña debe tener al menos 8 caracteres.")
       return
     }
 
     setError("")
     setLoading(true)
     try {
-      // signInWithEmailAndPassword returns a UserCredential
-      const userCredential = await signInWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       )
       const user = userCredential.user
-      // Log the common profile fields you can use in the app
-      console.log("Firebase sign-in successful. user:", {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        providerData: user.providerData,
-      })
+      //agregar displayName
+      if (name) {
+        await updateProfile(user, { displayName: name })
+      }
 
-      // Alternative source for current user after sign-in
-      console.log("auth.currentUser:", auth.currentUser)
-
-      // --- Persist credentials/profile ---
+      // Persist JWT (id token) securely and public profile in AsyncStorage
       try {
-        // Try to get a fresh ID token (JWT) for secure storage
         const idToken = await user.getIdToken()
         if (idToken) {
           await SecureStore.setItemAsync("jwt", idToken)
-          console.log("Saved JWT to SecureStore")
         }
       } catch (storeErr) {
-        console.error("Error saving JWT to SecureStore", storeErr)
+        console.warn("Could not save JWT to SecureStore", storeErr)
       }
 
       try {
         const publicProfile = {
           uid: user.uid,
-          displayName: user.displayName,
+          displayName: user.displayName || null,
           email: user.email,
-          photoURL: user.photoURL,
+          photoURL: user.photoURL || null,
         }
         await AsyncStorage.setItem("userProfile", JSON.stringify(publicProfile))
-        console.log("Saved user profile to AsyncStorage")
       } catch (storeErr) {
-        console.error("Error saving profile to AsyncStorage", storeErr)
+        console.warn("Could not save profile to AsyncStorage", storeErr)
       }
 
-      // TODO: If you store extra profile data in Firestore, fetch it here.
-      // e.g. const profile = await getDoc(doc(firestore, 'users', user.uid));
+      // Optionally send email verification here: await user.sendEmailVerification();
+
+      // Navigate to main app
       router.push("/(tabs)")
-    } catch (firebaseLoginError) {
-      const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
+    } catch (err) {
+      const friendlyMessage = getFriendlyAuthMessage(err)
       setError(friendlyMessage)
       showErrorToast(friendlyMessage)
+      console.log("SignUp error", err)
     } finally {
       setLoading(false)
     }
   }
+
   const showErrorToast = (title: string, description?: string) => {
     Toast.show({
       type: "danger",
@@ -142,26 +159,38 @@ export function SignInForm() {
       text2: description,
     })
   }
-
   return (
     <View className='gap-6 w-full'>
       <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5'>
         <CardHeader>
-          <CardTitle
-            className='text-center text-2xl sm:text-left'
-            testID='loginTitle'
-          >
-            Iniciar sesión
+          <CardTitle className='text-center text-2xl sm:text-left'>
+            Creá tu cuenta
           </CardTitle>
           <CardDescription className='text-center sm:text-left'>
-            ¡Bienvenido! Iniciá sesión para continuar
+            ¡Bienvenido! Ingresá tus datos para continuar
           </CardDescription>
         </CardHeader>
         <CardContent className='gap-6'>
           <View className='gap-6'>
             <View className='gap-1.5'>
+              <Label htmlFor='email'>Nombre</Label>
+              <Input
+                id='name'
+                placeholder='name'
+                keyboardType='default'
+                autoComplete='name'
+                autoCapitalize='words'
+                onSubmitEditing={onNameSubmitEditing}
+                returnKeyType='next'
+                submitBehavior='submit'
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+            <View className='gap-1.5'>
               <Label htmlFor='email'>Usuario</Label>
               <Input
+                ref={emailInputRef}
                 id='email'
                 placeholder='mail@example.com'
                 keyboardType='email-address'
@@ -175,47 +204,48 @@ export function SignInForm() {
               />
             </View>
             <View className='gap-1.5'>
-              <View className='flex-row items-center'>
+              <View className='flex-row items-center justify-between'>
                 <Label htmlFor='password'>Contraseña</Label>
-                <Button
-                  variant='link'
-                  size='sm'
-                  className='web:h-fit ml-auto h-4 px-1 py-0 sm:h-4'
-                  onPress={() => {
-                    // TODO: Navigate to forgot password screen
-                  }}
-                >
-                  <Text className='font-normal leading-4'>
-                    Olvidé mi contraseña
-                  </Text>
-                </Button>
               </View>
               <Input
                 ref={passwordInputRef}
                 id='password'
+                returnKeyType='next'
                 secureTextEntry
-                returnKeyType='send'
-                onSubmitEditing={onSubmit}
+                onSubmitEditing={onPasswordSubmitEditing}
                 value={password}
                 onChangeText={setPassword}
               />
             </View>
-
+            <View className='gap-1.5'>
+              <View className='flex-row items-center justify-between'>
+                <Label htmlFor='password'>Confirmar contraseña</Label>
+              </View>
+              <Input
+                ref={passwordConfirmationInputRef}
+                id='conf-password'
+                returnKeyType='send'
+                secureTextEntry
+                onSubmitEditing={onSubmit}
+                value={passwordConfirmation}
+                onChangeText={setPasswordConfirmation}
+              />
+            </View>
             <Button className='w-full' onPress={onSubmit}>
               <Text>Continuar</Text>
             </Button>
-            <View className='flex-row items-center justify-center'>
-              <Text className='text-sm'>¿No tenés cuenta? </Text>
-              <Pressable
-                onPress={() => {
-                  router.push("/sign-up/SignUpPage")
-                }}
-              >
-                <Text className='text-sm underline underline-offset-4'>
-                  Registrate
-                </Text>
-              </Pressable>
-            </View>
+          </View>
+          <View className='flex-row items-center justify-center'>
+            <Text className='text-center text-sm'>¿Ya tenés una cuenta? </Text>
+            <Pressable
+              onPress={() => {
+                router.push("/sign-in/SignInPage")
+              }}
+            >
+              <Text className='text-sm underline underline-offset-4'>
+                Ingresá
+              </Text>
+            </Pressable>
           </View>
           <View className='flex-row items-center'>
             <Separator className='flex-1' />
