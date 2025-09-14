@@ -4,7 +4,16 @@ import { useRouter } from "expo-router"
 import { Card, CardTitle, CardContent }  from "@/components/ui/card"
 import { Button }  from "@/components/ui/button"
 import { Dialog, DialogClose, DialogDescription, DialogTrigger, DialogTitle }  from "@/components/ui/dialog"
+import { Amphora } from "lucide-react-native"
 
+export const calculateBalance = (balance: number, amount: number, type: string) => {
+  if (type === 'income') {
+    return balance + amount;
+  } else if (type === 'expense') {
+    return balance - amount;
+  }
+  return balance;
+}
 
 export default function HomePage() {
   const router = useRouter()
@@ -15,11 +24,7 @@ export default function HomePage() {
 
   const handleTransaction = (amount: string) => {
     const numericAmount = parseFloat(amount);
-    if (transaccion === 'income') {
-      setBalance(balance + numericAmount);
-    } else if (transaccion === 'expense') {
-      setBalance(balance - numericAmount);
-    }
+    setBalance(calculateBalance(balance, numericAmount, transaccion));
   };
 
   return (
