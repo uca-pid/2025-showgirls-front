@@ -12,31 +12,22 @@
     "lint": "expo lint",
     "test": "jest --watchAll --coverage"
   },
-  "jest": {
-    "preset": "jest-expo",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx,js,jsx}",
-      "!**/coverage/**",
-      "!**/node_modules/**",
-      "!**/babel.config.js",
-      "!**/expo-env.d.ts",
-      "!**/.expo/**",
-      "!eslint.config.js",
-      "|@rn-primitives"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native",
-      "|@react-native",
-      "|@react-native-community",
-      "|@expo",
-      "|expo(nent)?|@expo(nent)?/.*",
-      "|react-navigation",
-      "|@react-navigation/.*",
-      "|@rn-primitives",
-      ")/)"
-    ]
-  },
+"jest": {
+  "preset": "jest-expo",
+  "collectCoverage": true,
+  "collectCoverageFrom": [
+    "**/*.{ts,tsx,js,jsx}",
+    "!**/coverage/**",
+    "!**/node_modules/**",
+    "!**/babel.config.js",
+    "!**/expo-env.d.ts",
+    "!**/.expo/**",
+    "!eslint.config.js"
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(jest-)?react-native|@react-native|@react-native-community|@expo|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@rn-primitives)"
+  ]
+},
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "^1.24.0",
