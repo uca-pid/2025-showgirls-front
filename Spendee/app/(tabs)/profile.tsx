@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet, Alert, Image } from "react-native"
+import { View, StyleSheet, Alert, Image } from "react-native"
 import { Button } from "@/components/ui/button"
+import { Text } from "@/components/ui/text"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "expo-router"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -66,19 +68,18 @@ export default function ProfilePage() {
 
   return (
     <View className="flex-1 items-center justify-center p-5">
-      <Text>Perfil</Text>
       {loading ? (
-        <Text style={styles.text}>Cargando...</Text>
+        <Text>Cargando...</Text>
       ) : profile ? (
-        <View style={{ alignItems: 'center' }}>
-          {profile.photoURL ? (
-            <Image source={{ uri: profile.photoURL }} style={{ width: 96, height: 96, borderRadius: 48, marginBottom: 12 }} />
-          ) : null}
-          <Text style={styles.text}>{profile.displayName || 'Sin nombre'}</Text>
-          <Text style={styles.text}>{profile.email || 'Sin email'}</Text>
+        <View className="items-center">
+          <Avatar alt={"Zach Nugent's Avatar"} className="mb-4 h-24 w-24 border-2 border-white">
+            <AvatarImage source={{ uri: profile.photoURL ? profile.photoURL : 'https://github.com/mrzachnugent.png' }} />
+          </Avatar>
+          <Text>{profile.displayName || 'Sin nombre'}</Text>
+          <Text>{profile.email || 'Sin email'}</Text>
         </View>
       ) : (
-        <Text style={styles.text}>No hay datos de perfil almacenados.</Text>
+        <Text>No hay datos de perfil almacenados.</Text>
       )}
       <View className="space-y-3 mt-6 gap-3">
         <Button className="bg-blue-500" onPress={handleSignOut}>
@@ -91,9 +92,3 @@ export default function ProfilePage() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 16 },
-  title: { fontSize: 20, marginBottom: 8 },
-  text: { fontSize: 14, marginBottom: 16, color: "#555" },
-})
