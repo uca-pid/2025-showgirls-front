@@ -1,22 +1,39 @@
-import React, {useState} from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from "react-native"
-import { useRouter } from "expo-router"
-import { Card, CardTitle, CardContent }  from "@/components/ui/card"
-import { Button }  from "@/components/ui/button"
-import { Dialog, DialogClose, DialogDescription, DialogTrigger, DialogTitle }  from "@/components/ui/dialog"
-import { Amphora } from "lucide-react-native"
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { Card, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Amphora } from "lucide-react-native";
 
-export const calculateBalance = (balance: number, amount: number, type: string) => {
-  if (type === 'income') {
+export const calculateBalance = (
+  balance: number,
+  amount: number,
+  type: string
+) => {
+  if (type === "income") {
     return balance + amount;
-  } else if (type === 'expense') {
+  } else if (type === "expense") {
     return balance - amount;
   }
   return balance;
-}
+};
 
 export default function HomePage() {
-  const router = useRouter()
+  const router = useRouter();
   const [balance, setBalance] = useState(0);
   const [transaccion, setTransaccion] = useState(String);
   const [amount, setAmount] = useState(String);
@@ -33,7 +50,9 @@ export default function HomePage() {
 
       <View>
         <Card className="w-72 mb-6 bg-gray-300 border-gray-300">
-          <CardTitle className="text-black text-center">Balance actual</CardTitle>
+          <CardTitle className="text-black text-center">
+            Balance actual
+          </CardTitle>
           <CardContent>
             <Text className="text-2xl font-bold text-black text-center">
               ${balance}
@@ -44,23 +63,26 @@ export default function HomePage() {
 
       <View className="flex-row space-x-4 gap-4">
         <Button
-          onPress={() => {setTransaccion('income'); setModalVisible(true)}}
-          className="size-2xl bg-green-500">
-          <Text className="text-white font-bold">
-            + Ingreso
-          </Text>
+          onPress={() => {
+            setTransaccion("income");
+            setModalVisible(true);
+          }}
+          className="size-2xl bg-green-500"
+        >
+          <Text className="text-white font-bold">+ Ingreso</Text>
         </Button>
 
         <Button
-          onPress={() => {setTransaccion('expense'); setModalVisible(true)}}
-          className="size-2xl bg-red-500">
-          <Text className="text-white font-bold">
-            - Egreso
-          </Text>  
+          onPress={() => {
+            setTransaccion("expense");
+            setModalVisible(true);
+          }}
+          className="size-2xl bg-red-500"
+        >
+          <Text className="text-white font-bold">- Egreso</Text>
         </Button>
-        
       </View>
-      
+
       <Modal transparent={true} visible={modalVisible} animationType="slide">
         <View className="flex-1 bg-black/50 justify-center items-center">
           <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
@@ -97,10 +119,7 @@ export default function HomePage() {
             </View>
           </View>
         </View>
-
       </Modal>
-
     </View>
-  )
+  );
 }
-
