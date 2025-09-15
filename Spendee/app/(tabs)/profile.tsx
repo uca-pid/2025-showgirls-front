@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, Button, StyleSheet, Alert, Image } from "react-native"
+import { View, Text, StyleSheet, Alert, Image } from "react-native"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "expo-router"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -64,8 +65,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
+    <View className="flex-1 items-center justify-center p-5">
+      <Text>Perfil</Text>
       {loading ? (
         <Text style={styles.text}>Cargando...</Text>
       ) : profile ? (
@@ -79,7 +80,14 @@ export default function ProfilePage() {
       ) : (
         <Text style={styles.text}>No hay datos de perfil almacenados.</Text>
       )}
-      <Button title="Cerrar sesión" onPress={handleSignOut} />
+      <View className="space-y-3 mt-6 gap-3">
+        <Button className="bg-blue-500" onPress={handleSignOut}>
+          <Text className="text-white text-center text-bold">Editar Perfil</Text>
+        </Button>
+        <Button className="bg-blue-500" onPress={handleSignOut}>
+          <Text className="text-white text-center text-bold">Cerrar sesión</Text>
+        </Button>
+      </View>
     </View>
   )
 }
