@@ -45,11 +45,11 @@ export default function HomePage() {
   };
 
   return (
-    <View className="flex-1 bg-gray-100 items-center justify-center p-5">
+    <View className="flex-1 items-center justify-center p-5">
       <Text className="text-lg font-semibold mb-4">Bienvenido a Spendee!</Text>
 
       <View>
-        <Card className="w-72 mb-6 bg-gray-300 border-gray-300">
+        <Card className="w-72 mb-6 bg-gray-300">
           <CardTitle className="text-black text-center">
             Balance actual
           </CardTitle>

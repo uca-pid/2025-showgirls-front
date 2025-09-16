@@ -107,13 +107,13 @@ export default function ProfilePage() {
   };
 
   return (
-    <View className="items-center justify-center mt-10 ">
+    <View className="items-center justify-center mt-10">
       {loading ? (
         <Text>Cargando...</Text>
       ) : profile ? (
         <View className="items-center gap-4">
           <Avatar
-            alt={"Zach Nugent's Avatar"}
+            alt={`${profile?.displayName}'s Avatar`}
             className="h-24 w-24 border-2 border-white bg-black"
           >
             <AvatarImage
