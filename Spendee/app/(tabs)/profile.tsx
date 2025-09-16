@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import React, { act, useEffect, useState } from "react";
+import { View, FlatList, Alert } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { getAuth } from "firebase/auth";
+import {
+  BellDot,
+  ChevronRight,
+  Icon,
+  LogOut,
+  Settings,
+  User2,
+} from "lucide-react-native";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -39,6 +47,32 @@ export default function ProfilePage() {
       mounted = false;
     };
   }, []);
+
+  const DATA = [
+    {
+      title: "Editar Perfil",
+      description: profile?.email,
+      icon: <User2 size={25} color="white" />,
+      action: () => router.push("/"),
+    },
+    {
+      title: "Notificaciones",
+      description: "Mute",
+      icon: <BellDot size={25} color="white" />,
+    },
+    {
+      title: "Configuración",
+      description: "Seguridad, Privacidad",
+      icon: <Settings size={25} color="white" />,
+    },
+    {
+      title: "Cerrar Sesión",
+      description: "Salir de la cuenta",
+      icon: <LogOut size={25} color="white" />,
+      action: () => handleSignOut(),
+      variant: "destructive",
+    },
+  ];
 
   const handleSignOut = () => {
     // Real sign-out: clear storage, sign out from firebase if available, then navigate
@@ -78,10 +112,10 @@ export default function ProfilePage() {
         <Text>Cargando...</Text>
       ) : profile ? (
         <View className="items-center gap-10">
-          <View className="relative p-20 mb-4 rounded-lg shadow-md w-screen bg-purple-300 items-center"></View>
+          <View className=" p-20 mb-4 rounded-lg shadow-md w-screen items-center"></View>
           <Avatar
             alt={"Zach Nugent's Avatar"}
-            className="absolute top-[45%] mb-4 h-24 w-24 border-2 border-white bg-black"
+            className="h-24 w-24 border-2 border-white bg-black"
           >
             <AvatarImage
               source={{
@@ -102,16 +136,42 @@ export default function ProfilePage() {
         <Text>No hay datos de perfil almacenados.</Text>
       )}
       <View className="space-y-3 mt-6 gap-3 items-center">
-        <Button className="bg-purple-300">
-          <Text className="text-white text-center text-bold color-white">
-            Editar Perfil
-          </Text>
-        </Button>
-        <Button className="bg-purple-300" onPress={handleSignOut}>
-          <Text className="text-white text-center text-bold color-white">
-            Cerrar sesión
-          </Text>
-        </Button>
+        <FlatList
+          className="w-screen p-4"
+          data={DATA}
+          renderItem={({ item, index }) => (
+            <Card
+              className="rounded-none border-0 border-t-[1.5px]"
+              style={
+                index === 0 && DATA.length > 1
+                  ? {
+                      borderTopLeftRadius: 30,
+                      borderTopRightRadius: 30,
+                      borderTopWidth: 0,
+                    }
+                  : index === DATA.length - 1 && DATA.length > 1
+                    ? {
+                        borderBottomLeftRadius: 30,
+                        borderBottomRightRadius: 30,
+                      }
+                    : DATA.length === 1
+                      ? { borderRadius: 30 }
+                      : {}
+              }
+              key={index}
+              onTouchEnd={item.action !== undefined ? item.action : () => {}}
+            >
+              <CardContent className="flex-row justify-between items-center">
+                {item.icon}
+                <View className="w-4/5 pl-4">
+                  <Text className="text-lg font-medium">{item.title}</Text>
+                  <Text className="color-gray-500">{item.description}</Text>
+                </View>
+                <ChevronRight size={22} color="white" />
+              </CardContent>
+            </Card>
+          )}
+        />
       </View>
     </View>
   );
