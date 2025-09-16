@@ -1,14 +1,14 @@
-import React from "react"
-import { Tabs } from "expo-router"
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8e8e93',
+        tabBarActiveTintColor: "#c79dffff",
+        tabBarInactiveTintColor: "#8e8e93",
       }}
     >
       <Tabs.Screen
@@ -16,7 +16,11 @@ export default function TabsLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} color={color} size={size} />
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -25,10 +29,14 @@ export default function TabsLayout() {
         options={{
           title: "Perfil",
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} color={color} size={size} />
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
     </Tabs>
-  )
+  );
 }

@@ -145,7 +145,7 @@ export function SignInForm() {
 
   return (
     <View className='gap-6 w-full'>
-      <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5'>
+      <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background'>
         <CardHeader>
           <CardTitle
             className='text-center text-2xl sm:text-left'
