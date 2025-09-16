@@ -107,12 +107,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <View className="items-center justify-center">
+    <View className="items-center justify-center mt-10 ">
       {loading ? (
         <Text>Cargando...</Text>
       ) : profile ? (
-        <View className="items-center gap-10">
-          <View className=" p-20 mb-4 rounded-lg shadow-md w-screen items-center"></View>
+        <View className="items-center gap-4">
           <Avatar
             alt={"Zach Nugent's Avatar"}
             className="h-24 w-24 border-2 border-white bg-black"
@@ -130,49 +129,48 @@ export default function ProfilePage() {
               </Text>
             </AvatarFallback>
           </Avatar>
-          <Text className="m-15">{profile.displayName || "Sin nombre"}</Text>
+          <Text className="">{profile.displayName || "Sin nombre"}</Text>
         </View>
       ) : (
         <Text>No hay datos de perfil almacenados.</Text>
       )}
-      <View className="space-y-3 mt-6 gap-3 items-center">
-        <FlatList
-          className="w-screen p-4"
-          data={DATA}
-          renderItem={({ item, index }) => (
-            <Card
-              className="rounded-none border-0 border-t-[1.5px]"
-              style={
-                index === 0 && DATA.length > 1
+
+      <FlatList
+        className="w-screen p-4"
+        data={DATA}
+        renderItem={({ item, index }) => (
+          <Card
+            className="rounded-none border-0 border-t-[1.5px]"
+            style={
+              index === 0 && DATA.length > 1
+                ? {
+                    borderTopLeftRadius: 30,
+                    borderTopRightRadius: 30,
+                    borderTopWidth: 0,
+                  }
+                : index === DATA.length - 1 && DATA.length > 1
                   ? {
-                      borderTopLeftRadius: 30,
-                      borderTopRightRadius: 30,
-                      borderTopWidth: 0,
+                      borderBottomLeftRadius: 30,
+                      borderBottomRightRadius: 30,
                     }
-                  : index === DATA.length - 1 && DATA.length > 1
-                    ? {
-                        borderBottomLeftRadius: 30,
-                        borderBottomRightRadius: 30,
-                      }
-                    : DATA.length === 1
-                      ? { borderRadius: 30 }
-                      : {}
-              }
-              key={index}
-              onTouchEnd={item.action !== undefined ? item.action : () => {}}
-            >
-              <CardContent className="flex-row justify-between items-center">
-                {item.icon}
-                <View className="w-4/5 pl-4">
-                  <Text className="text-lg font-medium">{item.title}</Text>
-                  <Text className="color-gray-500">{item.description}</Text>
-                </View>
-                <ChevronRight size={22} color="white" />
-              </CardContent>
-            </Card>
-          )}
-        />
-      </View>
+                  : DATA.length === 1
+                    ? { borderRadius: 30 }
+                    : {}
+            }
+            key={index}
+            onTouchEnd={item.action !== undefined ? item.action : () => {}}
+          >
+            <CardContent className="flex-row justify-between items-center">
+              {item.icon}
+              <View className="w-4/5 pl-4">
+                <Text className="text-lg font-medium">{item.title}</Text>
+                <Text className="color-gray-500">{item.description}</Text>
+              </View>
+              <ChevronRight size={22} color="white" />
+            </CardContent>
+          </Card>
+        )}
+      />
     </View>
   );
 }
