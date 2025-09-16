@@ -1,5 +1,5 @@
 import { Stack } from "expo-router"
-import "../global.css"
+import "@/global.css"
 import { PortalHost } from "@rn-primitives/portal"
 import React from "react"
 import Toast, {
@@ -66,6 +66,14 @@ export default function RootLayout() {
         <Stack.Screen name='index' />
         <Stack.Screen name='sign-in/SignInPage' />
         <Stack.Screen name='(tabs)' />
+        <Stack.Screen
+          name='edit-profile'
+          options={{
+            headerShown: true,
+            title: "Editar Perfil",
+            headerBackTitle: "Perfil",
+          }}
+        />
       </Stack>
       <Toast config={toastConfig as any as ToastConfig} />
       <PortalHost />

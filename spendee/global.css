@@ -6,6 +6,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@theme {
+  --color-user-1: hsl(276.99 38% 67%);
+  --color-user-2: hsl(210.64 60% 64%);
+  --color-user-3: hsl(164.27 39% 51%);
+  --color-user-4: hsl(111.89 27% 57%);
+  --color-user-5: hsl(52.3 35% 50%);
+  --color-user-6: hsl(25.47 53% 59%);
+  --color-user-7: hsl(341.44 46% 67%);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
