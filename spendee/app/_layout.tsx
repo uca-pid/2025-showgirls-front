@@ -1,19 +1,19 @@
-import { Stack } from "expo-router"
-import "@/global.css"
-import { PortalHost } from "@rn-primitives/portal"
-import React from "react"
+import { Stack } from "expo-router";
+import "@/global.css";
+import { PortalHost } from "@rn-primitives/portal";
+import React from "react";
 import Toast, {
   ToastConfig,
   BaseToast,
   BaseToastProps,
-} from "react-native-toast-message"
+} from "react-native-toast-message";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from "@react-navigation/native"
-import { useColorScheme } from "react-native"
-import { Info, OctagonAlert } from "lucide-react-native"
+} from "@react-navigation/native";
+import { useColorScheme } from "react-native";
+import { Info, OctagonAlert } from "lucide-react-native";
 
 export default function RootLayout() {
   const toastConfig = {
@@ -50,24 +50,24 @@ export default function RootLayout() {
         text1NumberOfLines={2}
       />
     ),
-  }
-  const colorScheme = useColorScheme()
-  const theme = colorScheme === "dark" ? DarkTheme : DefaultTheme
+  };
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
   return (
     <ThemeProvider value={theme}>
       <Stack
-        initialRouteName='index'
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
           animation: "fade",
           animationDuration: 200,
         }}
       >
-        <Stack.Screen name='index' />
-        <Stack.Screen name='sign-in/SignInPage' />
-        <Stack.Screen name='(tabs)' />
+        <Stack.Screen name="index" options={{ headerTransparent: true }} />
+        <Stack.Screen name="sign-in/SignInPage" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
-          name='edit-profile'
+          name="edit-profile"
           options={{
             headerShown: true,
             title: "Editar Perfil",
@@ -78,5 +78,5 @@ export default function RootLayout() {
       <Toast config={toastConfig as any as ToastConfig} />
       <PortalHost />
     </ThemeProvider>
-  )
+  );
 }
