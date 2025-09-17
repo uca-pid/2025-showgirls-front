@@ -52,7 +52,7 @@ export default function ProfilePage() {
       title: "Editar Perfil",
       description: profile?.email,
       icon: <User2 size={25} color="white" />,
-      action: () => router.push("/edit-profile"),
+      action: () => router.push("./edit-profile"),
     },
     {
       title: "Notificaciones",
