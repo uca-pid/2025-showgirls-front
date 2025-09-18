@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { PortalHost } from "@rn-primitives/portal"
 
 export default function TabsLayout() {
   const [profile, setProfile] = useState<{
@@ -41,12 +42,6 @@ export default function TabsLayout() {
 
   return (
     <GestureHandlerRootView>
-      <BottomSheet ref={bottomSheetRef} onChange={handleSheetChanges}>
-        <BottomSheetView>
-          <Text>Awesome 🎉</Text>
-        </BottomSheetView>
-      </BottomSheet>
-
       <Tabs
         screenOptions={{
           headerShown: true,
@@ -84,6 +79,7 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
+      <PortalHost />
     </GestureHandlerRootView>
   )
 }
