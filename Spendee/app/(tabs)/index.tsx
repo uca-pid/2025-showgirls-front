@@ -23,6 +23,8 @@ export const calculateBalance = (
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0);
+  const [income, setIncome] = useState(0);
+  const [expense, setExpense] = useState(0);
   const [transaccion, setTransaccion] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,9 +59,11 @@ export default function HomePage() {
   const handleTransaction = () => {
     const numericAmount = parseFloat(amount);
     if (transaccion === "income") {
+      setIncome(income + numericAmount);
       addIncome();
     }
     if (transaccion === "expense") {
+      setExpense(expense + numericAmount);
       addExpense();
     }
     setBalance(calculateBalance(balance, numericAmount, transaccion));
@@ -115,6 +119,9 @@ export default function HomePage() {
       .then((res) => res.json())
       .then((data) => {
         setBalance(data.balance);
+        setIncome(data.sumaIngresos);
+        setExpense(data.sumaGastos);
+        console.log("Balance fetched:", data);
       })
       .catch((err) => console.error("Error fetching balance:", err));
   };
@@ -159,6 +166,22 @@ export default function HomePage() {
               <Text className="text-white font-bold">Egreso</Text>
             </Button>
           </View>
+        </Card>
+        <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[250px]">
+          <CardContent className="justify-between w-full px-4 py-2">
+            <View className="flex-row justify-between w-full">
+              <Text className="text-secondary">Ingresos Totales</Text>
+              <Text className="text-secondary">
+                ${new Intl.NumberFormat("es-AR").format(income)}
+              </Text>
+            </View>
+            <View className="flex-row justify-between w-full">
+              <Text className="text-secondary">Egresos Totales</Text>
+              <Text className="text-secondary">
+                ${new Intl.NumberFormat("es-AR").format(expense)}
+              </Text>
+            </View>
+          </CardContent>
         </Card>
       </View>
 
