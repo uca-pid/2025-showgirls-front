@@ -67,7 +67,7 @@ export default function HomePage() {
       addIncome();
     }
     if (transaccion === "expense") {
-      // Aquí puedes agregar la lógica para manejar egresos, como llamar a una función addExpense()
+      addExpense();
     }
     setBalance(calculateBalance(balance, numericAmount, transaccion));
   };
@@ -85,6 +85,30 @@ export default function HomePage() {
       body: JSON.stringify({
         userId: user,
         ingreso: numericAmount,
+        montoAnterior: balance,
+      }),
+    })
+      .then((res) => {
+        console.log("Status:", res.status);
+        return res.json();
+      })
+      .then((data) => console.log("Respuesta backend:", data))
+      .catch((err) => console.error("Error en fetch:", err));
+  };
+
+  const addExpense = () => {
+    console.log("Adding expense:", amount);
+    const user = profile?.uid;
+    const numericAmount = parseFloat(amount);
+    console.log("User ID:", user);
+    fetch("http://192.168.0.21:3000/gasto", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user,
+        gasto: numericAmount,
         montoAnterior: balance,
       }),
     })
