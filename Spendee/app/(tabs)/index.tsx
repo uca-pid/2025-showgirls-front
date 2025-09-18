@@ -4,14 +4,7 @@ import { useRouter } from "expo-router";
 import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogDescription,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Amphora, Minus, Plus } from "lucide-react-native";
+import { Minus, Plus } from "lucide-react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 
@@ -29,7 +22,6 @@ export const calculateBalance = (
 };
 
 export default function HomePage() {
-  const router = useRouter();
   const [balance, setBalance] = useState(0);
   const [transaccion, setTransaccion] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
@@ -53,6 +45,7 @@ export default function HomePage() {
           email: user.email ?? "",
           photoURL: user.photoURL ?? "",
         });
+        getBalance(user.uid);
       } else {
         setProfile(null);
       }
@@ -73,7 +66,6 @@ export default function HomePage() {
   };
 
   const addIncome = () => {
-    console.log("Adding income:", amount);
     const user = profile?.uid;
     const numericAmount = parseFloat(amount);
     console.log("User ID:", user);
@@ -97,10 +89,8 @@ export default function HomePage() {
   };
 
   const addExpense = () => {
-    console.log("Adding expense:", amount);
     const user = profile?.uid;
     const numericAmount = parseFloat(amount);
-    console.log("User ID:", user);
     fetch("http://192.168.0.21:3000/gasto", {
       method: "POST",
       headers: {
@@ -120,11 +110,19 @@ export default function HomePage() {
       .catch((err) => console.error("Error en fetch:", err));
   };
 
+  const getBalance = (userId: String) => {
+    fetch(`http://192.168.0.21:3000/balance/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBalance(data.balance);
+      })
+      .catch((err) => console.error("Error fetching balance:", err));
+  };
   return (
     <View className={`flex-1 items-center pt-${headerHight}px bg-background`}>
-      <View className="bg-[#b28bcb] h-[27 0px] w-full relative items-center relative">
+      <View className="bg-[#b28bcb] h-[270px] w-full relative items-center relative">
         <Text className="absolute top-[55px] font-bold left-4 mb-0">
-          Hola, User
+          Hola, {profile?.displayName || "Usuario"}
         </Text>
         <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[80px]">
           <CardTitle className="text-secondary text-m pl-2">
