@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, Alert, Pressable } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
-import { getAuth } from "firebase/auth";
+import React, { useEffect, useState } from 'react'
+import { View, FlatList, Alert, Pressable } from 'react-native'
+import { Text } from '@/components/ui/text'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
+import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SecureStore from 'expo-secure-store'
+import { getAuth } from 'firebase/auth'
 import {
   BellDot,
   ChevronRight,
@@ -14,96 +14,96 @@ import {
   LogOut,
   Settings,
   User2,
-} from "lucide-react-native";
+} from 'lucide-react-native'
 
 export default function ProfilePage() {
-  const router = useRouter();
+  const router = useRouter()
   const [profile, setProfile] = useState<{
-    uid?: string;
-    displayName?: string;
-    email?: string;
-    photoURL?: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
+    uid?: string
+    displayName?: string
+    email?: string
+    photoURL?: string
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     async function loadProfile() {
       try {
-        const json = await AsyncStorage.getItem("userProfile");
-        if (!mounted) return;
+        const json = await AsyncStorage.getItem('userProfile')
+        if (!mounted) return
         if (json) {
-          setProfile(JSON.parse(json));
+          setProfile(JSON.parse(json))
         }
       } catch (err) {
-        console.error("Error loading profile from AsyncStorage", err);
+        console.error('Error loading profile from AsyncStorage', err)
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setLoading(false)
       }
     }
-    loadProfile();
+    loadProfile()
     return () => {
-      mounted = false;
-    };
-  }, []);
+      mounted = false
+    }
+  }, [])
 
   const DATA = [
     {
-      title: "Editar Perfil",
+      title: 'Editar Perfil',
       description: profile?.email,
       icon: <User2 size={25} color="white" />,
-      action: () => router.push("/edit-profile"),
+      action: () => router.push('/edit-profile'),
     },
     {
-      title: "Notificaciones",
-      description: "Mute",
+      title: 'Notificaciones',
+      description: 'Mute',
       icon: <BellDot size={25} color="white" />,
     },
     {
-      title: "Configuración",
-      description: "Seguridad, Privacidad",
+      title: 'Configuración',
+      description: 'Seguridad, Privacidad',
       icon: <Settings size={25} color="white" />,
     },
     {
-      title: "Cerrar Sesión",
-      description: "Salir de la cuenta",
+      title: 'Cerrar Sesión',
+      description: 'Salir de la cuenta',
       icon: <LogOut size={25} color="white" />,
       action: () => handleSignOut(),
-      variant: "destructive",
+      variant: 'destructive',
     },
-  ];
+  ]
 
   const handleSignOut = () => {
     // Real sign-out: clear storage, sign out from firebase if available, then navigate
-    Alert.alert("Cerrar sesión", "¿Querés cerrar tu sesión?", [
+    Alert.alert('Cerrar sesión', '¿Querés cerrar tu sesión?', [
       {
-        text: "Cancelar",
-        style: "cancel",
+        text: 'Cancelar',
+        style: 'cancel',
       },
       {
-        text: "Cerrar sesión",
-        style: "destructive",
+        text: 'Cerrar sesión',
+        style: 'destructive',
         onPress: async () => {
           try {
-            await SecureStore.deleteItemAsync("jwt");
-            await AsyncStorage.removeItem("userProfile");
+            await SecureStore.deleteItemAsync('jwt')
+            await AsyncStorage.removeItem('userProfile')
             // try firebase sign out if auth initialized
             try {
-              const auth = getAuth();
-              await auth.signOut();
+              const auth = getAuth()
+              await auth.signOut()
             } catch (e) {
               // ignore if firebase not configured in this runtime
-              console.warn("Firebase signOut threw:", e);
+              console.warn('Firebase signOut threw:', e)
             }
           } catch (err) {
-            console.error("Error clearing auth storage", err);
+            console.error('Error clearing auth storage', err)
           } finally {
-            router.replace("/sign-in/SignInPage");
+            router.replace('/sign-in/SignInPage')
           }
         },
       },
-    ]);
-  };
+    ])
+  }
 
   return (
     <View className="items-center justify-center bg-background h-full">
@@ -119,7 +119,7 @@ export default function ProfilePage() {
               source={{
                 uri: profile.photoURL
                   ? profile.photoURL
-                  : "https://github.com/mrzachnugent.png",
+                  : 'https://github.com/mrzachnugent.png',
               }}
             />
             <AvatarFallback>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
         <Text>No hay datos de perfil almacenados.</Text>
       )}
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
-        {profile?.uid || "Sin nombre"}
+        {profile?.displayName || 'Sin nombre'}
       </Text>
       <FlatList
         className="w-screen p-4"
@@ -178,5 +178,5 @@ export default function ProfilePage() {
         )}
       />
     </View>
-  );
+  )
 }

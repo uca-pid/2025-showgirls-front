@@ -1,42 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Modal, TextInput } from "react-native";
-import { useRouter } from "expo-router";
-import { Card, CardTitle, CardContent } from "@/components/ui/card";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
+import React, { useEffect, useState } from "react"
+import { View, TouchableOpacity, Modal, TextInput } from "react-native"
+import { router, useRouter } from "expo-router"
+import { Card, CardTitle, CardContent } from "@/components/ui/card"
+import { Text } from "@/components/ui/text"
+import { Button } from "@/components/ui/button"
+import { Minus, Plus } from "lucide-react-native"
+import { useHeaderHeight } from "@react-navigation/elements"
+import { onAuthStateChanged, getAuth } from "firebase/auth"
+
+const IP_PUBLIC = "192.168.1.35"
 
 export const calculateBalance = (
   balance: number,
   amount: number,
-  type: string
+  type: string,
 ) => {
   if (type === "income") {
-    return balance + amount;
+    return balance + amount
   } else if (type === "expense") {
-    return balance - amount;
+    return balance - amount
   }
-  return balance;
-};
+  return balance
+}
 
 export default function HomePage() {
-  const [balance, setBalance] = useState(0);
-  const [income, setIncome] = useState(0);
-  const [expense, setExpense] = useState(0);
-  const [transaccion, setTransaccion] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const headerHight = useHeaderHeight();
+  const [balance, setBalance] = useState(0)
+  const [income, setIncome] = useState(0)
+  const [expense, setExpense] = useState(0)
+  const [transaccion, setTransaccion] = useState<string>("")
+  const [amount, setAmount] = useState<string>("")
+  const [modalVisible, setModalVisible] = useState(false)
+  const headerHight = useHeaderHeight()
   const [profile, setProfile] = useState<{
-    uid?: string;
-    displayName?: string;
-    email?: string;
-    photoURL?: string;
-  } | null>(null);
+    uid?: string
+    displayName?: string
+    email?: string
+    photoURL?: string
+  } | null>(null)
 
-  const auth = getAuth();
+  const auth = getAuth()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -46,34 +48,34 @@ export default function HomePage() {
           displayName: user.displayName ?? "",
           email: user.email ?? "",
           photoURL: user.photoURL ?? "",
-        });
-        getBalance(user.uid);
+        })
+        getBalance(user.uid)
       } else {
-        setProfile(null);
+        router.push("/sign-in/SignInPage")
       }
-    });
+    })
 
-    return () => unsubscribe();
-  }, []);
+    return () => unsubscribe()
+  }, [])
 
   const handleTransaction = () => {
-    const numericAmount = parseFloat(amount);
+    const numericAmount = parseFloat(amount)
     if (transaccion === "income") {
-      setIncome(income + numericAmount);
-      addIncome();
+      setIncome(income + numericAmount)
+      addIncome()
     }
     if (transaccion === "expense") {
-      setExpense(expense + numericAmount);
-      addExpense();
+      setExpense(expense + numericAmount)
+      addExpense()
     }
-    setBalance(calculateBalance(balance, numericAmount, transaccion));
-  };
+    setBalance(calculateBalance(balance, numericAmount, transaccion))
+  }
 
   const addIncome = () => {
-    const user = profile?.uid;
-    const numericAmount = parseFloat(amount);
-    console.log("User ID:", user);
-    fetch("http://192.168.0.21:3000/ingreso", {
+    const user = profile?.uid
+    const numericAmount = parseFloat(amount)
+    console.log("User ID:", user)
+    fetch(`http://${IP_PUBLIC}:3000/ingreso`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,17 +87,17 @@ export default function HomePage() {
       }),
     })
       .then((res) => {
-        console.log("Status:", res.status);
-        return res.json();
+        console.log("Status:", res.status)
+        return res.json()
       })
       .then((data) => console.log("Respuesta backend:", data))
-      .catch((err) => console.error("Error en fetch:", err));
-  };
+      .catch((err) => console.error("Error en fetch:", err))
+  }
 
   const addExpense = () => {
-    const user = profile?.uid;
-    const numericAmount = parseFloat(amount);
-    fetch("http://192.168.0.21:3000/gasto", {
+    const user = profile?.uid
+    const numericAmount = parseFloat(amount)
+    fetch(`http://${IP_PUBLIC}:3000/gasto`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,31 +109,31 @@ export default function HomePage() {
       }),
     })
       .then((res) => {
-        console.log("Status:", res.status);
-        return res.json();
+        console.log("Status:", res.status)
+        return res.json()
       })
       .then((data) => console.log("Respuesta backend:", data))
-      .catch((err) => console.error("Error en fetch:", err));
-  };
+      .catch((err) => console.error("Error en fetch:", err))
+  }
 
   const getBalance = (userId: String) => {
-    fetch(`http://192.168.0.21:3000/balance/${userId}`)
+    fetch(`http://${IP_PUBLIC}:3000/balance/${userId}`)
       .then((res) => res.json())
       .then((data) => {
-        setBalance(data.balance);
-        setIncome(data.sumaIngresos);
-        setExpense(data.sumaGastos);
-        console.log("Balance fetched:", data);
+        setBalance(data.balance)
+        setIncome(data.sumaIngresos)
+        setExpense(data.sumaGastos)
+        console.log("Balance fetched:", data)
       })
-      .catch((err) => console.error("Error fetching balance:", err));
-  };
+      .catch((err) => console.error("Error fetching balance:", err))
+  }
   return (
-    <View className={`flex-1 items-center pt-${headerHight}px bg-background`}>
-      <View className="bg-[#b28bcb] h-[270px] w-full relative items-center relative">
+    <View className={`flex-1 items-center pt-[${headerHight}px] bg-background`}>
+      <View className="bg-gradient-to-b from-purple-600 to-blue-600 h-full w-full relative items-center ">
         <Text className="absolute top-[55px] font-bold left-4 mb-0">
           Hola, {profile?.displayName || "Usuario"}
         </Text>
-        <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[80px]">
+        <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[80px] items-center justify-center">
           <CardTitle className="text-secondary text-m pl-2">
             Balance actual
           </CardTitle>
@@ -145,8 +147,8 @@ export default function HomePage() {
             <Button
               variant={"secondary"}
               onPress={() => {
-                setTransaccion("income");
-                setModalVisible(true);
+                setTransaccion("income")
+                setModalVisible(true)
               }}
               className="size-2xl"
             >
@@ -157,8 +159,8 @@ export default function HomePage() {
             <Button
               variant={"secondary"}
               onPress={() => {
-                setTransaccion("expense");
-                setModalVisible(true);
+                setTransaccion("expense")
+                setModalVisible(true)
               }}
               className="size-2xl"
             >
@@ -210,9 +212,9 @@ export default function HomePage() {
 
               <TouchableOpacity
                 onPress={() => {
-                  handleTransaction();
-                  setAmount(amount);
-                  setModalVisible(false);
+                  handleTransaction()
+                  setAmount(amount)
+                  setModalVisible(false)
                 }}
                 className="bg-blue-500 rounded-xl px-5 py-3"
               >
@@ -223,5 +225,5 @@ export default function HomePage() {
         </View>
       </Modal>
     </View>
-  );
+  )
 }

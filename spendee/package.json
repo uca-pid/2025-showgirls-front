@@ -28,6 +28,10 @@
       "node_modules/(?!(jest-)?react-native|@react-native|@react-native-community|@expo|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@rn-primitives)"
     ]
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": false
+  },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.2.6",

@@ -1,17 +1,17 @@
-import React, { useCallback, useRef } from "react";
-import { Text } from "@/components/ui/text";
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useCallback, useRef } from "react"
+import { Text } from "@/components/ui/text"
+import { Tabs } from "expo-router"
+import { Ionicons } from "@expo/vector-icons"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet"
 
 export default function TabsLayout() {
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null)
 
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
+    console.log("handleSheetChanges", index)
+  }, [])
 
   return (
     <GestureHandlerRootView>
@@ -59,5 +59,5 @@ export default function TabsLayout() {
         />
       </Tabs>
     </GestureHandlerRootView>
-  );
+  )
 }
