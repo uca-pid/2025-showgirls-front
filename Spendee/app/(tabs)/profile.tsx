@@ -133,7 +133,7 @@ export default function ProfilePage() {
         <Text>No hay datos de perfil almacenados.</Text>
       )}
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
-        {profile?.displayName || "Sin nombre"}
+        {profile?.uid || "Sin nombre"}
       </Text>
       <FlatList
         className="w-screen p-4"
