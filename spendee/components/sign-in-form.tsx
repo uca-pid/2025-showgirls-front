@@ -13,7 +13,13 @@ import { Separator } from "@/components/ui/separator"
 import { Text } from "@/components/ui/text"
 import { navigate } from "expo-router/build/global-state/routing"
 import * as React from "react"
-import { Pressable, type TextInput, View } from "react-native"
+import {
+  Keyboard,
+  Pressable,
+  type TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native"
 import { useState, useEffect } from "react"
 import { router, useRouter } from "expo-router"
 
@@ -144,87 +150,89 @@ export function SignInForm() {
   }
 
   return (
-    <View className="gap-6 w-full">
-      <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background">
-        <CardHeader>
-          <CardTitle
-            className="text-center text-2xl sm:text-left"
-            testID="loginTitle"
-          >
-            Iniciar sesión
-          </CardTitle>
-          <CardDescription className="text-center sm:text-left">
-            ¡Bienvenido! Iniciá sesión para continuar
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="gap-6">
-          <View className="gap-6">
-            <View className="gap-1.5">
-              <Label htmlFor="email">Usuario</Label>
-              <Input
-                id="email"
-                placeholder="mail@example.com"
-                keyboardType="email-address"
-                autoComplete="email"
-                autoCapitalize="none"
-                onSubmitEditing={onEmailSubmitEditing}
-                returnKeyType="next"
-                submitBehavior="submit"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-            <View className="gap-1.5">
-              <View className="flex-row items-center">
-                <Label htmlFor="password">Contraseña</Label>
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View className="gap-6 w-full">
+        <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background">
+          <CardHeader>
+            <CardTitle
+              className="text-center text-2xl sm:text-left"
+              testID="loginTitle"
+            >
+              Iniciar sesión
+            </CardTitle>
+            <CardDescription className="text-center sm:text-left">
+              ¡Bienvenido! Iniciá sesión para continuar
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="gap-6">
+            <View className="gap-6">
+              <View className="gap-1.5">
+                <Label htmlFor="email">Usuario</Label>
+                <Input
+                  id="email"
+                  placeholder="mail@example.com"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  onSubmitEditing={onEmailSubmitEditing}
+                  returnKeyType="next"
+                  submitBehavior="submit"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+              <View className="gap-1.5">
+                <View className="flex-row items-center">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
+                    onPress={() => {
+                      // TODO: Navigate to forgot password screen
+                    }}
+                  >
+                    <Text className="font-normal leading-4">
+                      Olvidé mi contraseña
+                    </Text>
+                  </Button>
+                </View>
+                <Input
+                  ref={passwordInputRef}
+                  id="password"
+                  secureTextEntry
+                  returnKeyType="send"
+                  onSubmitEditing={onSubmit}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </View>
+
+              <Button className="w-full" onPress={onSubmit}>
+                <Text>Continuar</Text>
+              </Button>
+              <View className="flex-row items-center justify-center">
+                <Text className="text-sm">¿No tenés cuenta? </Text>
+                <Pressable
                   onPress={() => {
-                    // TODO: Navigate to forgot password screen
+                    router.push("/sign-up/SignUpPage")
                   }}
                 >
-                  <Text className="font-normal leading-4">
-                    Olvidé mi contraseña
+                  <Text className="text-sm underline underline-offset-4">
+                    Registrate
                   </Text>
-                </Button>
+                </Pressable>
               </View>
-              <Input
-                ref={passwordInputRef}
-                id="password"
-                secureTextEntry
-                returnKeyType="send"
-                onSubmitEditing={onSubmit}
-                value={password}
-                onChangeText={setPassword}
-              />
             </View>
-
-            <Button className="w-full" onPress={onSubmit}>
-              <Text>Continuar</Text>
-            </Button>
-            <View className="flex-row items-center justify-center">
-              <Text className="text-sm">¿No tenés cuenta? </Text>
-              <Pressable
-                onPress={() => {
-                  router.push("/sign-up/SignUpPage")
-                }}
-              >
-                <Text className="text-sm underline underline-offset-4">
-                  Registrate
-                </Text>
-              </Pressable>
+            <View className="flex-row items-center">
+              <Separator className="flex-1" />
+              <Text className="text-muted-foreground px-4 text-sm">o</Text>
+              <Separator className="flex-1" />
             </View>
-          </View>
-          <View className="flex-row items-center">
-            <Separator className="flex-1" />
-            <Text className="text-muted-foreground px-4 text-sm">o</Text>
-            <Separator className="flex-1" />
-          </View>
-          <SocialConnections />
-        </CardContent>
-      </Card>
-    </View>
+            <SocialConnections />
+          </CardContent>
+        </Card>
+      </View>
+    </TouchableWithoutFeedback>
   )
 }
