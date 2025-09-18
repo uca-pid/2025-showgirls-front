@@ -1,11 +1,37 @@
-import React, { useCallback, useRef } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Text } from "@/components/ui/text"
-import { Tabs } from "expo-router"
+import { router, Tabs } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
 
 export default function TabsLayout() {
+  const [profile, setProfile] = useState<{
+    uid?: string
+    displayName?: string
+    email?: string
+    photoURL?: string
+  } | null>(null)
+
+  const auth = getAuth()
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setProfile({
+          uid: user.uid,
+          displayName: user.displayName ?? "",
+          email: user.email ?? "",
+          photoURL: user.photoURL ?? "",
+        })
+      } else {
+        router.replace("/sign-in/SignInPage")
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   // callbacks
@@ -31,10 +57,10 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Hola, UserName!",
+            title: `Hola, ${profile?.displayName || "User"}`,
             headerTitleAlign: "left",
             headerTransparent: true,
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons
                 name={focused ? "home" : "home-outline"}
