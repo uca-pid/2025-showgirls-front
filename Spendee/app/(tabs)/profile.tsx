@@ -51,6 +51,8 @@ export default function ProfilePage() {
       icon: <User2 size={25} color="white" />,
       action: () => router.push("/edit-profile"),
     },
+    /**
+     * 
     {
       title: "Notificaciones",
       description: "Mute",
@@ -61,6 +63,7 @@ export default function ProfilePage() {
       description: "Seguridad, Privacidad",
       icon: <Settings size={25} color="white" />,
     },
+    */
     {
       title: "Cerrar Sesión",
       description: "Salir de la cuenta",

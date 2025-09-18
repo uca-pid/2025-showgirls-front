@@ -9,7 +9,7 @@ import { useHeaderHeight } from "@react-navigation/elements"
 import { onAuthStateChanged, getAuth } from "firebase/auth"
 import { LinearGradient } from "expo-linear-gradient"
 
-const IP_PUBLIC = "192.168.1.35"
+const IP_PUBLIC = "192.168.1.79"
 
 export const calculateBalance = (
   balance: number,

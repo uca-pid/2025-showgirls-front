@@ -189,7 +189,7 @@ export function SignInForm() {
                     size="sm"
                     className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
                     onPress={() => {
-                      // TODO: Navigate to forgot password screen
+                      router.push("/forgot-password")
                     }}
                   >
                     <Text className="font-normal leading-4">
@@ -225,11 +225,12 @@ export function SignInForm() {
               </View>
             </View>
             <View className="flex-row items-center">
+              {/** 
               <Separator className="flex-1" />
               <Text className="text-muted-foreground px-4 text-sm">o</Text>
               <Separator className="flex-1" />
+              <SocialConnections />*/}
             </View>
-            <SocialConnections />
           </CardContent>
         </Card>
       </View>

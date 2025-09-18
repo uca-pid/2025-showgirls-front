@@ -256,12 +256,14 @@ export function SignUpForm() {
                 </Text>
               </Pressable>
             </View>
+
             <View className="flex-row items-center">
+              {/** 
               <Separator className="flex-1" />
               <Text className="text-muted-foreground px-4 text-sm">o</Text>
               <Separator className="flex-1" />
+              <SocialConnections />*/}
             </View>
-            <SocialConnections />
           </CardContent>
         </Card>
       </View>
