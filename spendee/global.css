@@ -7,13 +7,17 @@
 @tailwind utilities;
 
 @theme {
-  --color-user-1: hsl(276.99 38% 67%);
-  --color-user-2: hsl(210.64 60% 64%);
-  --color-user-3: hsl(164.27 39% 51%);
-  --color-user-4: hsl(111.89 27% 57%);
-  --color-user-5: hsl(52.3 35% 50%);
-  --color-user-6: hsl(25.47 53% 59%);
-  --color-user-7: hsl(341.44 46% 67%);
+  --color-rob-roy-50: #fcf9ee;
+  --color-rob-roy-100: #f7eece;
+  --color-rob-roy-200: #eedb99;
+  --color-rob-roy-300: #e9cc78;
+  --color-rob-roy-400: #e0af3f;
+  --color-rob-roy-500: #d79229;
+  --color-rob-roy-600: #be7121;
+  --color-rob-roy-700: #9e531f;
+  --color-rob-roy-800: #81421f;
+  --color-rob-roy-900: #6b371c;
+  --color-rob-roy-950: #3d1c0b;
 }
 
 @layer base {
