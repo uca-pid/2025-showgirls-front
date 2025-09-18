@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { initializeApp } from "firebase/app"
 import { deleteUser, getAuth, updateProfile } from "firebase/auth"
 import Toast from "react-native-toast-message"
-import { router } from "expo-router"
+import { Redirect, router } from "expo-router"
 import { Trash2 } from "lucide-react-native"
 
 const firebaseConfig = {
