@@ -18,7 +18,7 @@ import { router } from "expo-router"
 const auth = getAuth()
 
 async function checkEmail(email: string) {
-  const res = await fetch("http://192.168.1.79:3000/verify-email", {
+  const res = await fetch("http://172.29.143.164:3000/verify-email", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
