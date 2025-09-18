@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Minus, Plus } from "lucide-react-native"
 import { useHeaderHeight } from "@react-navigation/elements"
 import { onAuthStateChanged, getAuth } from "firebase/auth"
+import { LinearGradient } from "expo-linear-gradient"
 
 const IP_PUBLIC = "192.168.1.35"
 
@@ -51,7 +52,7 @@ export default function HomePage() {
         })
         getBalance(user.uid)
       } else {
-        router.push("/sign-in/SignInPage")
+        router.replace("/sign-in/SignInPage")
       }
     })
 
@@ -116,7 +117,7 @@ export default function HomePage() {
       .catch((err) => console.error("Error en fetch:", err))
   }
 
-  const getBalance = (userId: String) => {
+  const getBalance = (userId: string) => {
     fetch(`http://${IP_PUBLIC}:3000/balance/${userId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -127,67 +128,74 @@ export default function HomePage() {
       })
       .catch((err) => console.error("Error fetching balance:", err))
   }
+
   return (
-    <View className={`flex-1 items-center pt-[${headerHight}px] bg-background`}>
-      <View className="bg-gradient-to-b from-purple-600 to-blue-600 h-full w-full relative items-center ">
-        <Text className="absolute top-[55px] font-bold left-4 mb-0">
-          Hola, {profile?.displayName || "Usuario"}
-        </Text>
-        <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[80px] items-center justify-center">
-          <CardTitle className="text-secondary text-m pl-2">
-            Balance actual
-          </CardTitle>
-          <CardContent className="items-start pl-2">
-            <Text className="text-4xl font-bold text-secondary text-left">
-              ${new Intl.NumberFormat("es-AR").format(balance)}
+    <LinearGradient
+      colors={["#F9A8D4", "#121212"]}
+      style={{
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        flex: 1,
+        gap: 20,
+        paddingTop: headerHight,
+      }}
+      start={{ x: 0.5, y: 0.0 }}
+      end={{ x: 0.5, y: 1.0 }}
+      locations={[0, 0.7]}
+    >
+      <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 pt-4 gap-2 justify-center">
+        <CardTitle className="text-secondary text-m pl-2">
+          Balance actual
+        </CardTitle>
+        <CardContent>
+          <Text className="text-4xl font-bold text-secondary text-left">
+            ${new Intl.NumberFormat("es-AR").format(balance)}
+          </Text>
+        </CardContent>
+
+        <View className="flex-row gap-4 p-2 align-center justify-center">
+          <Button
+            variant={"secondary"}
+            onPress={() => {
+              setTransaccion("income")
+              setModalVisible(true)
+            }}
+            className="size-2xl"
+          >
+            <Plus size={20} color={"white"} />
+            <Text className="text-white font-bold">Ingreso</Text>
+          </Button>
+
+          <Button
+            variant={"secondary"}
+            onPress={() => {
+              setTransaccion("expense")
+              setModalVisible(true)
+            }}
+            className="size-2xl"
+          >
+            <Minus size={20} color={"white"} />
+            <Text className="text-white font-bold">Egreso</Text>
+          </Button>
+        </View>
+        <View className="w-full p-4">
+          <View className="justify-between w-full flex-row">
+            <Text className="text-secondary">Ingresos Totales</Text>
+            <Text className="text-secondary">
+              ${new Intl.NumberFormat("es-AR").format(income)}
             </Text>
-          </CardContent>
-
-          <View className="flex-row space-x-4 gap-4 pb-2 pt-2 align-center justify-center">
-            <Button
-              variant={"secondary"}
-              onPress={() => {
-                setTransaccion("income")
-                setModalVisible(true)
-              }}
-              className="size-2xl"
-            >
-              <Plus size={20} color={"white"} />
-              <Text className="text-white font-bold">Ingreso</Text>
-            </Button>
-
-            <Button
-              variant={"secondary"}
-              onPress={() => {
-                setTransaccion("expense")
-                setModalVisible(true)
-              }}
-              className="size-2xl"
-            >
-              <Minus size={20} color={"white"} />
-              <Text className="text-white font-bold">Egreso</Text>
-            </Button>
           </View>
-        </Card>
-        <Card className="w-[92%] bg-foreground border-0 rounded-none gap-1 absolute top-[250px]">
-          <CardContent className="justify-between w-full px-4 py-2">
-            <View className="flex-row justify-between w-full">
-              <Text className="text-secondary">Ingresos Totales</Text>
-              <Text className="text-secondary">
-                ${new Intl.NumberFormat("es-AR").format(income)}
-              </Text>
-            </View>
-            <View className="flex-row justify-between w-full">
-              <Text className="text-secondary">Egresos Totales</Text>
-              <Text className="text-secondary">
-                ${new Intl.NumberFormat("es-AR").format(expense)}
-              </Text>
-            </View>
-          </CardContent>
-        </Card>
-      </View>
 
-      <Modal transparent={true} visible={modalVisible} animationType="slide">
+          <View className="justify-between w-full flex-row">
+            <Text className="text-secondary">Egresos Totales</Text>
+            <Text className="text-secondary">
+              ${new Intl.NumberFormat("es-AR").format(expense)}
+            </Text>
+          </View>
+        </View>
+      </Card>
+      <Modal transparent={true} visible={modalVisible} animationType="fade">
         <View className="flex-1 bg-black/50 justify-center items-center">
           <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
             <Text className="text-xl font-bold text-gray-800 mb-4">
@@ -224,6 +232,6 @@ export default function HomePage() {
           </View>
         </View>
       </Modal>
-    </View>
+    </LinearGradient>
   )
 }
