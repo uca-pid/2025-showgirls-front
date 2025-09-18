@@ -84,7 +84,7 @@ export function SignInForm() {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       )
       const user = userCredential.user
       // Log the common profile fields you can use in the app
@@ -126,7 +126,7 @@ export function SignInForm() {
 
       // TODO: If you store extra profile data in Firestore, fetch it here.
       // e.g. const profile = await getDoc(doc(firestore, 'users', user.uid));
-      router.push("/(tabs)")
+      router.replace("/(tabs)")
     } catch (firebaseLoginError) {
       const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
       setError(friendlyMessage)
@@ -144,83 +144,83 @@ export function SignInForm() {
   }
 
   return (
-    <View className='gap-6 w-full'>
-      <Card className='border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background'>
+    <View className="gap-6 w-full">
+      <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background">
         <CardHeader>
           <CardTitle
-            className='text-center text-2xl sm:text-left'
-            testID='loginTitle'
+            className="text-center text-2xl sm:text-left"
+            testID="loginTitle"
           >
             Iniciar sesión
           </CardTitle>
-          <CardDescription className='text-center sm:text-left'>
+          <CardDescription className="text-center sm:text-left">
             ¡Bienvenido! Iniciá sesión para continuar
           </CardDescription>
         </CardHeader>
-        <CardContent className='gap-6'>
-          <View className='gap-6'>
-            <View className='gap-1.5'>
-              <Label htmlFor='email'>Usuario</Label>
+        <CardContent className="gap-6">
+          <View className="gap-6">
+            <View className="gap-1.5">
+              <Label htmlFor="email">Usuario</Label>
               <Input
-                id='email'
-                placeholder='mail@example.com'
-                keyboardType='email-address'
-                autoComplete='email'
-                autoCapitalize='none'
+                id="email"
+                placeholder="mail@example.com"
+                keyboardType="email-address"
+                autoComplete="email"
+                autoCapitalize="none"
                 onSubmitEditing={onEmailSubmitEditing}
-                returnKeyType='next'
-                submitBehavior='submit'
+                returnKeyType="next"
+                submitBehavior="submit"
                 value={email}
                 onChangeText={setEmail}
               />
             </View>
-            <View className='gap-1.5'>
-              <View className='flex-row items-center'>
-                <Label htmlFor='password'>Contraseña</Label>
+            <View className="gap-1.5">
+              <View className="flex-row items-center">
+                <Label htmlFor="password">Contraseña</Label>
                 <Button
-                  variant='link'
-                  size='sm'
-                  className='web:h-fit ml-auto h-4 px-1 py-0 sm:h-4'
+                  variant="link"
+                  size="sm"
+                  className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
                   onPress={() => {
                     // TODO: Navigate to forgot password screen
                   }}
                 >
-                  <Text className='font-normal leading-4'>
+                  <Text className="font-normal leading-4">
                     Olvidé mi contraseña
                   </Text>
                 </Button>
               </View>
               <Input
                 ref={passwordInputRef}
-                id='password'
+                id="password"
                 secureTextEntry
-                returnKeyType='send'
+                returnKeyType="send"
                 onSubmitEditing={onSubmit}
                 value={password}
                 onChangeText={setPassword}
               />
             </View>
 
-            <Button className='w-full' onPress={onSubmit}>
+            <Button className="w-full" onPress={onSubmit}>
               <Text>Continuar</Text>
             </Button>
-            <View className='flex-row items-center justify-center'>
-              <Text className='text-sm'>¿No tenés cuenta? </Text>
+            <View className="flex-row items-center justify-center">
+              <Text className="text-sm">¿No tenés cuenta? </Text>
               <Pressable
                 onPress={() => {
                   router.push("/sign-up/SignUpPage")
                 }}
               >
-                <Text className='text-sm underline underline-offset-4'>
+                <Text className="text-sm underline underline-offset-4">
                   Registrate
                 </Text>
               </Pressable>
             </View>
           </View>
-          <View className='flex-row items-center'>
-            <Separator className='flex-1' />
-            <Text className='text-muted-foreground px-4 text-sm'>o</Text>
-            <Separator className='flex-1' />
+          <View className="flex-row items-center">
+            <Separator className="flex-1" />
+            <Text className="text-muted-foreground px-4 text-sm">o</Text>
+            <Separator className="flex-1" />
           </View>
           <SocialConnections />
         </CardContent>
