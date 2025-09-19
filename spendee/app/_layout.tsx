@@ -56,18 +56,18 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
       <Stack
-        initialRouteName='index'
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
           animation: "fade",
           animationDuration: 200,
         }}
       >
-        <Stack.Screen name='index' />
-        <Stack.Screen name='sign-in/SignInPage' />
-        <Stack.Screen name='(tabs)' />
+        <Stack.Screen name="index" options={{ headerTransparent: true }} />
+        <Stack.Screen name="sign-in/SignInPage" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
-          name='edit-profile'
+          name="edit-profile"
           options={{
             headerShown: true,
             title: "Editar Perfil",

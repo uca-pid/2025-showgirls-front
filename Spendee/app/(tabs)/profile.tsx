@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, Alert, Pressable } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
-import { getAuth } from "firebase/auth";
+import React, { useEffect, useState } from "react"
+import { View, FlatList, Alert, Pressable } from "react-native"
+import { Text } from "@/components/ui/text"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Card, CardContent } from "@/components/ui/card"
+import { useRouter } from "expo-router"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as SecureStore from "expo-secure-store"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
 import {
   BellDot,
   ChevronRight,
@@ -14,38 +14,35 @@ import {
   LogOut,
   Settings,
   User2,
-} from "lucide-react-native";
+} from "lucide-react-native"
 
 export default function ProfilePage() {
-  const router = useRouter();
+  const router = useRouter()
   const [profile, setProfile] = useState<{
-    uid?: string;
-    displayName?: string;
-    email?: string;
-    photoURL?: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
+    uid?: string
+    displayName?: string
+    email?: string
+    photoURL?: string
+  } | null>(null)
+
+  const auth = getAuth()
 
   useEffect(() => {
-    let mounted = true;
-    async function loadProfile() {
-      try {
-        const json = await AsyncStorage.getItem("userProfile");
-        if (!mounted) return;
-        if (json) {
-          setProfile(JSON.parse(json));
-        }
-      } catch (err) {
-        console.error("Error loading profile from AsyncStorage", err);
-      } finally {
-        if (mounted) setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setProfile({
+          uid: user.uid,
+          displayName: user.displayName ?? "",
+          email: user.email ?? "",
+          photoURL: user.photoURL ?? "",
+        })
+      } else {
+        router.replace("/sign-in/SignInPage")
       }
-    }
-    loadProfile();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const DATA = [
     {
@@ -54,6 +51,8 @@ export default function ProfilePage() {
       icon: <User2 size={25} color="white" />,
       action: () => router.push("/edit-profile"),
     },
+    /**
+     * 
     {
       title: "Notificaciones",
       description: "Mute",
@@ -64,6 +63,7 @@ export default function ProfilePage() {
       description: "Seguridad, Privacidad",
       icon: <Settings size={25} color="white" />,
     },
+    */
     {
       title: "Cerrar Sesión",
       description: "Salir de la cuenta",
@@ -71,7 +71,7 @@ export default function ProfilePage() {
       action: () => handleSignOut(),
       variant: "destructive",
     },
-  ];
+  ]
 
   const handleSignOut = () => {
     // Real sign-out: clear storage, sign out from firebase if available, then navigate
@@ -85,31 +85,29 @@ export default function ProfilePage() {
         style: "destructive",
         onPress: async () => {
           try {
-            await SecureStore.deleteItemAsync("jwt");
-            await AsyncStorage.removeItem("userProfile");
+            await SecureStore.deleteItemAsync("jwt")
+            await AsyncStorage.removeItem("userProfile")
             // try firebase sign out if auth initialized
             try {
-              const auth = getAuth();
-              await auth.signOut();
+              const auth = getAuth()
+              await auth.signOut()
             } catch (e) {
               // ignore if firebase not configured in this runtime
-              console.warn("Firebase signOut threw:", e);
+              console.warn("Firebase signOut threw:", e)
             }
           } catch (err) {
-            console.error("Error clearing auth storage", err);
+            console.error("Error clearing auth storage", err)
           } finally {
-            router.replace("/sign-in/SignInPage");
+            router.replace("/sign-in/SignInPage")
           }
         },
       },
-    ]);
-  };
+    ])
+  }
 
   return (
     <View className="items-center justify-center bg-background h-full">
-      {loading ? (
-        <Text>Cargando...</Text>
-      ) : profile ? (
+      {profile ? (
         <View className="items-center bg-primary relative h-[130px] w-screen">
           <Avatar
             alt={`${profile?.displayName}'s Avatar`}
@@ -178,5 +176,5 @@ export default function ProfilePage() {
         )}
       />
     </View>
-  );
+  )
 }
