@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react"
-import { View, FlatList, Alert, Pressable } from "react-native"
-import { Text } from "@/components/ui/text"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import { useRouter } from "expo-router"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import * as SecureStore from "expo-secure-store"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
+import React, { useEffect, useState } from 'react'
+import { View, FlatList, Alert, Pressable } from 'react-native'
+import { Text } from '@/components/ui/text'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
+import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SecureStore from 'expo-secure-store'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import {
   BellDot,
   ChevronRight,
@@ -14,7 +14,7 @@ import {
   LogOut,
   Settings,
   User2,
-} from "lucide-react-native"
+} from 'lucide-react-native'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -32,12 +32,12 @@ export default function ProfilePage() {
       if (user) {
         setProfile({
           uid: user.uid,
-          displayName: user.displayName ?? "",
-          email: user.email ?? "",
-          photoURL: user.photoURL ?? "",
+          displayName: user.displayName ?? '',
+          email: user.email ?? '',
+          photoURL: user.photoURL ?? '',
         })
       } else {
-        router.replace("/sign-in/SignInPage")
+        router.replace('/sign-in')
       }
     })
 
@@ -46,10 +46,10 @@ export default function ProfilePage() {
 
   const DATA = [
     {
-      title: "Editar Perfil",
+      title: 'Editar Perfil',
       description: profile?.email,
       icon: <User2 size={25} color="white" />,
-      action: () => router.push("/edit-profile"),
+      action: () => router.push('../edit-profile'),
     },
     /**
      * 
@@ -65,40 +65,40 @@ export default function ProfilePage() {
     },
     */
     {
-      title: "Cerrar Sesión",
-      description: "Salir de la cuenta",
+      title: 'Cerrar Sesión',
+      description: 'Salir de la cuenta',
       icon: <LogOut size={25} color="white" />,
       action: () => handleSignOut(),
-      variant: "destructive",
+      variant: 'destructive',
     },
   ]
 
   const handleSignOut = () => {
     // Real sign-out: clear storage, sign out from firebase if available, then navigate
-    Alert.alert("Cerrar sesión", "¿Querés cerrar tu sesión?", [
+    Alert.alert('Cerrar sesión', '¿Querés cerrar tu sesión?', [
       {
-        text: "Cancelar",
-        style: "cancel",
+        text: 'Cancelar',
+        style: 'cancel',
       },
       {
-        text: "Cerrar sesión",
-        style: "destructive",
+        text: 'Cerrar sesión',
+        style: 'destructive',
         onPress: async () => {
           try {
-            await SecureStore.deleteItemAsync("jwt")
-            await AsyncStorage.removeItem("userProfile")
+            await SecureStore.deleteItemAsync('jwt')
+            await AsyncStorage.removeItem('userProfile')
             // try firebase sign out if auth initialized
             try {
               const auth = getAuth()
               await auth.signOut()
             } catch (e) {
               // ignore if firebase not configured in this runtime
-              console.warn("Firebase signOut threw:", e)
+              console.warn('Firebase signOut threw:', e)
             }
           } catch (err) {
-            console.error("Error clearing auth storage", err)
+            console.error('Error clearing auth storage', err)
           } finally {
-            router.replace("/sign-in/SignInPage")
+            router.replace('/sign-in')
           }
         },
       },
@@ -117,7 +117,7 @@ export default function ProfilePage() {
               source={{
                 uri: profile.photoURL
                   ? profile.photoURL
-                  : "https://github.com/mrzachnugent.png",
+                  : 'https://github.com/mrzachnugent.png',
               }}
             />
             <AvatarFallback>
@@ -131,7 +131,7 @@ export default function ProfilePage() {
         <Text>No hay datos de perfil almacenados.</Text>
       )}
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
-        {profile?.displayName || "Sin nombre"}
+        {profile?.displayName || 'Sin nombre'}
       </Text>
       <FlatList
         className="w-screen p-4"

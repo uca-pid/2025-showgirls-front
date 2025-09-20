@@ -9,8 +9,6 @@ import { useHeaderHeight } from '@react-navigation/elements'
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
 import { LinearGradient } from 'expo-linear-gradient'
 
-const IP_PUBLIC = '172.29.143.164'
-
 export const calculateBalance = (
   balance: number,
   amount: number,
@@ -52,7 +50,7 @@ export default function HomePage() {
         })
         getBalance(user.uid)
       } else {
-        router.replace('/sign-in/SignInPage')
+        router.replace('/sign-in')
       }
     })
 
@@ -76,7 +74,7 @@ export default function HomePage() {
     const user = profile?.uid
     const numericAmount = parseFloat(amount.replace(',', '.'))
     console.log('User ID:', user)
-    fetch(`http://${IP_PUBLIC}:3000/ingreso`, {
+    fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/ingreso`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +96,7 @@ export default function HomePage() {
   const addExpense = () => {
     const user = profile?.uid
     const numericAmount = parseFloat(amount.replace(',', '.'))
-    fetch(`http://${IP_PUBLIC}:3000/gasto`, {
+    fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/gasto`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -114,11 +112,12 @@ export default function HomePage() {
         return res.json()
       })
       .then((data) => console.log('Respuesta backend:', data))
+
       .catch((err) => console.error('Error en fetch:', err))
   }
 
   const getBalance = (userId: string) => {
-    fetch(`http://${IP_PUBLIC}:3000/balance/${userId}`)
+    fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/balance/${userId}`)
       .then((res) => res.json())
       .then((data) => {
         setBalance(data.balance)

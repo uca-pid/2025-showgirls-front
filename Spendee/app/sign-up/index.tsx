@@ -54,7 +54,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
-export function SignUpForm() {
+export default function SignUpForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
   const emailInputRef = React.useRef<TextInput>(null)
   const passwordConfirmationInputRef = React.useRef<TextInput>(null)
@@ -179,7 +179,7 @@ export function SignUpForm() {
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="gap-6 w-full">
+      <View className="gap-6 w-full h-full justify-center bg-background">
         <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background">
           <CardHeader>
             <CardTitle className="text-center text-2xl sm:text-left">
@@ -262,7 +262,7 @@ export function SignUpForm() {
               </Text>
               <Pressable
                 onPress={() => {
-                  router.push('/sign-in/SignInPage')
+                  router.replace('/sign-in')
                 }}
               >
                 <Text className="text-sm underline underline-offset-4">

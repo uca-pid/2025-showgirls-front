@@ -51,7 +51,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
-export function SignInForm() {
+export default function SignInForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -151,7 +151,7 @@ export function SignInForm() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="gap-6 w-full">
+      <View className="gap-6 w-full h-full justify-center bg-background">
         <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5 bg-background">
           <CardHeader>
             <CardTitle
@@ -189,7 +189,7 @@ export function SignInForm() {
                     size="sm"
                     className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
                     onPress={() => {
-                      router.push('/forgot-password')
+                      router.push('/sign-in/forgot-password')
                     }}
                   >
                     <Text className="font-normal leading-4">
@@ -215,7 +215,7 @@ export function SignInForm() {
                 <Text className="text-sm">¿No tenés cuenta? </Text>
                 <Pressable
                   onPress={() => {
-                    router.push('/sign-up/SignUpPage')
+                    router.replace('/sign-up')
                   }}
                 >
                   <Text className="text-sm underline underline-offset-4">

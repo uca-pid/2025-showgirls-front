@@ -65,6 +65,7 @@ const EditProfilePage = () => {
       })
         .then(() => {
           showSuccessToast('Perfil actualizado')
+          router.dismissAll()
           router.replace('/profile')
         })
         .catch((error) => {
@@ -78,7 +79,7 @@ const EditProfilePage = () => {
       deleteUser(auth.currentUser)
         .then(() => {
           showSuccessToast('Usuario eliminado')
-          router.replace('/sign-in/SignInPage')
+          router.replace('/sign-in')
         })
         .catch((error) => {
           showErrorToast('Error al eliminar usuario')
@@ -119,8 +120,8 @@ const EditProfilePage = () => {
             </View>
           </Card>
         </Modal>
-        <View className="w-full ">
-          <Text className="text-sm text- color-muted-foreground pl-4 ">
+        <View className="w-full">
+          <Text className="text-sm color-muted-foreground pl-4 ">
             CAMBIAR NOMBRE
           </Text>
           <Card className="w-full h-auto">
