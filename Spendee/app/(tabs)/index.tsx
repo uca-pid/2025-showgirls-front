@@ -8,8 +8,7 @@ import { Minus, Plus } from 'lucide-react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
 import { onAuthStateChanged, getAuth } from 'firebase/auth'
 import { LinearGradient } from 'expo-linear-gradient'
-
-const IP_PUBLIC = '172.29.143.164'
+import * as SecureStore from 'expo-secure-store'
 
 export const calculateBalance = (
   balance: number,
@@ -59,77 +58,107 @@ export default function HomePage() {
     return () => unsubscribe()
   }, [])
 
-  const handleTransaction = () => {
+  const handleTransaction = async () => {
     const numericAmount = parseFloat(amount.replace(',', '.'))
     if (transaccion === 'income') {
       setIncome(income + numericAmount)
-      addIncome()
+      await addIncome()
     }
     if (transaccion === 'expense') {
       setExpense(expense + numericAmount)
-      addExpense()
+      await addExpense()
     }
     setBalance(calculateBalance(balance, numericAmount, transaccion))
   }
 
-  const addIncome = () => {
+  const addIncome = async () => {
     const user = profile?.uid
     const numericAmount = parseFloat(amount.replace(',', '.'))
     console.log('User ID:', user)
-    fetch(`http://${IP_PUBLIC}:3000/ingreso`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: user,
-        ingreso: numericAmount,
-        montoAnterior: balance,
-      }),
-    })
-      .then((res) => {
-        console.log('Status:', res.status)
-        return res.json()
+    
+    try {
+      const firebaseUser = auth.currentUser
+      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
+
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/ingreso`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          userId: user,
+          ingreso: numericAmount,
+          montoAnterior: balance,
+        }),
       })
-      .then((data) => console.log('Respuesta backend:', data))
-      .catch((err) => console.error('Error en fetch:', err))
+
+      console.log('Status:', res.status)
+      try {
+        const data = await res.json()
+        console.log('Respuesta backend:', data)
+      } catch (e) {
+        console.warn('No JSON body in response:', e)
+      }
+    } catch (err) {
+      console.error('Error sending ingreso (or getting token):', err)
+    }
   }
 
-  const addExpense = () => {
+  const addExpense = async () => {
     const user = profile?.uid
     const numericAmount = parseFloat(amount.replace(',', '.'))
-    fetch(`http://${IP_PUBLIC}:3000/gasto`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: user,
-        gasto: numericAmount,
-        montoAnterior: balance,
-      }),
-    })
-      .then((res) => {
-        console.log('Status:', res.status)
-        return res.json()
+    try {
+      const firebaseUser = auth.currentUser
+      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
+
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/gasto`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          userId: user,
+          gasto: numericAmount,
+          montoAnterior: balance,
+        }),
       })
-      .then((data) => console.log('Respuesta backend:', data))
-      .catch((err) => console.error('Error en fetch:', err))
+
+      console.log('Status:', res.status)
+      try {
+        const data = await res.json()
+        console.log('Respuesta backend:', data)
+      } catch (e) {
+        console.warn('No JSON body in response:', e)
+      }
+    } catch (err) {
+      console.error('Error sending gasto (or getting token):', err)
+    }
   }
 
-  const getBalance = (userId: string) => {
-    fetch(`http://${IP_PUBLIC}:3000/balance/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setBalance(data.balance)
-        setIncome(data.sumaIngresos)
-        setExpense(data.sumaGastos)
-        console.log('Balance fetched:', data)
+  const getBalance = async (userId: string) => {
+    try {
+      const firebaseUser = auth.currentUser
+      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
+
+      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/balance/${userId}`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       })
-      .catch((err) => console.error('Error fetching balance:', err))
+
+      const data = await res.json()
+      setBalance(data.balance)
+      setIncome(data.sumaIngresos)
+      setExpense(data.sumaGastos)
+      console.log('Balance fetched:', data)
+    } catch (err) {
+      console.error('Error fetching balance or getting token:', err)
+    }
   }
 
-  const verifyAmount = () => {
+  const verifyAmount = async () => {
     const numericAmount = parseFloat(amount.replace(',', '.'))
     if (isNaN(numericAmount) || numericAmount <= 0) {
       alert('Por favor, ingrese un monto válido mayor que cero.')
@@ -137,7 +166,7 @@ export default function HomePage() {
     }
     console.log(numericAmount)
     setAmount(amount)
-    handleTransaction()
+    await handleTransaction()
   }
 
   return (
@@ -241,8 +270,8 @@ export default function HomePage() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => {
-                  verifyAmount()
+                onPress={async () => {
+                  await verifyAmount()
                   setModalVisible(false)
                 }}
                 className="bg-blue-500 rounded-xl px-5 py-3"
