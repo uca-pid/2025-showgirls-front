@@ -13,32 +13,24 @@ import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import * as React from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   Pressable,
   TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { EyeIcon, EyeOffIcon } from 'lucide-react-native'
 
-import { useState, useEffect } from 'react'
-import { router, useRouter } from 'expo-router'
+import { useState } from 'react'
+import { router } from 'expo-router'
 
 import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithCredential,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google' // Importación necesaria
 import * as AuthSession from 'expo-auth-session'
 import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Toast from 'react-native-toast-message'
+import userService from '../services/user.service'
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -61,26 +53,12 @@ export default function SignUpForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-
-  function getFriendlyAuthMessage(err: any) {
-    console.log('Firebase Auth Error:', err.code, err.message)
-    const code = err?.code || ''
-    if (code.includes('auth/invalid-credential'))
-      return 'Email o Contraseña incorrectos.'
-    if (code.includes('auth/too-many-requests'))
-      return 'Demasiados intentos. Intenta más tarde.'
-    // fallback
-    return err?.message || 'Error al iniciar sesión. Intenta de nuevo.'
-  }
-
   const [name, setName] = useState('')
+  const [loading, setLoading] = useState(false)
+
   function onNameSubmitEditing() {
     emailInputRef.current?.focus()
   }
-
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
@@ -89,93 +67,15 @@ export default function SignUpForm() {
   }
 
   async function onSubmit() {
-    if (!email || !password || !passwordConfirmation || !name) {
-      setError('Completá todos los campos.')
-      showErrorToast('Completá todos los campos.')
-      return
-    }
-
-    if (name.length < 4) {
-      setError('El nombre debe tener al menos 4 caracteres.')
-      showErrorToast('El nombre debe tener al menos 4 caracteres.')
-      return
-    }
-
-    if (name.length > 20) {
-      setError('El nombre no puede tener más de 20 caracteres.')
-      showErrorToast('El nombre no puede tener más de 20 caracteres.')
-      return
-    }
-
-    if (password !== passwordConfirmation) {
-      setError('Las contraseñas no coinciden.')
-      showErrorToast('Las contraseñas no coinciden.')
-      return
-    }
-
-    // basic password length check
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.')
-      showErrorToast('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
-
-    setError('')
     setLoading(true)
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      )
-      const user = userCredential.user
-      //agregar displayName
-      if (name) {
-        await updateProfile(user, { displayName: name })
-      }
-
-      // Persist JWT (id token) securely and public profile in AsyncStorage
-      try {
-        const idToken = await user.getIdToken()
-        if (idToken) {
-          await SecureStore.setItemAsync('jwt', idToken)
-        }
-      } catch (storeErr) {
-        console.warn('Could not save JWT to SecureStore', storeErr)
-      }
-
-      try {
-        const publicProfile = {
-          uid: user.uid,
-          displayName: user.displayName || null,
-          email: user.email,
-          photoURL: user.photoURL || null,
-        }
-        await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
-      } catch (storeErr) {
-        console.warn('Could not save profile to AsyncStorage', storeErr)
-      }
-
-      // Optionally send email verification here: await user.sendEmailVerification();
-
-      // Navigate to main app
-      router.replace('/(tabs)')
-    } catch (err) {
-      const friendlyMessage = getFriendlyAuthMessage(err)
-      setError(friendlyMessage)
-      showErrorToast(friendlyMessage)
-      console.log('SignUp error', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const showErrorToast = (title: string, description?: string) => {
-    Toast.show({
-      type: 'danger',
-      text1: title,
-      text2: description,
-    })
+    await userService.register(
+      auth,
+      email,
+      password,
+      passwordConfirmation,
+      name,
+    )
+    setLoading(false)
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -252,8 +152,15 @@ export default function SignUpForm() {
                   onChangeText={setPasswordConfirmation}
                 />
               </View>
-              <Button className="w-full" onPress={onSubmit}>
-                <Text>Continuar</Text>
+              <Button
+                className="w-full"
+                onPress={loading ? () => {} : onSubmit}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#000000" />
+                ) : (
+                  <Text>Continuar</Text>
+                )}
               </Button>
             </View>
             <View className="flex-row items-center justify-center">
