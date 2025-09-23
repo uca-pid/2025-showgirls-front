@@ -11,31 +11,26 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import { navigate } from 'expo-router/build/global-state/routing'
 import * as React from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
+  KeyboardAvoidingView,
   Pressable,
   type TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { useState, useEffect } from 'react'
-import { router, useRouter } from 'expo-router'
+import { useState } from 'react'
+import { useRouter } from 'expo-router'
 
 import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithCredential,
-} from 'firebase/auth'
+import { getAuth } from 'firebase/auth'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google' // Importación necesaria
 import * as AuthSession from 'expo-auth-session'
 import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Toast from 'react-native-toast-message'
+import userService from '../services/user.service'
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -55,98 +50,17 @@ export default function SignInForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-
-  // <-- ADICIONADO: función para mapear errores de Firebase a mensajes amigables
-  function getFriendlyAuthMessage(err: any) {
-    console.log('Firebase Auth Error:', err.code, err.message)
-    const code = err?.code || ''
-    if (code.includes('auth/invalid-credential'))
-      return 'Email o contraseña incorrectos.'
-    if (code.includes('auth/invalid-email'))
-      return 'Email o contraseña incorrectos.'
-    if (code.includes('auth/too-many-requests'))
-      return 'Demasiados intentos. Intenta más tarde.'
-    // fallback
-    return err?.message || 'Error al iniciar sesión. Intenta de nuevo.'
-  }
 
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
   }
 
   async function onSubmit() {
-    if (!email || !password) {
-      showErrorToast('Completá email y contraseña')
-      return
-    }
-
-    setError('')
     setLoading(true)
-    try {
-      // signInWithEmailAndPassword returns a UserCredential
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      )
-      const user = userCredential.user
-      // Log the common profile fields you can use in the app
-      console.log('Firebase sign-in successful. user:', {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        providerData: user.providerData,
-      })
-
-      // Alternative source for current user after sign-in
-      console.log('auth.currentUser:', auth.currentUser)
-
-      // --- Persist credentials/profile ---
-      try {
-        // Try to get a fresh ID token (JWT) for secure storage
-        const idToken = await user.getIdToken()
-        if (idToken) {
-          await SecureStore.setItemAsync('jwt', idToken)
-          console.log('Saved JWT to SecureStore')
-        }
-      } catch (storeErr) {
-        console.error('Error saving JWT to SecureStore', storeErr)
-      }
-
-      try {
-        const publicProfile = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-        }
-        await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
-        console.log('Saved user profile to AsyncStorage')
-      } catch (storeErr) {
-        console.error('Error saving profile to AsyncStorage', storeErr)
-      }
-
-      // TODO: If you store extra profile data in Firestore, fetch it here.
-      // e.g. const profile = await getDoc(doc(firestore, 'users', user.uid));
-      router.replace('/(tabs)')
-    } catch (firebaseLoginError) {
-      const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
-      setError(friendlyMessage)
-      showErrorToast(friendlyMessage)
-    } finally {
-      setLoading(false)
-    }
-  }
-  const showErrorToast = (title: string, description?: string) => {
-    Toast.show({
-      type: 'danger',
-      text1: title,
-      text2: description,
-    })
+    await userService.login(auth, email, password)
+    setLoading(false)
   }
 
   return (
@@ -208,8 +122,15 @@ export default function SignInForm() {
                 />
               </View>
 
-              <Button className="w-full" onPress={onSubmit}>
-                <Text>Continuar</Text>
+              <Button
+                className="w-full"
+                onPress={loading ? () => {} : onSubmit}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#000000" />
+                ) : (
+                  <Text>Continuar</Text>
+                )}
               </Button>
               <View className="flex-row items-center justify-center">
                 <Text className="text-sm">¿No tenés cuenta? </Text>
