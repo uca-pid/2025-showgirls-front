@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   Auth,
   createUserWithEmailAndPassword,
+  deleteUser,
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
@@ -17,8 +18,15 @@ const showErrorToast = (title: string, description?: string) => {
   })
 }
 
+const showSuccessToast = (title: string, description?: string) => {
+  Toast.show({
+    type: 'success',
+    text1: title,
+    text2: description,
+  })
+}
+
 function getFriendlyAuthMessage(err: any) {
-  console.log('Firebase Auth Error:', err.code, err.message)
   const code = err?.code || ''
   if (code.includes('auth/invalid-credential'))
     return 'Email o contraseña incorrectos.'
@@ -109,6 +117,59 @@ export class UserService {
         const friendlyMessage = getFriendlyAuthMessage(firebaseRegisterError)
         showErrorToast(friendlyMessage)
       })
+  }
+
+  public async update(auth: Auth, newName: string) {
+    if (auth.currentUser) {
+      if (newName.length < 4) {
+        showErrorToast('El nombre debe tener al menos 4 caracteres.')
+        return
+      }
+
+      if (newName.length > 20) {
+        showErrorToast('El nombre no puede tener más de 20 caracteres.')
+        return
+      }
+      updateProfile(auth.currentUser, {
+        displayName: newName,
+      })
+        .then(() => {
+          showSuccessToast('Perfil actualizado')
+          router.dismissAll()
+          router.replace('/profile')
+        })
+        .catch((error) => {
+          showErrorToast('Error al actualizar perfil')
+        })
+    }
+  }
+
+  public async delete(auth: Auth) {
+    if (auth.currentUser) {
+      deleteUser(auth.currentUser)
+        .then(() => {
+          showSuccessToast('Usuario eliminado')
+          router.replace('/sign-in')
+        })
+        .catch((error) => {
+          showErrorToast('Error al eliminar usuario')
+        })
+    }
+  }
+
+  public async signOut(auth: Auth) {
+    await SecureStore.deleteItemAsync('jwt')
+      .then(async () => await AsyncStorage.removeItem('userProfile'))
+      .catch((error) => {
+        showErrorToast('Error al cerrar sesión')
+        return
+      })
+      .then(async () => await auth.signOut())
+      .catch((error) => {
+        showErrorToast('Error al cerrar sesión')
+        return
+      })
+    router.replace('/sign-in')
   }
 }
 const userService = new UserService()
