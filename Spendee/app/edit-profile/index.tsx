@@ -1,4 +1,9 @@
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import Modal from 'react-native-modal'
 import React, { useState } from 'react'
 import { Text } from '@/components/ui/text'
@@ -6,40 +11,19 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { initializeApp } from 'firebase/app'
-import { deleteUser, getAuth, updateProfile } from 'firebase/auth'
 import Toast from 'react-native-toast-message'
-import { Redirect, router } from 'expo-router'
 import { Trash2 } from 'lucide-react-native'
+import userService from '../services/user.service'
+import { auth } from '../../firebase.config'
 
-const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
-}
-
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
-
-const EditProfilePage = () => {
+export default function EditProfilePage() {
   const [newName, setNewName] = useState<string>('')
   const [showModal, setShowModal] = useState<boolean>(false)
+  const [loading, setLoading] = useState(false)
 
   const showErrorToast = (title: string, description?: string) => {
     Toast.show({
       type: 'danger',
-      text1: title,
-      text2: description,
-    })
-  }
-  const showSuccessToast = (title: string, description?: string) => {
-    Toast.show({
-      type: 'success',
       text1: title,
       text2: description,
     })
@@ -49,42 +33,16 @@ const EditProfilePage = () => {
     !newName ? showErrorToast('Ingresá un nombre') : editName(newName)
   }
 
-  function editName(newName: string) {
-    if (auth.currentUser) {
-      if (newName.length < 4) {
-        showErrorToast('El nombre debe tener al menos 4 caracteres.')
-        return
-      }
-
-      if (newName.length > 20) {
-        showErrorToast('El nombre no puede tener más de 20 caracteres.')
-        return
-      }
-      updateProfile(auth.currentUser, {
-        displayName: newName,
-      })
-        .then(() => {
-          showSuccessToast('Perfil actualizado')
-          router.dismissAll()
-          router.replace('/profile')
-        })
-        .catch((error) => {
-          showErrorToast('Error al actualizar perfil')
-        })
-    }
+  async function editName(newName: string) {
+    setLoading(true)
+    await userService.update(auth, newName)
+    setLoading(false)
   }
 
-  function deleteAccount() {
-    if (auth.currentUser) {
-      deleteUser(auth.currentUser)
-        .then(() => {
-          showSuccessToast('Usuario eliminado')
-          router.replace('/sign-in')
-        })
-        .catch((error) => {
-          showErrorToast('Error al eliminar usuario')
-        })
-    }
+  async function deleteAccount() {
+    setLoading(true)
+    await userService.delete(auth)
+    setLoading(false)
   }
 
   return (
@@ -134,8 +92,16 @@ const EditProfilePage = () => {
                 placeholder="Nombre"
                 onChangeText={setNewName}
               />
-              <Button className="mt-[10px]" onPress={onSubmit}>
-                <Text>Actualizar</Text>
+              <Button
+                disabled={loading}
+                className="mt-[10px]"
+                onPress={onSubmit}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#000000" />
+                ) : (
+                  <Text>Actualizar</Text>
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -183,5 +149,3 @@ const EditProfilePage = () => {
     </TouchableWithoutFeedback>
   )
 }
-
-export default EditProfilePage

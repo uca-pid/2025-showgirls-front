@@ -1,7 +1,7 @@
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import '@/global.css'
 import { PortalHost } from '@rn-primitives/portal'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Toast, {
   ToastConfig,
   BaseToast,
@@ -13,7 +13,9 @@ import {
   ThemeProvider,
 } from '@react-navigation/native'
 import { useColorScheme } from 'react-native'
-import { Info, OctagonAlert } from 'lucide-react-native'
+import { OctagonAlert } from 'lucide-react-native'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../firebase.config'
 
 export default function RootLayout() {
   const toastConfig = {
@@ -53,6 +55,19 @@ export default function RootLayout() {
   }
   const colorScheme = useColorScheme()
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace('/')
+      } else {
+        router.replace('./sign-in')
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
   return (
     <ThemeProvider value={theme}>
       <Stack

@@ -1,36 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { router, Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { PortalHost } from '@rn-primitives/portal'
+import { auth } from '../../firebase.config'
 
 export default function TabsLayout() {
-  const [profile, setProfile] = useState<{
-    uid?: string
-    displayName?: string
-    email?: string
-    photoURL?: string
-  } | null>(null)
-
-  const auth = getAuth()
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setProfile({
-          uid: user.uid,
-          displayName: user.displayName ?? '',
-          email: user.email ?? '',
-          photoURL: user.photoURL ?? '',
-        })
-      } else {
-        router.replace('./sign-in')
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
+  const user = auth.currentUser
 
   return (
     <GestureHandlerRootView>
@@ -44,7 +20,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: `Hola, ${profile?.displayName}`,
+            title: `Hola ${user?.displayName}`,
             tabBarLabel: 'Home',
             headerTitleAlign: 'left',
             headerTransparent: true,
@@ -70,10 +46,6 @@ export default function TabsLayout() {
               />
             ),
           }}
-        />
-        <Tabs.Screen
-          name="profile/edit-profile/index"
-          options={{ href: null, headerTitle: 'Editar Perfil' }}
         />
       </Tabs>
       <PortalHost />
