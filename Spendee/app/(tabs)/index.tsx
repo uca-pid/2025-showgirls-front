@@ -1,27 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { View, TouchableOpacity, Modal, TextInput } from 'react-native'
-import { router, useRouter } from 'expo-router'
 import { Card, CardTitle, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
 import { Minus, Plus } from 'lucide-react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
-import { onAuthStateChanged, getAuth } from 'firebase/auth'
 import { LinearGradient } from 'expo-linear-gradient'
-import * as SecureStore from 'expo-secure-store'
-
-export const calculateBalance = (
-  balance: number,
-  amount: number,
-  type: string,
-) => {
-  if (type === 'income') {
-    return balance + amount
-  } else if (type === 'expense') {
-    return balance - amount
-  }
-  return balance
-}
+import { auth } from '@/firebase.config'
+import ApiService from '../services/api.service'
+import balanceService from '../services/balance.service'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -31,32 +18,22 @@ export default function HomePage() {
   const [amount, setAmount] = useState<string>('')
   const [modalVisible, setModalVisible] = useState(false)
   const headerHight = useHeaderHeight()
-  const [profile, setProfile] = useState<{
-    uid?: string
-    displayName?: string
-    email?: string
-    photoURL?: string
-  } | null>(null)
 
-  const auth = getAuth()
+  const user = auth.currentUser
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setProfile({
-          uid: user.uid,
-          displayName: user.displayName ?? '',
-          email: user.email ?? '',
-          photoURL: user.photoURL ?? '',
-        })
-        getBalance(user.uid)
-      } else {
-        router.replace('/sign-in/SignInPage')
-      }
-    })
+    const userId = user?.uid
+    if (userId) setData(userId)
+  }, [user])
 
-    return () => unsubscribe()
-  }, [])
+  const calculateBalance = (balance: number, amount: number, type: string) => {
+    if (type === 'income') {
+      return balance + amount
+    } else if (type === 'expense') {
+      return balance - amount
+    }
+    return balance
+  }
 
   const handleTransaction = async () => {
     const numericAmount = parseFloat(amount.replace(',', '.'))
@@ -71,102 +48,45 @@ export default function HomePage() {
     setBalance(calculateBalance(balance, numericAmount, transaccion))
   }
 
-  const addIncome = async () => {
-    const user = profile?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    console.log('User ID:', user)
-    
-    try {
-      const firebaseUser = auth.currentUser
-      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
-
-      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/ingreso`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          userId: user,
-          ingreso: numericAmount,
-          montoAnterior: balance,
-        }),
-      })
-
-      console.log('Status:', res.status)
-      try {
-        const data = await res.json()
-        console.log('Respuesta backend:', data)
-      } catch (e) {
-        console.warn('No JSON body in response:', e)
-      }
-    } catch (err) {
-      console.error('Error sending ingreso (or getting token):', err)
-    }
-  }
-
-  const addExpense = async () => {
-    const user = profile?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    try {
-      const firebaseUser = auth.currentUser
-      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
-
-      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/gasto`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          userId: user,
-          gasto: numericAmount,
-          montoAnterior: balance,
-        }),
-      })
-
-      console.log('Status:', res.status)
-      try {
-        const data = await res.json()
-        console.log('Respuesta backend:', data)
-      } catch (e) {
-        console.warn('No JSON body in response:', e)
-      }
-    } catch (err) {
-      console.error('Error sending gasto (or getting token):', err)
-    }
-  }
-
-  const getBalance = async (userId: string) => {
-    try {
-      const firebaseUser = auth.currentUser
-      const token = firebaseUser ? await firebaseUser.getIdToken(true) : null
-
-      const res = await fetch(`http://${process.env.EXPO_PUBLIC_IP_PUBLIC}:3000/balance/${userId}`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      })
-
-      const data = await res.json()
-      setBalance(data.balance)
-      setIncome(data.sumaIngresos)
-      setExpense(data.sumaGastos)
-      console.log('Balance fetched:', data)
-    } catch (err) {
-      console.error('Error fetching balance or getting token:', err)
-    }
-  }
-
-  const verifyAmount = async () => {
+  const verifyAmount = () => {
     const numericAmount = parseFloat(amount.replace(',', '.'))
     if (isNaN(numericAmount) || numericAmount <= 0) {
       alert('Por favor, ingrese un monto válido mayor que cero.')
       return
     }
-    console.log(numericAmount)
     setAmount(amount)
-    await handleTransaction()
+    handleTransaction()
+  }
+
+  const addIncome = async () => {
+    const userId = user?.uid
+    const numericAmount = parseFloat(amount.replace(',', '.'))
+    await ApiService.post('/ingreso', {
+      userId: userId,
+      ingreso: numericAmount,
+      montoAnterior: balance,
+    })
+  }
+
+  const addExpense = async () => {
+    const userId = user?.uid
+    const numericAmount = parseFloat(amount.replace(',', '.'))
+    await ApiService.post('/gasto', {
+      userId: userId,
+      gasto: numericAmount,
+      montoAnterior: balance,
+    })
+  }
+
+  const setData = async (userId: string) => {
+    await balanceService
+      .findByUserId(userId)
+      .then((res) => res.data)
+      .then((data) => {
+        setIncome(data.sumaIngresos)
+        setExpense(data.sumaGastos)
+        setBalance(data.balance)
+      })
   }
 
   return (
