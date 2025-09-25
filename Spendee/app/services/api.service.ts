@@ -1,3 +1,5 @@
+import { auth } from '@/firebase.config'
+
 interface ApiResponse<T> {
   data: T
   status: number
@@ -20,6 +22,14 @@ class ApiService {
   private static defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+  }
+
+  private static async getAuthHeader(): Promise<HeadersInit> {
+    const user = auth.currentUser
+    if (!user) return {}
+
+    const token = await user.getIdToken()
+    return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
   private static async handleResponse<T>(
@@ -51,23 +61,17 @@ class ApiService {
     }
   }
 
-  public static setAuthToken(token: string): void {
-    this.defaultHeaders = {
-      ...this.defaultHeaders,
-      Authorization: `Bearer ${token}`,
-    }
-  }
-
   public static async get<T>(
     endpoint: string,
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { params, headers, ...restConfig } = config
     const url = this.baseUrl + endpoint
+    const authHeader = await this.getAuthHeader()
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: { ...this.defaultHeaders, ...headers },
+      headers: { ...this.defaultHeaders, ...authHeader, ...headers },
       ...restConfig,
     })
 
@@ -81,10 +85,11 @@ class ApiService {
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
     const url = this.baseUrl + endpoint
+    const authHeader = await this.getAuthHeader()
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: { ...this.defaultHeaders, ...headers },
+      headers: { ...this.defaultHeaders, ...authHeader, ...headers },
       body: data ? JSON.stringify(data) : undefined,
       ...restConfig,
     })
@@ -99,10 +104,11 @@ class ApiService {
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
     const url = this.baseUrl + endpoint
+    const authHeader = await this.getAuthHeader()
 
     const response = await fetch(url, {
       method: 'PUT',
-      headers: { ...this.defaultHeaders, ...headers },
+      headers: { ...this.defaultHeaders, ...authHeader, ...headers },
       body: data ? JSON.stringify(data) : undefined,
       ...restConfig,
     })
@@ -116,10 +122,11 @@ class ApiService {
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
     const url = this.baseUrl + endpoint
+    const authHeader = await this.getAuthHeader()
 
     const response = await fetch(url, {
       method: 'DELETE',
-      headers: { ...this.defaultHeaders, ...headers },
+      headers: { ...this.defaultHeaders, ...authHeader, ...headers },
       ...restConfig,
     })
 

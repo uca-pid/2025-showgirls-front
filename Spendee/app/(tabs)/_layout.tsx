@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
-import { router, Tabs } from 'expo-router'
+import React from 'react'
+import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { PortalHost } from '@rn-primitives/portal'
-import { auth } from '../../firebase.config'
-import { onAuthStateChanged } from 'firebase/auth'
-import { useAuth } from '@/context/authContext'
+import { useAuth } from '@/context/AuthContext'
 
 export default function TabsLayout() {
   const { user, loading } = useAuth()

@@ -16,7 +16,7 @@ import { useColorScheme } from 'react-native'
 import { OctagonAlert } from 'lucide-react-native'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase.config'
-import { AuthProvider } from '@/context/authContext'
+import { AuthProvider } from '@/context/AuthContext'
 
 export default function RootLayout() {
   const toastConfig = {
