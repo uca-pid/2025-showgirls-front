@@ -16,6 +16,7 @@ import { useColorScheme } from 'react-native'
 import { OctagonAlert } from 'lucide-react-native'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase.config'
+import { AuthProvider } from '@/context/authContext'
 
 export default function RootLayout() {
   const toastConfig = {
@@ -69,27 +70,29 @@ export default function RootLayout() {
   }, [])
 
   return (
-    <ThemeProvider value={theme}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'fade',
-          animationDuration: 200,
-        }}
-      >
-        <Stack.Screen name="sign-in/index" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="edit-profile/index"
-          options={{
-            headerShown: true,
-            headerTitle: 'Editar perfil',
-            headerBackTitle: 'Perfil',
+    <AuthProvider>
+      <ThemeProvider value={theme}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            animationDuration: 200,
           }}
-        />
-      </Stack>
-      <Toast config={toastConfig as any as ToastConfig} />
-      <PortalHost />
-    </ThemeProvider>
+        >
+          <Stack.Screen name="sign-in/index" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="edit-profile/index"
+            options={{
+              headerShown: true,
+              headerTitle: 'Editar perfil',
+              headerBackTitle: 'Perfil',
+            }}
+          />
+        </Stack>
+        <Toast config={toastConfig as any as ToastConfig} />
+        <PortalHost />
+      </ThemeProvider>
+    </AuthProvider>
   )
 }

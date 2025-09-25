@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { router, Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { PortalHost } from '@rn-primitives/portal'
 import { auth } from '../../firebase.config'
+import { onAuthStateChanged } from 'firebase/auth'
+import { useAuth } from '@/context/authContext'
 
 export default function TabsLayout() {
-  const user = auth.currentUser
+  const { user, loading } = useAuth()
 
   return (
     <GestureHandlerRootView>
@@ -20,7 +22,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: `Hola ${user?.displayName}`,
+            title: `Hola ${!loading ? user?.displayName : 'Cargando...'}`,
             tabBarLabel: 'Home',
             headerTitleAlign: 'left',
             headerTransparent: true,

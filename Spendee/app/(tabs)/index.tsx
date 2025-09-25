@@ -24,7 +24,7 @@ export default function HomePage() {
   useEffect(() => {
     const userId = user?.uid
     if (userId) setData(userId)
-  }, [])
+  }, [user])
 
   const calculateBalance = (balance: number, amount: number, type: string) => {
     if (type === 'income') {
