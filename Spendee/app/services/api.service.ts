@@ -16,7 +16,7 @@ interface RequestConfig extends RequestInit {
 }
 
 class ApiService {
-  private static baseUrl: string = `http://${process.env.EXPO_PUBLIC_API_BASE_URL}:4000`
+  private static baseUrl: string = `${process.env.EXPO_PUBLIC_API_BASE_URL}`
   private static defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -51,29 +51,6 @@ class ApiService {
     }
   }
 
-  private static createUrl(
-    endpoint: string,
-    params?: Record<string, string>,
-  ): string {
-    const normalizedEndpoint = endpoint.startsWith('/')
-      ? endpoint
-      : `/${endpoint}`
-
-    const url = new URL(normalizedEndpoint, this.baseUrl)
-
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value)
-      })
-    }
-
-    return url.toString()
-  }
-
-  public static setBaseUrl(url: string): void {
-    this.baseUrl = url.endsWith('/') ? url.slice(0, -1) : url
-  }
-
   public static setAuthToken(token: string): void {
     this.defaultHeaders = {
       ...this.defaultHeaders,
@@ -86,7 +63,7 @@ class ApiService {
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { params, headers, ...restConfig } = config
-    const url = this.createUrl(endpoint, params)
+    const url = this.baseUrl + endpoint
 
     const response = await fetch(url, {
       method: 'GET',
@@ -103,7 +80,7 @@ class ApiService {
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
-    const url = this.createUrl(endpoint)
+    const url = this.baseUrl + endpoint
 
     const response = await fetch(url, {
       method: 'POST',
@@ -121,7 +98,7 @@ class ApiService {
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
-    const url = this.createUrl(endpoint)
+    const url = this.baseUrl + endpoint
 
     const response = await fetch(url, {
       method: 'PUT',
@@ -138,7 +115,7 @@ class ApiService {
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { headers, ...restConfig } = config
-    const url = this.createUrl(endpoint)
+    const url = this.baseUrl + endpoint
 
     const response = await fetch(url, {
       method: 'DELETE',
