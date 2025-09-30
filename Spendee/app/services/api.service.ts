@@ -44,11 +44,11 @@ class ApiService {
 
       try {
         const errorData = await response.json()
+        console.log(errorData)
         error.message = errorData.message || error.message
       } catch {
         console.log('Error parsing json', error)
       }
-
       throw error
     }
 
