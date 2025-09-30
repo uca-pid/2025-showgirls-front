@@ -3,12 +3,19 @@ import { View, TouchableOpacity, Modal, TextInput } from 'react-native'
 import { Card, CardTitle, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { Button } from '@/components/ui/button'
-import { Minus, Plus } from 'lucide-react-native'
+import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  Minus,
+  Plus,
+} from 'lucide-react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
 import { LinearGradient } from 'expo-linear-gradient'
 import { auth } from '@/firebase.config'
 import ApiService from '../services/api.service'
 import balanceService from '../services/balance.service'
+import IconButton from '@/components/IconButton'
+import IconMenu from '@/components/IconMenu'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -89,6 +96,25 @@ export default function HomePage() {
       })
   }
 
+  const actions = [
+    {
+      text: 'Ingresar',
+      icon: BanknoteArrowUp,
+      onPress: () => {
+        setTransaccion('income')
+        setModalVisible(true)
+      },
+    },
+    {
+      text: 'Sacar',
+      icon: BanknoteArrowDown,
+      onPress: () => {
+        setTransaccion('expense')
+        setModalVisible(true)
+      },
+    },
+  ]
+
   return (
     <LinearGradient
       colors={['#F9A8D4', '#121212']}
@@ -116,33 +142,9 @@ export default function HomePage() {
               maximumFractionDigits: 2,
             }).format(balance)}
           </Text>
+          <IconMenu actions={actions} />
         </CardContent>
 
-        <View className="flex-row gap-4 p-2 align-center justify-center">
-          <Button
-            variant={'secondary'}
-            onPress={() => {
-              setTransaccion('income')
-              setModalVisible(true)
-            }}
-            className="size-2xl"
-          >
-            <Plus size={20} color={'white'} />
-            <Text className="text-white font-bold">Ingreso</Text>
-          </Button>
-
-          <Button
-            variant={'secondary'}
-            onPress={() => {
-              setTransaccion('expense')
-              setModalVisible(true)
-            }}
-            className="size-2xl"
-          >
-            <Minus size={20} color={'white'} />
-            <Text className="text-white font-bold">Egreso</Text>
-          </Button>
-        </View>
         <View className="w-full p-4">
           <View className="justify-between w-full flex-row">
             <Text className="text-secondary">Ingresos Totales</Text>
