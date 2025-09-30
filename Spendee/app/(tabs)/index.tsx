@@ -16,6 +16,7 @@ import ApiService from '../services/api.service'
 import balanceService from '../services/balance.service'
 import IconButton from '@/components/IconButton'
 import IconMenu from '@/components/IconMenu'
+import { PieChart } from 'react-native-gifted-charts'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -106,13 +107,21 @@ export default function HomePage() {
       },
     },
     {
-      text: 'Sacar',
+      text: 'Egresar',
       icon: BanknoteArrowDown,
       onPress: () => {
         setTransaccion('expense')
         setModalVisible(true)
       },
     },
+  ]
+
+  const data = [
+    { categoryIcon: '💼', value: 1000, categoryColor: '#F87171' },
+    { categoryIcon: '🏠', value: 200, categoryColor: '#34D399' },
+    { categoryIcon: '🍔', value: 187, categoryColor: '#60A5FA' },
+    { categoryIcon: '🚗', value: 350, categoryColor: '#FBBF24' },
+    { categoryIcon: '🎉', value: 901, categoryColor: '#A78BFA' },
   ]
 
   return (
@@ -130,11 +139,11 @@ export default function HomePage() {
       end={{ x: 0.5, y: 1.0 }}
       locations={[0, 0.7]}
     >
-      <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 pt-4 gap-2 justify-center">
+      <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
         <CardTitle className="text-secondary text-m pl-2">
           Balance actual
         </CardTitle>
-        <CardContent>
+        <CardContent className="gap-2">
           <Text className="text-4xl font-bold text-secondary text-left">
             $
             {new Intl.NumberFormat('es-AR', {
@@ -144,31 +153,35 @@ export default function HomePage() {
           </Text>
           <IconMenu actions={actions} />
         </CardContent>
-
-        <View className="w-full p-4">
-          <View className="justify-between w-full flex-row">
-            <Text className="text-secondary">Ingresos Totales</Text>
-            <Text className="text-secondary">
-              $
-              {new Intl.NumberFormat('es-AR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(income)}
-            </Text>
-          </View>
-
-          <View className="justify-between w-full flex-row">
-            <Text className="text-secondary">Egresos Totales</Text>
-            <Text className="text-secondary">
-              $
-              {new Intl.NumberFormat('es-AR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(expense)}
-            </Text>
-          </View>
-        </View>
       </Card>
+
+      <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
+        <CardTitle className="text-secondary text-m pl-2">
+          Gastos por categoría
+        </CardTitle>
+        <CardContent className="gap-2 items-center">
+          <PieChart
+            donut
+            innerRadius={95}
+            strokeColor="#fafafa"
+            strokeWidth={5}
+            data={data}
+            showText
+            textSize={20}
+            centerLabelComponent={() => (
+              <View className="items-center">
+                <Text className="text-lg font-semibold text-gray-800">
+                  Gastos Totales
+                </Text>
+                <Text className="text-xl font-bold text-gray-800">
+                  ${expense}
+                </Text>
+              </View>
+            )}
+          />
+        </CardContent>
+      </Card>
+
       <Modal transparent={true} visible={modalVisible} animationType="fade">
         <View className="flex-1 bg-black/50 justify-center items-center">
           <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
