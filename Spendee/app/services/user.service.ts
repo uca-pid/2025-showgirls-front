@@ -6,24 +6,16 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
-import Toast from 'react-native-toast-message'
 import * as SecureStore from 'expo-secure-store'
 import { router } from 'expo-router'
+import { toastService } from '@/context/ToastContext'
 
-const showErrorToast = (title: string, description?: string) => {
-  Toast.show({
-    type: 'danger',
-    text1: title,
-    text2: description,
-  })
+const showErrorToast = (title: string) => {
+  toastService.show(title)
 }
 
-const showSuccessToast = (title: string, description?: string) => {
-  Toast.show({
-    type: 'success',
-    text1: title,
-    text2: description,
-  })
+const showSuccessToast = (title: string) => {
+  toastService.show(title, 'success')
 }
 
 function getFriendlyAuthMessage(err: any) {
@@ -114,8 +106,7 @@ export class UserService {
         router.replace('/(tabs)')
       })
       .catch((firebaseRegisterError) => {
-        const friendlyMessage = getFriendlyAuthMessage(firebaseRegisterError)
-        showErrorToast(friendlyMessage)
+        showErrorToast('Por favor, ingresá un email válido')
       })
   }
 
