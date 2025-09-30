@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   Keyboard,
   TouchableWithoutFeedback,
   View,
@@ -39,45 +40,31 @@ export default function EditProfilePage() {
     setLoading(false)
   }
 
-  async function deleteAccount() {
-    setLoading(true)
-    await userService.delete(auth)
-    setLoading(false)
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Eliminar cuenta',
+      'Esta acción es irreversible \n¿Seguro que deseas continuar?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar cuenta',
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true)
+            await userService.delete(auth)
+            setLoading(false)
+          },
+        },
+      ],
+    )
   }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="bg-background h-full w-full items-center gap-4 p-4">
-        <Modal
-          isVisible={showModal}
-          animationIn="fadeIn"
-          animationOut="fadeOut"
-          useNativeDriver
-          useNativeDriverForBackdrop
-          onBackdropPress={() => setShowModal(false)}
-          backdropTransitionOutTiming={1}
-        >
-          <Card className="justify-between items-center h-auto m-auto w-[90%] p-4">
-            <Text className="text-2xl font-bold self-start">
-              Eliminar cuenta
-            </Text>
-            <Text className="text-m text-muted-foreground self-start">
-              Esta acción es irreversible, ¿estás seguro que querés eliminar tu
-              cuenta?
-            </Text>
-            <View className="gap-2 w-full">
-              <Button
-                onPress={() => {
-                  setShowModal(false)
-                  deleteAccount()
-                }}
-                variant={'destructive'}
-              >
-                <Text>Estoy seguro, eliminar cuenta</Text>
-              </Button>
-            </View>
-          </Card>
-        </Modal>
         <View className="w-full">
           <Text className="text-sm color-muted-foreground pl-4 ">
             CAMBIAR NOMBRE
@@ -135,10 +122,7 @@ export default function EditProfilePage() {
               <Text className="text-m text-muted-foreground">
                 Esta acción es irreversible
               </Text>
-              <Button
-                onPress={() => setShowModal(true)}
-                variant={'destructive'}
-              >
+              <Button onPress={handleDeleteAccount} variant={'destructive'}>
                 <Trash2 size={20} color="white" />
                 <Text>Eliminar cuenta</Text>
               </Button>
