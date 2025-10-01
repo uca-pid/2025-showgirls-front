@@ -47,6 +47,12 @@ export default function TabsLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="profile/index/change-password"
+          options={{
+            title: 'Cambiar Contraseña',
+          }}
+        />
       </Tabs>
       <PortalHost />
     </GestureHandlerRootView>

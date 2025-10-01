@@ -10,6 +10,7 @@ import {
   Plus,
 } from 'lucide-react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
+import { useIsFocused } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { auth } from '@/firebase.config'
 import ApiService from '../services/api.service'
@@ -117,13 +118,58 @@ export default function HomePage() {
     },
   ]
 
-  const data = [
-    { categoryIcon: '💼', value: 1000, categoryColor: '#F87171' },
-    { categoryIcon: '🏠', value: 200, categoryColor: '#34D399' },
-    { categoryIcon: '🍔', value: 187, categoryColor: '#60A5FA' },
-    { categoryIcon: '🚗', value: 350, categoryColor: '#FBBF24' },
-    { categoryIcon: '🎉', value: 901, categoryColor: '#A78BFA' },
-  ]
+  // Chart data (initially empty — will be loaded from server)
+  const [chartData, setChartData] = useState<any[]>([])
+  const [chartLoading, setChartLoading] = useState(false)
+  const isFocused = useIsFocused()
+
+  const iconNameToEmoji: Record<string, string> = {
+    bus: '🚌',
+    utensils: '�',
+    home: '🏠',
+    heart: '❤️',
+    gamepad: '🎮',
+    book: '📚',
+    'ellipsis-h': '⋯',
+  }
+  
+  useEffect(() => {
+    let mounted = true
+    const fetchCategories = async () => {
+      setChartLoading(true)
+      try {
+        const res = await ApiService.get('/categories')
+        console.log(res)
+        const items = res?.data ?? []
+        console.log(items)
+        if (!Array.isArray(items)) return
+
+        const mapped = items.map((c: any) => {
+          return {
+            categoryIcon: iconNameToEmoji[c.icono],
+            value: Number(c.totalGastos),
+            categoryColor: c.color,
+            categoryName: c.categoria,
+            categoryId: c.id,
+          }
+        })
+
+        if (mounted) setChartData(mapped)
+      } catch (err) {
+        console.warn('Error fetching categories:', err)
+        // keep chartData empty if failure
+      } finally {
+        if (mounted) setChartLoading(false)
+      }
+    }
+
+    if (isFocused) fetchCategories()
+
+    return () => {
+      mounted = false
+    }
+  }, [isFocused])
+
 
   return (
     <LinearGradient
@@ -164,23 +210,33 @@ export default function HomePage() {
           Gastos por categoría
         </CardTitle>
         <CardContent className="gap-2 items-center">
-          <PieChart
-            donut
-            innerRadius={95}
-            strokeColor="#fafafa"
-            strokeWidth={5}
-            data={data}
-            centerLabelComponent={() => (
-              <View className="items-center">
-                <Text className="text-lg font-semibold text-gray-800">
-                  Gastos Totales
-                </Text>
-                <Text className="text-xl font-bold text-gray-800">
-                  ${expense}
-                </Text>
-              </View>
-            )}
-          />
+          {chartLoading ? (
+            <View className="items-center py-6">
+              <Text className="text-gray-500">Cargando categorías...</Text>
+            </View>
+          ) : chartData && chartData.length > 0 ? (
+            <PieChart
+              donut
+              innerRadius={95}
+              strokeColor="#fafafa"
+              strokeWidth={5}
+              data={chartData}
+              centerLabelComponent={() => (
+                <View className="items-center">
+                  <Text className="text-lg font-semibold text-gray-800">
+                    Gastos Totales
+                  </Text>
+                  <Text className="text-xl font-bold text-gray-800">
+                    ${expense}
+                  </Text>
+                </View>
+              )}
+            />
+          ) : (
+            <View className="items-center py-6">
+              <Text className="text-gray-500">No hay categorías para mostrar.</Text>
+            </View>
+          )}
         </CardContent>
       </Card>
 

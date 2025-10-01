@@ -16,6 +16,8 @@ import Toast from 'react-native-toast-message'
 import { Trash2 } from 'lucide-react-native'
 import userService from '../services/user.service'
 import { auth } from '../../firebase.config'
+import { router } from 'expo-router'
+
 
 export default function EditProfilePage() {
   const [newName, setNewName] = useState<string>('')
@@ -38,6 +40,11 @@ export default function EditProfilePage() {
     setLoading(true)
     await userService.update(auth, newName)
     setLoading(false)
+  }
+
+  //Cambiar password
+  const changePassword = () => {
+    router.push('/edit-profile/change-password')
   }
 
   const handleDeleteAccount = () => {
@@ -88,6 +95,29 @@ export default function EditProfilePage() {
                   <ActivityIndicator color="#000000" />
                 ) : (
                   <Text>Actualizar</Text>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </View>
+        <View className="w-full">
+          <Text className="text-sm color-muted-foreground pl-4 ">
+            CAMBIAR CONTRASEÑA
+          </Text>
+          <Card className="w-full h-auto">
+            <CardContent className="gap-4">
+              <Label htmlFor="newName">
+                <Text>Elegir una nueva contraseña</Text>
+              </Label>
+              <Button
+                disabled={loading}
+                className="mt-[10px]"
+                onPress={changePassword}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#000000" />
+                ) : (
+                  <Text>Cambiar</Text>
                 )}
               </Button>
             </CardContent>
