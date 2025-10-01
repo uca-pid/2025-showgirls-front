@@ -17,6 +17,7 @@ import balanceService from '../services/balance.service'
 import IconButton from '@/components/IconButton'
 import IconMenu from '@/components/IconMenu'
 import { PieChart } from 'react-native-gifted-charts'
+import { router } from 'expo-router'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -155,7 +156,10 @@ export default function HomePage() {
         </CardContent>
       </Card>
 
-      <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
+      <Card
+        className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center"
+        onTouchEnd={() => router.push('./expense')}
+      >
         <CardTitle className="text-secondary text-m pl-2">
           Gastos por categoría
         </CardTitle>
@@ -166,8 +170,6 @@ export default function HomePage() {
             strokeColor="#fafafa"
             strokeWidth={5}
             data={data}
-            showText
-            textSize={20}
             centerLabelComponent={() => (
               <View className="items-center">
                 <Text className="text-lg font-semibold text-gray-800">
