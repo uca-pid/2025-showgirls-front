@@ -18,7 +18,6 @@ import userService from '../services/user.service'
 import { auth } from '../../firebase.config'
 import { router } from 'expo-router'
 
-
 export default function EditProfilePage() {
   const [newName, setNewName] = useState<string>('')
   const [showModal, setShowModal] = useState<boolean>(false)
@@ -42,7 +41,6 @@ export default function EditProfilePage() {
     setLoading(false)
   }
 
-  //Cambiar password
   const changePassword = () => {
     router.push('/edit-profile/change-password')
   }

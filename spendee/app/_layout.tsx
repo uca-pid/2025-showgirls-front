@@ -42,14 +42,6 @@ export default function RootLayout() {
           >
             <Stack.Screen name="sign-in/index" />
             <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="edit-profile/index"
-              options={{
-                headerShown: true,
-                headerTitle: 'Editar perfil',
-                headerBackTitle: 'Perfil',
-              }}
-            />
           </Stack>
           <PortalHost />
         </ThemeProvider>
