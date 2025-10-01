@@ -1,5 +1,5 @@
-import { View, Text, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
+import { View, Text, ActivityIndicator } from 'react-native'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -16,97 +16,115 @@ import userService from '../services/user.service'
 
 const ChangePasswordPage = () => {
   const [loading, setLoading] = useState(false)
-  const [oldPassword, setOldPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confNewPassword, setConfNewPassword] = useState('')
+  const [form, setForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
 
-  const showErrorToast = (message: string) => {
-    toastService.show(message)
-  }
-  const showSuccessToast = (message: string) => {
-    toastService.show(message, 'success')
+  const handleChange = (key: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  const user = auth.currentUser
+  const showToast = (message: string, type: 'error' | 'success' = 'error') => {
+    toastService.show(message, type === 'success' ? 'success' : undefined)
+  }
+
+  const validateForm = () => {
+    const { oldPassword, newPassword, confirmPassword } = form
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return 'Completá todos los campos'
+    }
+    if (newPassword !== confirmPassword) {
+      return 'Las contraseñas deben coincidir'
+    }
+    if (newPassword.length < 8) {
+      return 'La contraseña debe tener al menos 8 caracteres'
+    }
+    if (oldPassword === newPassword) {
+      return 'La contraseña nueva debe ser distinta a la actual'
+    }
+    return null
+  }
+
   const handlePasswordChange = async () => {
-    if (!oldPassword || !newPassword || !confNewPassword) {
-      showErrorToast('Completá todos los campos')
-    } else if (newPassword !== confNewPassword) {
-      showErrorToast('Las contraseñas deben coincidir')
-    } else if (newPassword.length < 8) {
-      showErrorToast('La contraseña debe tener al menos 8 caracteres')
-    } else if (oldPassword === newPassword) {
-      showErrorToast('La contraseña nueva debe ser distinta a la actual')
-    } else if (user && user.email) {
-      const credentials = EmailAuthProvider.credential(user.email, oldPassword)
-      setLoading(true)
+    const errorMsg = validateForm()
+    if (errorMsg) return showToast(errorMsg)
+
+    const user = auth.currentUser
+    if (!user?.email) return showToast('Usuario no válido')
+
+    setLoading(true)
+    try {
+      const credentials = EmailAuthProvider.credential(
+        user.email,
+        form.oldPassword,
+      )
       await reauthenticateWithCredential(user, credentials)
-        .then(() =>
-          updatePassword(user, newPassword).then(() => {
-            showSuccessToast(
-              'Contraseña actualizada correctamente. Por favor, inicia sesión nuevamente',
-            )
-            router.dismissAll()
-            router.replace('/sign-in')
-            userService.signOut(auth)
-          }),
-        )
-        .catch((error) => {
-          showErrorToast('La contraseña es incorrecta')
-        })
+      await updatePassword(user, form.newPassword)
+
+      showToast(
+        'Contraseña actualizada correctamente. Por favor, inicia sesión nuevamente',
+        'success',
+      )
+      router.dismissAll()
+      router.replace('/sign-in')
+      userService.signOut(auth)
+    } catch {
+      showToast('La contraseña actual es incorrecta')
+    } finally {
       setLoading(false)
     }
   }
 
   return (
     <View className="bg-background w-full h-full p-4 gap-4">
-      <View className="w-full">
-        <Text className="text-sm color-muted-foreground pl-4 ">
-          CAMBIAR CONTRASEÑA
-        </Text>
-        <Card className="w-full h-auto">
-          <CardContent className="gap-4">
-            <Label htmlFor="newName">
-              <Text>Contraseña actual</Text>
-            </Label>
-            <Input
-              id="newName"
-              placeholder="Contraseña"
-              secureTextEntry
-              onChangeText={setOldPassword}
-            />
-            <Label htmlFor="newName">
-              <Text>Contraseña nueva</Text>
-            </Label>
-            <Input
-              id="newName"
-              placeholder="Nueva contraseña"
-              secureTextEntry
-              onChangeText={setNewPassword}
-            />
-            <Label htmlFor="newName">
-              <Text>Confirmar contraseña</Text>
-            </Label>
-            <Input
-              id="newName"
-              placeholder="Confirmar"
-              secureTextEntry
-              onChangeText={setConfNewPassword}
-            />
-            <Button
-              disabled={loading}
-              className="mt-[10px]"
-              onPress={handlePasswordChange}
-            >
-              {loading ? (
-                <ActivityIndicator color="#000000" />
-              ) : (
-                <Text>Actualizar</Text>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      </View>
+      <Text className="text-sm text-muted-foreground pl-4">
+        CAMBIAR CONTRASEÑA
+      </Text>
+
+      <Card className="w-full">
+        <CardContent className="gap-4">
+          <Label>
+            <Text>Contraseña actual</Text>
+          </Label>
+          <Input
+            placeholder="Contraseña"
+            secureTextEntry
+            onChangeText={(text) => handleChange('oldPassword', text)}
+          />
+
+          <Label>
+            <Text>Contraseña nueva</Text>
+          </Label>
+          <Input
+            placeholder="Nueva contraseña"
+            secureTextEntry
+            onChangeText={(text) => handleChange('newPassword', text)}
+          />
+
+          <Label>
+            <Text>Confirmar contraseña</Text>
+          </Label>
+          <Input
+            placeholder="Confirmar"
+            secureTextEntry
+            onChangeText={(text) => handleChange('confirmPassword', text)}
+          />
+
+          <Button
+            disabled={loading}
+            className="mt-[10px]"
+            onPress={handlePasswordChange}
+          >
+            {loading ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <Text>Actualizar</Text>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
     </View>
   )
 }
