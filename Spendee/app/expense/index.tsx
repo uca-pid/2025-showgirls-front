@@ -2,11 +2,22 @@ import { View, Text, FlatList, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { PieChart } from 'react-native-gifted-charts'
-import { ChevronRight } from 'lucide-react-native'
+import {
+  BookOpen,
+  Bus,
+  ChevronRight,
+  Ellipsis,
+  Gamepad2,
+  Heart,
+  House,
+  LucideIcon,
+  Utensils,
+} from 'lucide-react-native'
 import ApiService from '../services/api.service'
 import { useIsFocused } from '@react-navigation/native'
 import { auth } from '@/firebase.config'
 import balanceService from '../services/balance.service'
+import ItemMenu from '@/components/ItemMenu'
 
 const index = () => {
   const [balance, setBalance] = useState(0)
@@ -36,14 +47,14 @@ const index = () => {
   const [chartLoading, setChartLoading] = useState(false)
   const isFocused = useIsFocused()
 
-  const iconNameToEmoji: Record<string, string> = {
-    bus: '🚌',
-    utensils: '🍴',
-    home: '🏠',
-    heart: '❤️',
-    gamepad: '🎮',
-    book: '📚',
-    'ellipsis-h': '⋯',
+  const iconNameToEmoji: Record<string, LucideIcon> = {
+    bus: Bus,
+    utensils: Utensils,
+    home: House,
+    heart: Heart,
+    gamepad: Gamepad2,
+    book: BookOpen,
+    'ellipsis-h': Ellipsis,
   }
 
   useEffect(() => {
@@ -156,16 +167,11 @@ const index = () => {
                         <></>
                       )}
                       <CardContent className="flex-row justify-between items-center">
-                        <Text>{item.categoryIcon}</Text>
-                        <View className="w-4/5 pl-4 flex-row justify-between">
-                          <Text numberOfLines={2} className="text-lg">
-                            {item.categoryName}
-                          </Text>
-                          <Text numberOfLines={2} className="text-lg">
-                            $ {item.value}
-                          </Text>
-                        </View>
-                        <ChevronRight size={22} color="black" />
+                        <ItemMenu
+                          text={item.categoryName}
+                          icon={item.categoryIcon}
+                          color="#F9A8D4"
+                        />
                       </CardContent>
                     </Card>
                   )}
