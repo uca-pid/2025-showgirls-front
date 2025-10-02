@@ -132,7 +132,7 @@ export default function HomePage() {
     book: '📚',
     'ellipsis-h': '⋯',
   }
-  
+
   useEffect(() => {
     let mounted = true
     const fetchCategories = async () => {
@@ -169,7 +169,6 @@ export default function HomePage() {
       mounted = false
     }
   }, [isFocused])
-
 
   return (
     <LinearGradient
@@ -234,7 +233,9 @@ export default function HomePage() {
             />
           ) : (
             <View className="items-center py-6">
-              <Text className="text-gray-500">No hay categorías para mostrar.</Text>
+              <Text className="text-gray-500">
+                No hay categorías para mostrar.
+              </Text>
             </View>
           )}
         </CardContent>

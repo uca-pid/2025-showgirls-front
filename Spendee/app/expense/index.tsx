@@ -11,13 +11,17 @@ import {
   Heart,
   House,
   LucideIcon,
+  Plus,
   Utensils,
+  Wrench,
 } from 'lucide-react-native'
 import ApiService from '../services/api.service'
 import { useIsFocused } from '@react-navigation/native'
 import { auth } from '@/firebase.config'
 import balanceService from '../services/balance.service'
 import ItemMenu from '@/components/ItemMenu'
+import IconButton from '@/components/IconButton'
+import { router } from 'expo-router'
 
 const index = () => {
   const [balance, setBalance] = useState(0)
@@ -54,6 +58,7 @@ const index = () => {
     heart: Heart,
     gamepad: Gamepad2,
     book: BookOpen,
+    Wrench: Wrench,
     'ellipsis-h': Ellipsis,
   }
 
@@ -103,7 +108,7 @@ const index = () => {
     <View className="w-full h-full bg-background pt-8">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="items-center pb-20"
+        contentContainerClassName="items-center gap-6 pb-8"
       >
         <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
           <CardTitle className="text-secondary text-m pl-2">
@@ -186,6 +191,11 @@ const index = () => {
             )}
           </CardContent>
         </Card>
+        <IconButton
+          icon={Plus}
+          onPress={() => router.push('./category')}
+          text={'Agregar Categoria'}
+        />
       </ScrollView>
     </View>
   )
