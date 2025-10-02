@@ -23,7 +23,8 @@ export default function TabsLayout() {
             title: `Hola ${!loading ? user?.displayName : 'Cargando...'}`,
             tabBarLabel: 'Home',
             headerTitleAlign: 'left',
-            headerTransparent: true,
+            headerShadowVisible: false,
+            headerStyle: { backgroundColor: '#F9A8D4' },
             headerShown: true,
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons

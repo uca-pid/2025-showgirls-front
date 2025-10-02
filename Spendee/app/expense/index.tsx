@@ -93,9 +93,7 @@ const index = () => {
       setChartLoading(true)
       try {
         const res = await ApiService.get('/categories')
-        console.log(res)
         const items = res?.data ?? []
-        console.log(items)
         if (!Array.isArray(items)) return
 
         const mapped = items.map((c: any) => ({

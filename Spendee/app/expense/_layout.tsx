@@ -11,6 +11,7 @@ export default function ExpenseLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: 'Gastos' }} />
+        <Stack.Screen name="[id]" options={{ title: 'Detalle del Gasto' }} />
       </Stack>
     </GestureHandlerRootView>
   )
