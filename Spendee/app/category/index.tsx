@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { auth } from '@/firebase.config'
 import ApiService from '../services/api.service'
+import { toastService } from '@/context/ToastContext'
 
 const index = () => {
   const [categoryName, setCategoryName] = useState('')
@@ -28,14 +29,32 @@ const index = () => {
 
   const user = auth.currentUser
 
+  const showToast = (message: string, type: 'error' | 'success' = 'error') => {
+    toastService.show(message, type === 'success' ? 'success' : undefined)
+  }
+
+  const validateForm = () => {
+    if (!categoryName || !description || !icon) {
+      return 'Por favor completa todos los campos'
+    }
+    return null
+  }
+
   const addCategory = async () => {
     const userId = user?.uid
-    await ApiService.post('/customCategory', {
-      categoria: categoryName,
-      icono: icon,
-      color: 'blue',
-      descripcion: description,
-    })
+    const errorMsg = validateForm()
+    if (errorMsg) return showToast(errorMsg)
+    try {
+      await ApiService.post('/customCategory', {
+        categoria: categoryName,
+        icono: icon,
+        color: 'blue',
+        descripcion: description,
+      })
+      showToast('Categoría agregada correctamente', 'success')
+    } catch (error) {
+      showToast('Error al agregar categoría')
+    }
   }
   return (
     <View className="flex-1 p-4 gap-4">
