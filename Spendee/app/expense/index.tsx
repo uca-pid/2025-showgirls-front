@@ -202,6 +202,7 @@ const index = () => {
                           icon={item.categoryIcon}
                           color="#F9A8D4"
                           editable={item.editable}
+                          gasto={item.value}
                           onPress={() =>
                             router.push({
                               pathname: '/category/edit-category',

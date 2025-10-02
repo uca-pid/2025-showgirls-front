@@ -9,6 +9,7 @@ export interface IconButtonProps {
   onPress?: () => void
   color: string
   editable?: boolean
+  gasto?: number
 }
 
 const ItemMenu = ({
@@ -17,6 +18,7 @@ const ItemMenu = ({
   onPress,
   color,
   editable,
+  gasto,
 }: IconButtonProps) => {
   console.log('ItemMenu', editable)
   return editable ? (
@@ -25,6 +27,7 @@ const ItemMenu = ({
         <Icon color={color} />
         <Text className="text-lg">{text}</Text>
         <Pencil size={18} color="gray" onPress={onPress} />
+        <Text>${gasto}</Text>
       </View>
       <ChevronRight size={22} color="black" />
     </View>
@@ -33,6 +36,7 @@ const ItemMenu = ({
       <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
         <Icon color={color} />
         <Text className="text-lg">{text}</Text>
+        <Text>${gasto}</Text>
       </View>
       <ChevronRight size={22} color="black" />
     </View>

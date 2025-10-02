@@ -307,7 +307,6 @@ export default function HomePage() {
                         text={item.gasto.toString()}
                         icon={ArrowBigDown}
                         color="#F9A8D4"
-                        selected={false}
                       />
                     </Button>
                   </CardContent>
