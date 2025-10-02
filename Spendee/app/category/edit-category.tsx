@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import IconButton from '@/components/IconButton'
 import {
+  Ellipsis,
   Paperclip,
   Popcorn,
   Shield,
@@ -19,9 +20,9 @@ import {
   Wrench,
 } from 'lucide-react-native'
 import { Button } from '@/components/ui/button'
-import { useRoute } from '@react-navigation/native'
 import { router, useLocalSearchParams } from 'expo-router'
 import ApiService from '../services/api.service'
+import { toastService } from '@/context/ToastContext'
 
 const EditCategory = () => {
   const { categoryName, categoryDescription, categoryIcon, categoryId } =
@@ -31,9 +32,39 @@ const EditCategory = () => {
   const [description, setDescription] = useState(
     String(categoryDescription) || '',
   )
-  const [icon, setIcon] = useState(String(categoryIcon) || '')
+  const [icon, setIcon] = useState('')
 
-  const modifyCategory = () => {}
+  const showToast = (message: string, type: 'error' | 'success' = 'error') => {
+    toastService.show(message, type === 'success' ? 'success' : undefined)
+  }
+
+  const validateForm = () => {
+    if (!categoryName || !description || !icon) {
+      return 'Por favor completa todos los campos'
+    }
+    return null
+  }
+
+  const modifyCategory = async () => {
+    const errorMsg = validateForm()
+    if (errorMsg) return showToast(errorMsg)
+    try {
+      const response = await ApiService.put(`/modifyCategory/${categoryId}`, {
+        categoria: name,
+        descripcion: description,
+        icono: icon,
+      })
+
+      alert('Categoría modificada con éxito')
+      console.log('Categoría actualizada:', response.data)
+
+      // Volver a la pantalla anterior
+      router.back()
+    } catch (error) {
+      console.error('Error al modificar la categoría:', error)
+      alert('No se pudo modificar la categoría')
+    }
+  }
   const deleteCategory = async () => {
     try {
       const response = await ApiService.delete(`/deleteCategory/${categoryId}`)
@@ -49,9 +80,9 @@ const EditCategory = () => {
   return (
     <View className="flex-1 p-4 gap-4">
       <Text className="text-gray-500">Nombre</Text>
-      <Input placeholder={name} />
+      <Input placeholder={name} onChangeText={setName} />
       <Text className="text-gray-500">Descripcion</Text>
-      <Input placeholder={description} />
+      <Input placeholder={description} onChangeText={setDescription} />
       <Text className="text-gray-500">Seleccionar ícono</Text>
       <View className="w-full ">
         <Card className="w-full h-[300]">
