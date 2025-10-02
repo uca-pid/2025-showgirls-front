@@ -12,6 +12,7 @@ import {
   House,
   LucideIcon,
   Paperclip,
+  Pencil,
   Plus,
   Popcorn,
   Shield,
@@ -109,6 +110,7 @@ const index = () => {
           categoryColor: c.color ?? '#A78BFA',
           categoryName: c.categoria ?? c.name ?? '',
           categoryId: c.id ?? c._id ?? null,
+          editable: c.editable ?? true,
         }))
 
         if (mounted) setChartData(mapped)
@@ -195,14 +197,25 @@ const index = () => {
                         <></>
                       )}
                       <CardContent className="flex-row justify-between items-center">
-                        <Button onLongPress={() => setSelected(!selected)}>
-                          <ItemMenu
-                            text={item.categoryName}
-                            icon={item.categoryIcon}
-                            color="#F9A8D4"
-                            selected={selected}
-                          />
-                        </Button>
+                        <ItemMenu
+                          text={item.categoryName}
+                          icon={item.categoryIcon}
+                          color="#F9A8D4"
+                          editable={item.editable}
+                          onPress={() =>
+                            router.push({
+                              pathname: '/category/edit-category',
+                              params: {
+                                categoryName: item.categoryName,
+                                categoryDescription:
+                                  item.categoryDescription ?? '',
+                                categoryIcon: item.categoryIcon,
+                                categoryId: item.categoryId,
+                              },
+                            })
+                          }
+                        />
+                        <View className="position-absolute space-x-2"></View>
                       </CardContent>
                     </Card>
                   )}

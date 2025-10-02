@@ -8,7 +8,7 @@ export interface IconButtonProps {
   icon: LucideIcon
   onPress?: () => void
   color: string
-  selected: boolean
+  editable?: boolean
 }
 
 const ItemMenu = ({
@@ -16,16 +16,15 @@ const ItemMenu = ({
   icon: Icon,
   onPress,
   color,
-  selected,
+  editable,
 }: IconButtonProps) => {
-  return selected ? (
+  console.log('ItemMenu', editable)
+  return editable ? (
     <View className="flex-row items-center">
       <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
-        <Button>
-          <Pencil size={18} color="gray" />
-        </Button>
         <Icon color={color} />
         <Text className="text-lg">{text}</Text>
+        <Pencil size={18} color="gray" onPress={onPress} />
       </View>
       <ChevronRight size={22} color="black" />
     </View>
