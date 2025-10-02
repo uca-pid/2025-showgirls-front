@@ -33,11 +33,13 @@ import balanceService from '../services/balance.service'
 import ItemMenu from '@/components/ItemMenu'
 import IconButton from '@/components/IconButton'
 import { router } from 'expo-router'
+import { Button } from '@/components/ui/button'
 
 const index = () => {
   const [balance, setBalance] = useState(0)
   const [income, setIncome] = useState(0)
   const [expense, setExpense] = useState(0)
+  const [selected, setSelected] = useState(false)
 
   const user = auth.currentUser
 
@@ -195,11 +197,14 @@ const index = () => {
                         <></>
                       )}
                       <CardContent className="flex-row justify-between items-center">
-                        <ItemMenu
-                          text={item.categoryName}
-                          icon={item.categoryIcon}
-                          color="#F9A8D4"
-                        />
+                        <Button onLongPress={() => setSelected(!selected)}>
+                          <ItemMenu
+                            text={item.categoryName}
+                            icon={item.categoryIcon}
+                            color="#F9A8D4"
+                            selected={selected}
+                          />
+                        </Button>
                       </CardContent>
                     </Card>
                   )}
