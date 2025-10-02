@@ -112,6 +112,7 @@ const index = () => {
           categoryColor: c.color ?? '#A78BFA',
           categoryName: c.categoria ?? c.name ?? '',
           categoryId: c.id ?? c._id ?? null,
+          editable: c.editable ?? true,
         }))
 
         if (mounted) setChartData(mapped)
@@ -202,6 +203,7 @@ const index = () => {
                           text={item.categoryName}
                           icon={item.categoryIcon}
                           color="#F9A8D4"
+                          editable={item.editable}
                           onPress={() =>
                             router.push({
                               pathname: '/category/edit-category',

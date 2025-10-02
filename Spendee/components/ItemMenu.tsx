@@ -8,15 +8,31 @@ export interface IconButtonProps {
   icon: LucideIcon
   onPress?: () => void
   color: string
+  editable?: boolean
 }
 
-const ItemMenu = ({ text, icon: Icon, onPress, color }: IconButtonProps) => {
-  return (
+const ItemMenu = ({
+  text,
+  icon: Icon,
+  onPress,
+  color,
+  editable,
+}: IconButtonProps) => {
+  console.log('ItemMenu', editable)
+  return editable ? (
     <View className="flex-row items-center">
       <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
         <Icon color={color} />
         <Text className="text-lg">{text}</Text>
         <Pencil size={18} color="gray" onPress={onPress} />
+      </View>
+      <ChevronRight size={22} color="black" />
+    </View>
+  ) : (
+    <View className="flex-row items-center">
+      <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
+        <Icon color={color} />
+        <Text className="text-lg">{text}</Text>
       </View>
       <ChevronRight size={22} color="black" />
     </View>
