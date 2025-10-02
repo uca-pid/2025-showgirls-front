@@ -20,7 +20,8 @@ import {
 } from 'lucide-react-native'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@react-navigation/native'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import ApiService from '../services/api.service'
 
 const EditCategory = () => {
   const { categoryName, categoryDescription, categoryIcon, categoryId } =
@@ -33,7 +34,17 @@ const EditCategory = () => {
   const [icon, setIcon] = useState(String(categoryIcon) || '')
 
   const modifyCategory = () => {}
-  const deleteCategory = () => {}
+  const deleteCategory = async () => {
+    try {
+      const response = await ApiService.delete(`/deleteCategory/${categoryId}`)
+      console.log('Categoría eliminada:', response.data)
+      alert('Categoría eliminada con éxito')
+      router.back()
+    } catch (error) {
+      console.error('Error al eliminar la categoría:', error)
+      alert('No se pudo eliminar la categoría')
+    }
+  }
 
   return (
     <View className="flex-1 p-4 gap-4">
