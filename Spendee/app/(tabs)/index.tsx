@@ -16,8 +16,29 @@ import {
   ArrowBigDown,
   BanknoteArrowDown,
   BanknoteArrowUp,
+  BookOpen,
+  Bus,
+  Ellipsis,
+  Gamepad2,
+  Heart,
+  House,
+  Icon,
+  LucideIcon,
   Minus,
+  Paperclip,
   Plus,
+  Popcorn,
+  Shield,
+  Shuffle,
+  Sigma,
+  Sprout,
+  Sun,
+  TestTube,
+  TreePalm,
+  Users,
+  Utensils,
+  Wine,
+  Wrench,
 } from 'lucide-react-native'
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useIsFocused } from '@react-navigation/native'
@@ -32,6 +53,8 @@ import { router } from 'expo-router'
 import expenseService from '../services/expense.service'
 import { ExpenseResponse } from '../services/expense.service'
 import ItemMenu from '@/components/ItemMenu'
+import { Input } from '@/components/ui/input'
+import DropDownPicker from 'react-native-dropdown-picker'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -41,7 +64,7 @@ export default function HomePage() {
   const [transaccion, setTransaccion] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [modalVisible, setModalVisible] = useState(false)
-  const headerHight = useHeaderHeight()
+  const [selectedCategory, setSelectedCategory] = useState<number>(0)
 
   const user = auth.currentUser
 
@@ -99,6 +122,11 @@ export default function HomePage() {
       userId: userId,
       gasto: numericAmount,
       montoAnterior: balance,
+      categoriaId:
+        selectedCategory >= 1 && selectedCategory <= 7
+          ? selectedCategory
+          : null,
+      customCategoriaId: selectedCategory > 7 ? selectedCategory : null,
     })
   }
 
@@ -147,14 +175,27 @@ export default function HomePage() {
   const [chartLoading, setChartLoading] = useState(false)
   const isFocused = useIsFocused()
 
-  const iconNameToEmoji: Record<string, string> = {
-    bus: '🚌',
-    utensils: '�',
-    home: '🏠',
-    heart: '❤️',
-    gamepad: '🎮',
-    book: '📚',
-    'ellipsis-h': '⋯',
+  const iconNameToEmoji: Record<string, LucideIcon> = {
+    bus: Bus,
+    utensils: Utensils,
+    home: House,
+    heart: Heart,
+    gamepad: Gamepad2,
+    book: BookOpen,
+    Wrench: Wrench,
+    Wine: Wine,
+    Sprout: Sprout,
+    Users: Users,
+    TreePalm: TreePalm,
+    TestTube: TestTube,
+    Sun: Sun,
+    Sigma: Sigma,
+    Popcorn: Popcorn,
+    Shuffle: Shuffle,
+    Shield: Shield,
+    Paperclip: Paperclip,
+    '': Ellipsis,
+    'ellipsis-h': Ellipsis,
   }
 
   useEffect(() => {
@@ -175,8 +216,11 @@ export default function HomePage() {
             categoryId: c.id,
           }
         })
+        console.log(items)
 
-        if (mounted) setChartData(mapped)
+        if (mounted) {
+          setChartData(mapped)
+        }
       } catch (err) {
         console.warn('Error fetching categories:', err)
         // keep chartData empty if failure
@@ -304,10 +348,9 @@ export default function HomePage() {
                             params: { id: item.id },
                           })
                         }
-                        text={item.gasto.toString()}
+                        text={`$ ${item.gasto.toString()}`}
                         icon={ArrowBigDown}
                         color="#F9A8D4"
-                        selected={false}
                       />
                     </Button>
                   </CardContent>
@@ -328,10 +371,41 @@ export default function HomePage() {
 
               <TextInput
                 placeholder="Ingrese monto"
+                placeholderTextColor="gray"
                 keyboardType="numeric"
                 onChangeText={setAmount}
                 className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
               />
+              {transaccion === 'expense' && (
+                <View className="w-full ">
+                  <Text className="text-sm color-muted-foreground pl-4">
+                    CATEGORÍAS
+                  </Text>
+                  <Card className="w-full bg-white border-0">
+                    <CardContent className="w-full gap-2 flex-wrap flex-row justify-center">
+                      {chartData.map((item) => {
+                        return (
+                          <Button
+                            key={item.categoryId}
+                            variant={
+                              item.categoryId === selectedCategory
+                                ? 'secondary'
+                                : 'default'
+                            }
+                            onPress={() => {
+                              setSelectedCategory(item.categoryId)
+                            }}
+                          >
+                            <Text className="text-black">
+                              {item.categoryName}
+                            </Text>
+                          </Button>
+                        )
+                      })}
+                    </CardContent>
+                  </Card>
+                </View>
+              )}
 
               <View className="flex-row justify-between">
                 <TouchableOpacity

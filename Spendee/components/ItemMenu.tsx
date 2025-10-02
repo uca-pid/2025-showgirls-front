@@ -18,7 +18,6 @@ const ItemMenu = ({
   color,
   editable,
 }: IconButtonProps) => {
-  console.log('ItemMenu', editable)
   return editable ? (
     <View className="flex-row items-center">
       <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">

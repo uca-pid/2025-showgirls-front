@@ -2,7 +2,6 @@ import { View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useGlobalSearchParams } from 'expo-router'
 import expenseService, { ExpenseResponse } from '../services/expense.service'
-import { Text } from '@/components/ui/text'
 import { Card, CardTitle } from '@/components/ui/card'
 
 const ExpenseDetailPage = () => {
