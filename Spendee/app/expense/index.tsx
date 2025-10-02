@@ -12,6 +12,7 @@ import {
   House,
   LucideIcon,
   Paperclip,
+  Pencil,
   Plus,
   Popcorn,
   Shield,
@@ -197,14 +198,24 @@ const index = () => {
                         <></>
                       )}
                       <CardContent className="flex-row justify-between items-center">
-                        <Button onLongPress={() => setSelected(!selected)}>
-                          <ItemMenu
-                            text={item.categoryName}
-                            icon={item.categoryIcon}
-                            color="#F9A8D4"
-                            selected={selected}
-                          />
-                        </Button>
+                        <ItemMenu
+                          text={item.categoryName}
+                          icon={item.categoryIcon}
+                          color="#F9A8D4"
+                          onPress={() =>
+                            router.push({
+                              pathname: '/category/edit-category',
+                              params: {
+                                categoryName: item.categoryName,
+                                categoryDescription:
+                                  item.categoryDescription ?? '',
+                                categoryIcon: item.categoryIcon,
+                                categoryId: item.categoryId,
+                              },
+                            })
+                          }
+                        />
+                        <View className="position-absolute space-x-2"></View>
                       </CardContent>
                     </Card>
                   )}
