@@ -122,11 +122,7 @@ export default function HomePage() {
       userId: userId,
       gasto: numericAmount,
       montoAnterior: balance,
-      categoriaId:
-        selectedCategory >= 1 && selectedCategory <= 7
-          ? selectedCategory
-          : null,
-      customCategoriaId: selectedCategory > 7 ? selectedCategory : null,
+      categoriaId: selectedCategory,
     })
   }
 
@@ -170,7 +166,6 @@ export default function HomePage() {
     },
   ]
 
-  // Chart data (initially empty — will be loaded from server)
   const [chartData, setChartData] = useState<any[]>([])
   const [chartLoading, setChartLoading] = useState(false)
   const isFocused = useIsFocused()
@@ -212,18 +207,15 @@ export default function HomePage() {
             categoryIcon: iconNameToEmoji[c.icono],
             value: Number(c.totalGastos),
             categoryColor: c.color,
-            categoryName: c.categoria,
+            categoryName: c.nombre,
             categoryId: c.id,
           }
         })
-        console.log(items)
-
         if (mounted) {
           setChartData(mapped)
         }
       } catch (err) {
         console.warn('Error fetching categories:', err)
-        // keep chartData empty if failure
       } finally {
         if (mounted) setChartLoading(false)
       }
@@ -340,19 +332,17 @@ export default function HomePage() {
                     <></>
                   )}
                   <CardContent className="flex-row justify-between items-center">
-                    <Button>
-                      <ItemMenu
-                        onPress={() =>
-                          router.push({
-                            pathname: '/expense/[id]',
-                            params: { id: item.id },
-                          })
-                        }
-                        text={`$ ${item.gasto.toString()}`}
-                        icon={ArrowBigDown}
-                        color="#F9A8D4"
-                      />
-                    </Button>
+                    <ItemMenu
+                      onPress={() => {
+                        router.push({
+                          pathname: '/expense/[id]',
+                          params: { id: item.id },
+                        })
+                      }}
+                      text={`$ ${item.gasto.toString()}`}
+                      icon={ArrowBigDown}
+                      color="#F9A8D4"
+                    />
                   </CardContent>
                 </Card>
               )}
