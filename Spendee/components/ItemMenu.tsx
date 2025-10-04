@@ -1,7 +1,8 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import { ChevronRight, LucideIcon, Pencil } from 'lucide-react-native'
 import { Button } from './ui/button'
+import { router } from 'expo-router'
 
 export interface IconButtonProps {
   text: string
@@ -20,25 +21,24 @@ const ItemMenu = ({
   editable,
   gasto,
 }: IconButtonProps) => {
-  return editable ? (
-    <View className="flex-row items-center">
-      <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
-        <Icon color={color} />
-        <Text className="text-lg">{text}</Text>
-        <Pencil size={18} color="gray" onPress={onPress} />
-        <Text>${gasto}</Text>
+  return (
+    <Pressable onPress={onPress}>
+      <View className="flex-row items-center">
+        <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
+          <Icon color={color} />
+          <Text className="text-lg">{text}</Text>
+          {editable && (
+            <Pencil
+              size={18}
+              color="gray"
+              onPress={() => router.push('/category/edit-category')}
+            />
+          )}
+          <Text>${gasto}</Text>
+        </View>
+        <ChevronRight size={22} color="black" />
       </View>
-      <ChevronRight size={22} color="black" />
-    </View>
-  ) : (
-    <View className="flex-row items-center">
-      <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
-        <Icon color={color} />
-        <Text className="text-lg">{text}</Text>
-        <Text>${gasto}</Text>
-      </View>
-      <ChevronRight size={22} color="black" />
-    </View>
+    </Pressable>
   )
 }
 
