@@ -55,6 +55,8 @@ import { ExpenseResponse } from '../services/expense.service'
 import ItemMenu from '@/components/ItemMenu'
 import { Input } from '@/components/ui/input'
 import DropDownPicker from 'react-native-dropdown-picker'
+import DonutChart from '@/components/DonutChart'
+import { useSharedValue } from 'react-native-reanimated'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
@@ -228,6 +230,21 @@ export default function HomePage() {
     }
   }, [isFocused])
 
+  const data = [
+    { value: 40, color: '#FF6B6B', icon: Heart },
+    { value: 30, color: '#4ECDC4', icon: Wine },
+    { value: 30, color: '#FFD93D', icon: TreePalm },
+  ]
+
+  const colors = chartData.map((item) => item.categoryColor)
+  const total = chartData.reduce((sum, item) => sum + item.value, 0)
+  const decimals = useSharedValue(chartData.map((item) => item.value / total))
+
+  const radius = 100
+  const strokeWidth = 20
+  const outerStrokeWidth = 30
+  const gap = 0.01
+
   return (
     <LinearGradient
       colors={['#F9A8D4', '#FCA5A5']}
@@ -273,23 +290,20 @@ export default function HomePage() {
                   <Text className="text-gray-500">Cargando categorías...</Text>
                 </View>
               ) : chartData && chartData.length > 0 ? (
-                <PieChart
-                  donut
-                  innerRadius={95}
-                  strokeColor="#fafafa"
-                  strokeWidth={5}
-                  data={chartData}
-                  centerLabelComponent={() => (
-                    <View className="items-center">
-                      <Text className="text-lg font-semibold text-gray-800">
-                        Gastos Totales
-                      </Text>
-                      <Text className="text-xl font-bold text-gray-800">
-                        ${expense}
-                      </Text>
-                    </View>
-                  )}
-                />
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <DonutChart
+                    data={chartData}
+                    centerText={`Total: $${total}`}
+                    size={210}
+                    strokeWidth={20}
+                  />
+                </View>
               ) : (
                 <View className="items-center py-6">
                   <Text className="text-gray-500">

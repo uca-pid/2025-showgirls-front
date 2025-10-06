@@ -35,6 +35,7 @@ import ItemMenu from '@/components/ItemMenu'
 import IconButton from '@/components/IconButton'
 import { router } from 'expo-router'
 import { Button } from '@/components/ui/button'
+import DonutChart from '@/components/DonutChart'
 
 const index = () => {
   const [balance, setBalance] = useState(0)
@@ -148,22 +149,11 @@ const index = () => {
               </View>
             ) : chartData && chartData.length > 0 ? (
               <>
-                <PieChart
-                  donut
-                  innerRadius={95}
-                  strokeColor="#fafafa"
-                  strokeWidth={5}
+                <DonutChart
                   data={chartData}
-                  centerLabelComponent={() => (
-                    <View className="items-center">
-                      <Text className="text-lg font-semibold text-gray-800">
-                        Gastos Totales
-                      </Text>
-                      <Text className="text-xl font-bold text-gray-800">
-                        ${expense}
-                      </Text>
-                    </View>
-                  )}
+                  centerText={`Total: $${expense}`}
+                  size={210}
+                  strokeWidth={20}
                 />
                 <FlatList
                   scrollEnabled={false}
