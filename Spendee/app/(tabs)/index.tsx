@@ -300,6 +300,8 @@ export default function HomePage() {
                   <DonutChart
                     data={chartData}
                     centerText={`Total: $${total}`}
+                    size={210}
+                    strokeWidth={20}
                   />
                 </View>
               ) : (
