@@ -1,8 +1,7 @@
-import { View, FlatList } from 'react-native'
-import React from 'react'
-import useCategories from '@/hooks/useCategories'
-import { Text } from '@/components/ui/text'
 import ItemButton from '@/components/ItemButton'
+import { Text } from '@/components/ui/text'
+import useCategories from '@/hooks/useCategories'
+import { router, useLocalSearchParams } from 'expo-router'
 import {
   BookOpen,
   Bus,
@@ -26,7 +25,8 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import { router, useLocalSearchParams } from 'expo-router'
+import React from 'react'
+import { FlatList, View } from 'react-native'
 
 const iconNameToEmoji: Record<string, LucideIcon> = {
   bus: Bus,
@@ -77,7 +77,7 @@ const CategoriesList = () => {
               badgeText={`$ ${item.totalGastos.toString()}`}
               onPress={() =>
                 router.replace({
-                  pathname: '/expense/modal/add',
+                  pathname: '/income/modal/add',
                   params: { categoryId: item.id, expense: expense },
                 })
               }

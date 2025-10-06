@@ -1,28 +1,28 @@
-import { View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useGlobalSearchParams } from 'expo-router'
-import expenseService, { ExpenseResponse } from '../../services/expense.service'
 import { Card, CardTitle } from '@/components/ui/card'
+import incomeService, { IncomeResponse } from '@/services/income.service'
+import { useGlobalSearchParams } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { View } from 'react-native'
 
-const ExpenseDetailPage = () => {
-  const [expense, setExpense] = useState<ExpenseResponse>()
+const IncomeDetailPage = () => {
+  const [income, setIncome] = useState<IncomeResponse>()
   const { id } = useGlobalSearchParams()
 
   useEffect(() => {
-    const getExpense = async () => {
-      const res = await expenseService.findByExpenseId(Number(id))
-      setExpense(res.data)
+    const getIncome = async () => {
+      const res = await incomeService.findById(Number(id))
+      setIncome(res.data)
     }
-    getExpense()
+    getIncome()
   }, [])
 
   return (
     <View className="bg-background w-full h-full items-center p-4">
       <Card className="w-full">
-        <CardTitle>{expense?.gasto}</CardTitle>
+        <CardTitle>{income?.ingreso}</CardTitle>
       </Card>
     </View>
   )
 }
 
-export default ExpenseDetailPage
+export default IncomeDetailPage

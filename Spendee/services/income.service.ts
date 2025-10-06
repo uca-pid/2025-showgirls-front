@@ -2,7 +2,7 @@ import ApiService from './api.service'
 
 export interface IncomeResponse {
   usuarioId: string
-  gasto: number
+  ingreso: number
   montoAnterior: number
   fecha: Date
   id: number
@@ -10,10 +10,13 @@ export interface IncomeResponse {
 
 class IncomeService {
   public async findById(incomeId: number) {
-    return await ApiService.get(`/ingresoPorId/${incomeId}`)
+    return await ApiService.get<IncomeResponse>(`/ingresoPorId/${incomeId}`)
   }
-  public async findByUserId(userId: number) {
-    return await ApiService.get(`/ingreso/${userId}`)
+  public async findByUserId(userId: string) {
+    return await ApiService.get<IncomeResponse[]>(`/ingreso/${userId}`)
+  }
+  public async create(body: any) {
+    return await ApiService.post('/ingreso', body)
   }
 }
 

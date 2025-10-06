@@ -1,24 +1,20 @@
-import {
-  TextInput,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-  FlatList,
-} from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { Text } from '@/components/ui/text'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ChevronDown, Icon } from 'lucide-react-native'
-import useCategories from '@/hooks/useCategories'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import expenseService from '@/services/expense.service'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
 import { auth } from '@/firebase.config'
 import balanceService from '@/services/balance.service'
-import { toastService } from '@/context/ToastContext'
+import incomeService from '@/services/income.service'
+import { useRouter } from 'expo-router'
+import React, { useState } from 'react'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 
 export default function AddExpensePage() {
   const user = auth.currentUser
@@ -27,9 +23,10 @@ export default function AddExpensePage() {
     var userId = user.uid
   }
   const router = useRouter()
-  const { categories } = useCategories()
-  const { categoryId, expense } = useLocalSearchParams()
-  const [amount, setAmount] = useState(expense ? (expense as string) : '')
+  /* const { categories } = useCategories()
+  const { categoryId, income } = useLocalSearchParams() */
+  /* const [amount, setAmount] = useState(income ? (income as string) : '') */
+  const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
 
   const formatAmount = (value: string) => {
@@ -41,19 +38,19 @@ export default function AddExpensePage() {
     if (!amount) {
       setError('Ingresa un monto')
       return
-    } else if (!categoryId) {
+    } /* else if (!categoryId) {
       setError('Selecciona una categoría')
       return
-    } else {
+    } */ else {
       try {
-        await expenseService.create({
+        await incomeService.create({
           userId: userId,
-          gasto: Number(amount),
+          ingreso: Number(amount),
           montoAnterior: (await balanceData).data.balance,
-          categoriaId: Number(categoryId),
+          /* categoriaId: Number(categoryId), */
         })
-        const expenses = await expenseService.findByUserId(userId)
-        console.log(expenses.data[expenses.data.length - 1])
+        const incomes = await incomeService.findByUserId(userId)
+        console.log(incomes.data[incomes.data.length - 1])
         router.dismissAll()
         router.replace('/')
       } catch (error) {
@@ -85,7 +82,7 @@ export default function AddExpensePage() {
               >
                 Cerrar
               </Text>
-              <Text className="font-semibold text-lg">Nuevo Gasto</Text>
+              <Text className="font-semibold text-lg">Nuevo Ingreso</Text>
               <Text className="text-lg color-pink-300" onPress={onSubmit}>
                 Agregar
               </Text>
@@ -115,7 +112,7 @@ export default function AddExpensePage() {
                 </View>
               </View>
 
-              <Button
+              {/* <Button
                 variant="ghost"
                 className="gap-0"
                 onPress={() =>
@@ -139,10 +136,10 @@ export default function AddExpensePage() {
                   </Text>
                 )}
                 <ChevronDown color="white" size={18} />
-              </Button>
+              </Button> */}
               {error && <Text className="text-red-700 text-base">{error}</Text>}
               <Button className="w-full bg-pink-300" onPress={onSubmit}>
-                <Text>Añadir Gasto</Text>
+                <Text>Añadir Ingreso</Text>
               </Button>
             </CardContent>
           </Card>
