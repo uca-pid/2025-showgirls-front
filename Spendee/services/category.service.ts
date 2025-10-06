@@ -8,7 +8,7 @@ export interface CategoryResponse {
   icono: string
   color: string
   descripcion: string
-  gastos: ExpenseResponse[]
+  totalGastos: number
 }
 
 class CategoryService {
