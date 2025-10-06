@@ -145,8 +145,7 @@ export default function HomePage() {
       text: 'Ingresar',
       icon: BanknoteArrowUp,
       onPress: () => {
-        setTransaccion('income')
-        setModalVisible(true)
+        router.push('/income/modal/add')
       },
     },
     {
