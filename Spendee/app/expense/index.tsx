@@ -27,10 +27,10 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import ApiService from '../services/api.service'
+import ApiService from '../../services/api.service'
 import { useIsFocused } from '@react-navigation/native'
 import { auth } from '@/firebase.config'
-import balanceService from '../services/balance.service'
+import balanceService from '../../services/balance.service'
 import ItemMenu from '@/components/ItemMenu'
 import IconButton from '@/components/IconButton'
 import { router } from 'expo-router'

@@ -22,7 +22,7 @@ import {
 } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import userService from '../services/user.service'
+import userService from '../../services/user.service'
 import { auth } from '../../firebase.config'
 
 export default function SignInForm() {

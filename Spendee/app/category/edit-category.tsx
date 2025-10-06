@@ -21,7 +21,7 @@ import {
 } from 'lucide-react-native'
 import { Button } from '@/components/ui/button'
 import { router, useLocalSearchParams } from 'expo-router'
-import ApiService from '../services/api.service'
+import ApiService from '../../services/api.service'
 import { toastService } from '@/context/ToastContext'
 
 const EditCategory = () => {

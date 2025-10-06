@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { router } from 'expo-router'
 import { ChevronRight, LogOut, User2 } from 'lucide-react-native'
 import { auth } from '@/firebase.config'
-import userService from '@/app/services/user.service'
+import userService from '@/services/user.service'
 
 export default function ProfilePage() {
   const user = auth.currentUser

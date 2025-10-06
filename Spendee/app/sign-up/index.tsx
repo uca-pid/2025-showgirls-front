@@ -23,7 +23,7 @@ import {
 
 import { useState } from 'react'
 import { router } from 'expo-router'
-import userService from '../services/user.service'
+import userService from '../../services/user.service'
 import { auth } from '../../firebase.config'
 
 export default function SignUpForm() {

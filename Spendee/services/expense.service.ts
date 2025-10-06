@@ -16,6 +16,10 @@ class ExpenseService {
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
   }
+
+  public async create(body: any) {
+    return await ApiService.post('/gasto', body)
+  }
 }
 
 const expenseService = new ExpenseService()

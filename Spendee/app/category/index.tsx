@@ -19,7 +19,7 @@ import {
 } from 'lucide-react-native'
 import { Button } from '@/components/ui/button'
 import { auth } from '@/firebase.config'
-import ApiService from '../services/api.service'
+import ApiService from '../../services/api.service'
 import { toastService } from '@/context/ToastContext'
 
 const index = () => {

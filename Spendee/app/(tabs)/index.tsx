@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   View,
   TouchableOpacity,
@@ -6,7 +6,6 @@ import {
   TextInput,
   FlatList,
   ScrollView,
-  TouchableWithoutFeedback,
   Pressable,
 } from 'react-native'
 import { Card, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
@@ -22,11 +21,8 @@ import {
   Gamepad2,
   Heart,
   House,
-  Icon,
   LucideIcon,
-  Minus,
   Paperclip,
-  Plus,
   Popcorn,
   Shield,
   Shuffle,
@@ -40,21 +36,16 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import { useHeaderHeight } from '@react-navigation/elements'
 import { useIsFocused } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { auth } from '@/firebase.config'
-import ApiService from '../services/api.service'
-import balanceService from '../services/balance.service'
-import IconButton from '@/components/IconButton'
+import ApiService from '../../services/api.service'
+import balanceService from '../../services/balance.service'
 import IconMenu from '@/components/IconMenu'
-import { PieChart } from 'react-native-gifted-charts'
 import { router } from 'expo-router'
-import expenseService from '../services/expense.service'
-import { ExpenseResponse } from '../services/expense.service'
+import expenseService from '../../services/expense.service'
+import { ExpenseResponse } from '../../services/expense.service'
 import ItemMenu from '@/components/ItemMenu'
-import { Input } from '@/components/ui/input'
-import DropDownPicker from 'react-native-dropdown-picker'
 import DonutChart from '@/components/DonutChart'
 import { useSharedValue } from 'react-native-reanimated'
 
@@ -162,8 +153,7 @@ export default function HomePage() {
       text: 'Egresar',
       icon: BanknoteArrowDown,
       onPress: () => {
-        setTransaccion('expense')
-        setModalVisible(true)
+        router.push('/expense/modal/add')
       },
     },
   ]
@@ -380,37 +370,6 @@ export default function HomePage() {
                 onChangeText={setAmount}
                 className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
               />
-              {transaccion === 'expense' && (
-                <View className="w-full ">
-                  <Text className="text-sm color-muted-foreground pl-4">
-                    CATEGORÍAS
-                  </Text>
-                  <Card className="w-full bg-white border-0">
-                    <CardContent className="w-full gap-2 flex-wrap flex-row justify-center">
-                      {chartData.map((item) => {
-                        return (
-                          <Button
-                            key={item.categoryId}
-                            variant={
-                              item.categoryId === selectedCategory
-                                ? 'secondary'
-                                : 'default'
-                            }
-                            onPress={() => {
-                              setSelectedCategory(item.categoryId)
-                            }}
-                          >
-                            <Text className="text-black">
-                              {item.categoryName}
-                            </Text>
-                          </Button>
-                        )
-                      })}
-                    </CardContent>
-                  </Card>
-                </View>
-              )}
-
               <View className="flex-row justify-between">
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
