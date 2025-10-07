@@ -1,24 +1,22 @@
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
+import { auth } from '@/firebase.config'
+import useCategories from '@/hooks/useCategories'
+import balanceService from '@/services/balance.service'
+import expenseService from '@/services/expense.service'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ChevronDown } from 'lucide-react-native'
+import { useState } from 'react'
 import {
-  TextInput,
-  View,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   ScrollView,
-  FlatList,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { Text } from '@/components/ui/text'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { ChevronDown, Icon } from 'lucide-react-native'
-import useCategories from '@/hooks/useCategories'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import expenseService from '@/services/expense.service'
-import { auth } from '@/firebase.config'
-import balanceService from '@/services/balance.service'
-import { toastService } from '@/context/ToastContext'
 
 export default function AddExpensePage() {
   const user = auth.currentUser
@@ -38,7 +36,7 @@ export default function AddExpensePage() {
   }
 
   const onSubmit = async () => {
-    if (!amount) {
+    if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
     } else if (!categoryId) {

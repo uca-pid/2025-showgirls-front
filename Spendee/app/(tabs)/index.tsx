@@ -1,16 +1,12 @@
-import { useEffect, useState } from 'react'
-import {
-  View,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  FlatList,
-  ScrollView,
-  Pressable,
-} from 'react-native'
-import { Card, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import DonutChart from '@/components/DonutChart'
+import IconMenu from '@/components/IconMenu'
+import ItemMenu from '@/components/ItemMenu'
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import { Button } from '@/components/ui/button'
+import { auth } from '@/firebase.config'
+import { useIsFocused } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { router } from 'expo-router'
 import {
   ArrowBigDown,
   BanknoteArrowDown,
@@ -36,88 +32,21 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import { useIsFocused } from '@react-navigation/native'
-import { LinearGradient } from 'expo-linear-gradient'
-import { auth } from '@/firebase.config'
+import { useEffect, useState } from 'react'
+import { FlatList, Pressable, ScrollView, View } from 'react-native'
 import ApiService from '../../services/api.service'
 import balanceService from '../../services/balance.service'
-import IconMenu from '@/components/IconMenu'
-import { router } from 'expo-router'
-import expenseService from '../../services/expense.service'
-import { ExpenseResponse } from '../../services/expense.service'
-import ItemMenu from '@/components/ItemMenu'
-import DonutChart from '@/components/DonutChart'
-import { useSharedValue } from 'react-native-reanimated'
+import expenseService, { ExpenseResponse } from '../../services/expense.service'
 
 export default function HomePage() {
   const [balance, setBalance] = useState(0)
-  const [income, setIncome] = useState(0)
-  const [expense, setExpense] = useState(0)
   const [userExpenses, setUserExpenses] = useState<ExpenseResponse[]>([])
-  const [transaccion, setTransaccion] = useState<string>('')
-  const [amount, setAmount] = useState<string>('')
-  const [modalVisible, setModalVisible] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<number>(0)
-
   const user = auth.currentUser
 
   useEffect(() => {
     const userId = user?.uid
     if (userId !== undefined) setData(userId)
   }, [user])
-
-  const calculateBalance = (balance: number, amount: number, type: string) => {
-    if (type === 'income') {
-      return balance + amount
-    } else if (type === 'expense') {
-      return balance - amount
-    }
-    return balance
-  }
-
-  const handleTransaction = async () => {
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    if (transaccion === 'income') {
-      setIncome(income + numericAmount)
-      await addIncome()
-    }
-    if (transaccion === 'expense') {
-      setExpense(expense + numericAmount)
-      await addExpense()
-    }
-    setBalance(calculateBalance(balance, numericAmount, transaccion))
-  }
-
-  const verifyAmount = () => {
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      alert('Por favor, ingrese un monto válido mayor que cero.')
-      return
-    }
-    setAmount(amount)
-    handleTransaction()
-  }
-
-  const addIncome = async () => {
-    const userId = user?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    await ApiService.post('/ingreso', {
-      userId: userId,
-      ingreso: numericAmount,
-      montoAnterior: balance,
-    })
-  }
-
-  const addExpense = async () => {
-    const userId = user?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    await ApiService.post('/gasto', {
-      userId: userId,
-      gasto: numericAmount,
-      montoAnterior: balance,
-      categoriaId: selectedCategory,
-    })
-  }
 
   const fetchExpenses = async (userId: string) => {
     try {
@@ -134,8 +63,6 @@ export default function HomePage() {
       .findByUserId(userId)
       .then((res) => res.data)
       .then((data) => {
-        setIncome(data.sumaIngresos)
-        setExpense(data.sumaGastos)
         setBalance(data.balance)
       })
   }
@@ -219,21 +146,7 @@ export default function HomePage() {
     }
   }, [isFocused])
 
-  const data = [
-    { value: 40, color: '#FF6B6B', icon: Heart },
-    { value: 30, color: '#4ECDC4', icon: Wine },
-    { value: 30, color: '#FFD93D', icon: TreePalm },
-  ]
-
-  const colors = chartData.map((item) => item.categoryColor)
   const total = chartData.reduce((sum, item) => sum + item.value, 0)
-  const decimals = useSharedValue(chartData.map((item) => item.value / total))
-
-  const radius = 100
-  const strokeWidth = 20
-  const outerStrokeWidth = 30
-  const gap = 0.01
-
   return (
     <LinearGradient
       colors={['#F9A8D4', '#FCA5A5']}
@@ -352,44 +265,6 @@ export default function HomePage() {
             />
           </CardFooter>
         </Card>
-
-        <Modal transparent={true} visible={modalVisible} animationType="fade">
-          <View className="flex-1 bg-black/50 justify-center items-center">
-            <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
-              <Text className="text-xl font-bold text-gray-800 mb-4">
-                {transaccion === 'income'
-                  ? 'Agregar Ingreso'
-                  : 'Agregar Egreso'}
-              </Text>
-
-              <TextInput
-                placeholder="Ingrese monto"
-                placeholderTextColor="gray"
-                keyboardType="numeric"
-                onChangeText={setAmount}
-                className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
-              />
-              <View className="flex-row justify-between">
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  className="bg-gray-400 rounded-xl px-5 py-3"
-                >
-                  <Text className="text-white font-semibold">Cancelar</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={async () => {
-                    await verifyAmount()
-                    setModalVisible(false)
-                  }}
-                  className="bg-blue-500 rounded-xl px-5 py-3"
-                >
-                  <Text className="text-white font-semibold">Confirmar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </ScrollView>
     </LinearGradient>
   )

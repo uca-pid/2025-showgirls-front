@@ -35,7 +35,7 @@ export default function AddExpensePage() {
   }
 
   const onSubmit = async () => {
-    if (!amount) {
+    if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
     } /* else if (!categoryId) {
