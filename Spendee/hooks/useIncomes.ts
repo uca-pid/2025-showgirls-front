@@ -1,7 +1,7 @@
 import incomeService from '@/services/income.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export default function useExpenses(userId: string) {
+export default function useIncomes(userId: string) {
   const queryClient = useQueryClient()
 
   const { data, refetch, ...rest } = useQuery({
