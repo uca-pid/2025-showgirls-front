@@ -193,7 +193,7 @@ const index = () => {
                           color="#F9A8D4"
                           editable={item.editable}
                           gasto={item.value}
-                          onPress={() =>
+                          onPress={() => {
                             router.push({
                               pathname: '/category/edit-category',
                               params: {
@@ -204,7 +204,7 @@ const index = () => {
                                 categoryId: item.categoryId,
                               },
                             })
-                          }
+                          }}
                         />
                         <View className="position-absolute space-x-2"></View>
                       </CardContent>

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -23,11 +23,12 @@ import { Button } from '@/components/ui/button'
 import { router, useLocalSearchParams } from 'expo-router'
 import ApiService from '../../services/api.service'
 import { toastService } from '@/context/ToastContext'
+import categoryService from '@/services/category.service'
+import expenseService from '@/services/expense.service'
 
 const EditCategory = () => {
   const { categoryName, categoryDescription, categoryIcon, categoryId } =
     useLocalSearchParams()
-
   const [name, setName] = useState(String(categoryName) || '')
   const [description, setDescription] = useState(
     String(categoryDescription) || '',
@@ -56,25 +57,32 @@ const EditCategory = () => {
       })
 
       alert('Categoría modificada con éxito')
-      console.log('Categoría actualizada:', response.data)
 
-      // Volver a la pantalla anterior
       router.back()
     } catch (error) {
-      console.error('Error al modificar la categoría:', error)
       alert('No se pudo modificar la categoría')
     }
   }
   const deleteCategory = async () => {
-    try {
-      const response = await ApiService.delete(`/deleteCategory/${categoryId}`)
-      console.log('Categoría eliminada:', response.data)
-      alert('Categoría eliminada con éxito')
-      router.back()
-    } catch (error) {
-      console.error('Error al eliminar la categoría:', error)
-      alert('No se pudo eliminar la categoría')
-    }
+    Alert.alert(
+      'Eliminar categoría',
+      'Los gastos asociados a esta categoría pasarán a la categoría "Otros" \n¿Seguro que deseas continuar?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar categoría',
+          style: 'destructive',
+          onPress: async () => {
+            await expenseService.edit(Number(categoryId), 7)
+            await categoryService.delete(Number(categoryId))
+            router.back()
+          },
+        },
+      ],
+    )
   }
 
   return (
