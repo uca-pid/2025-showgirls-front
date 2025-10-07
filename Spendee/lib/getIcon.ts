@@ -1,0 +1,49 @@
+import {
+  BookOpen,
+  Bus,
+  Ellipsis,
+  Gamepad2,
+  Heart,
+  House,
+  LucideIcon,
+  Paperclip,
+  Popcorn,
+  Shield,
+  Shuffle,
+  Sigma,
+  Sprout,
+  Sun,
+  TestTube,
+  TreePalm,
+  Users,
+  Utensils,
+  Wine,
+  Wrench,
+} from 'lucide-react-native'
+
+const iconMap: Record<string, LucideIcon> = {
+  bus: Bus,
+  utensils: Utensils,
+  home: House,
+  heart: Heart,
+  gamepad: Gamepad2,
+  book: BookOpen,
+  Wrench: Wrench,
+  Wine: Wine,
+  Sprout: Sprout,
+  Users: Users,
+  TreePalm: TreePalm,
+  TestTube: TestTube,
+  Sun: Sun,
+  Sigma: Sigma,
+  Popcorn: Popcorn,
+  Shuffle: Shuffle,
+  Shield: Shield,
+  Paperclip: Paperclip,
+  '': Ellipsis,
+  'ellipsis-h': Ellipsis,
+}
+
+export function getIcon(name: string): LucideIcon {
+  return iconMap[name] || Ellipsis
+}
