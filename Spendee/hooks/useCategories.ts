@@ -9,7 +9,7 @@ export default function useCategories() {
     queryKey: ['categories'],
   })
 
-  const { mutateAsync: addCategoryMutation } = useMutation({
+  const { mutateAsync: create } = useMutation({
     mutationFn: categoryService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
@@ -20,6 +20,6 @@ export default function useCategories() {
     ...rest,
     categories: data?.data,
     isLoading,
-    addCategoryMutation,
+    create,
   }
 }
