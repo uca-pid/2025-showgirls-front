@@ -1,20 +1,31 @@
-import expenseService from '@/services/expense.service'
+import expenseService, { ExpenseResponse } from '@/services/expense.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+const defaultExpenses: ExpenseResponse[] = []
 
 export default function useExpenses(userId: string) {
   const queryClient = useQueryClient()
 
-  const { data, refetch, ...rest } = useQuery({
-    queryKey: ['expenses'],
-    queryFn: () => expenseService.findByUserId(userId),
+  const {
+    data: expensesData = defaultExpenses,
+    refetch,
+    isLoading,
+    ...rest
+  } = useQuery<ExpenseResponse[]>({
+    queryKey: ['expenses', userId],
+    queryFn: async () => {
+      const res = await expenseService.findByUserId(userId)
+      return res.data
+    },
+    enabled: !!userId,
   })
 
   const { mutateAsync: create } = useMutation({
     mutationFn: expenseService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
     },
   })
 
-  return { expenses: data?.data, refetch, create, ...rest }
+  return { expensesData, refetch, create, isLoading, ...rest }
 }

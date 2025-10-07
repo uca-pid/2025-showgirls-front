@@ -1,20 +1,31 @@
-import incomeService from '@/services/income.service'
+import incomeService, { IncomeResponse } from '@/services/income.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+const defaultIncomes: IncomeResponse[] = []
 
 export default function useIncomes(userId: string) {
   const queryClient = useQueryClient()
 
-  const { data, refetch, ...rest } = useQuery({
-    queryKey: ['incomes'],
-    queryFn: () => incomeService.findByUserId(userId),
+  const {
+    data: incomesData = defaultIncomes,
+    refetch,
+    isLoading,
+    ...rest
+  } = useQuery<IncomeResponse[]>({
+    queryKey: ['incomes', userId],
+    queryFn: async () => {
+      const res = await incomeService.findByUserId(userId)
+      return res.data
+    },
+    enabled: !!userId,
   })
 
   const { mutateAsync: create } = useMutation({
     mutationFn: incomeService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['incomes'] })
+      queryClient.invalidateQueries({ queryKey: ['incomes', userId] })
     },
   })
 
-  return { incomes: data?.data, refetch, create, ...rest }
+  return { incomesData, refetch, create, isLoading, ...rest }
 }

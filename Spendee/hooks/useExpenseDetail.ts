@@ -1,11 +1,29 @@
-import expenseService from '@/services/expense.service'
+import expenseService, { ExpenseResponse } from '@/services/expense.service'
 import { useQuery } from '@tanstack/react-query'
 
+const defaultExpense: ExpenseResponse = {
+  id: 0,
+  gasto: 0,
+  montoAnterior: 0,
+  fecha: new Date(),
+  categoriaId: 0,
+  usuarioId: '',
+}
+
 export default function useExpenseDetail(expenseId: number) {
-  const { data, refetch, ...rest } = useQuery({
+  const {
+    data: expenseDetailData = defaultExpense,
+    refetch,
+    isLoading,
+    ...rest
+  } = useQuery<ExpenseResponse>({
     queryKey: ['expenseDetail', expenseId],
-    queryFn: () => expenseService.findByExpenseId(expenseId),
+    queryFn: async () => {
+      const res = await expenseService.findByExpenseId(expenseId)
+      return res.data
+    },
+    enabled: !!expenseId,
   })
 
-  return { expense: data?.data, refetch, ...rest }
+  return { expenseDetailData, refetch, isLoading, ...rest }
 }

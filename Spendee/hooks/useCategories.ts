@@ -1,11 +1,21 @@
-import categoryService from '@/services/category.service'
+import categoryService, { CategoryResponse } from '@/services/category.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+const defaultCategories: CategoryResponse[] = []
 
 export default function useCategories() {
   const queryClient = useQueryClient()
 
-  const { data, isLoading, ...rest } = useQuery({
-    queryFn: () => categoryService.findMany(),
+  const {
+    data: categoriesData = defaultCategories,
+    isLoading,
+    refetch,
+    ...rest
+  } = useQuery<CategoryResponse[]>({
+    queryFn: async () => {
+      const res = await categoryService.findMany()
+      return res.data
+    },
     queryKey: ['categories'],
   })
 
@@ -16,10 +26,5 @@ export default function useCategories() {
     },
   })
 
-  return {
-    ...rest,
-    categories: data?.data,
-    isLoading,
-    create,
-  }
+  return { categoriesData, isLoading, refetch, create, ...rest }
 }
