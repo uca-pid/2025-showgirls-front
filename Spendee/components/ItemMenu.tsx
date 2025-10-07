@@ -27,13 +27,7 @@ const ItemMenu = ({
         <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
           <Icon color={color} />
           <Text className="text-lg">{text}</Text>
-          {editable && (
-            <Pencil
-              size={18}
-              color="gray"
-              onPress={() => router.push('/category/edit-category')}
-            />
-          )}
+          {editable && <Pencil size={18} color="gray" onPress={onPress} />}
           <Text>${gasto}</Text>
         </View>
         <ChevronRight size={22} color="black" />

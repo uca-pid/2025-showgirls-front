@@ -20,6 +20,13 @@ class ExpenseService {
   public async create(body: any) {
     return await ApiService.post('/gasto', body)
   }
+
+  public async edit(formCategoryId: number, toCategoryId: number) {
+    return await ApiService.put(`/moverGastosCategoria/`, {
+      categoriaOrigenId: formCategoryId,
+      categoriaDestinoId: toCategoryId,
+    })
+  }
 }
 
 const expenseService = new ExpenseService()

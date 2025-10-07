@@ -23,6 +23,9 @@ class CategoryService {
   }) {
     return await ApiService.post(`/customCategory`, category)
   }
+  public async delete(categoryId: number) {
+    return await ApiService.delete(`/deleteCategory/${categoryId}`)
+  }
 }
 
 const categoryService = new CategoryService()

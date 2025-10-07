@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { auth } from '@/firebase.config'
 import ApiService from '../../services/api.service'
 import { toastService } from '@/context/ToastContext'
+import categoryService from '@/services/category.service'
 
 const index = () => {
   const [categoryName, setCategoryName] = useState('')
@@ -45,8 +46,8 @@ const index = () => {
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
-      await ApiService.post('/customCategory', {
-        categoria: categoryName,
+      await categoryService.create({
+        nombre: categoryName,
         icono: icon,
         color: 'blue',
         descripcion: description,
