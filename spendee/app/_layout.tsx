@@ -62,16 +62,40 @@ export default function RootLayout() {
                 options={{ title: 'Mis Gastos' }}
               />
               <Stack.Screen
-                name="expense/modal"
-                options={{ headerShown: false, presentation: 'modal' }}
+                name="expense/modal/add"
+                options={{
+                  headerShown: false,
+                  presentation: 'formSheet',
+                  sheetAllowedDetents: [0.5],
+                  sheetGrabberVisible: true,
+                }}
+              />
+              <Stack.Screen
+                name="expense/modal/categories-list"
+                options={{
+                  headerShown: false,
+                  presentation: 'modal',
+                }}
               />
               <Stack.Screen
                 name="expense/[id]"
                 options={{ title: 'Detalle del Gasto' }}
               />
               <Stack.Screen
-                name="income/modal"
-                options={{ headerShown: false, presentation: 'modal' }}
+                name="income/modal/add"
+                options={{
+                  headerShown: false,
+                  presentation: 'formSheet',
+                  sheetAllowedDetents: [0.5],
+                  sheetGrabberVisible: true,
+                }}
+              />
+              <Stack.Screen
+                name="income/modal/categories-list"
+                options={{
+                  headerShown: false,
+                  presentation: 'modal',
+                }}
               />
             </Stack>
           </ToastProvider>

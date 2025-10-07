@@ -53,7 +53,7 @@ const iconNameToEmoji: Record<string, LucideIcon> = {
 
 const CategoriesList = () => {
   const { categories } = useCategories()
-  const { expense } = useLocalSearchParams()
+  const { income } = useLocalSearchParams()
 
   return (
     <View className="w-full h-full bg-background items-center py-4">
@@ -76,9 +76,9 @@ const CategoriesList = () => {
               text={item.nombre}
               badgeText={`$ ${item.totalGastos.toString()}`}
               onPress={() =>
-                router.replace({
+                router.dismissTo({
                   pathname: '/income/modal/add',
-                  params: { categoryId: item.id, expense: expense },
+                  params: { categoryId: item.id, income: income },
                 })
               }
             />

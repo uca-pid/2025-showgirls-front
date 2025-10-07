@@ -49,8 +49,6 @@ export default function AddExpensePage() {
           montoAnterior: (await balanceData).data.balance,
           /* categoriaId: Number(categoryId), */
         })
-        const incomes = await incomeService.findByUserId(userId)
-        console.log(incomes.data[incomes.data.length - 1])
         router.dismissAll()
         router.replace('/')
       } catch (error) {
@@ -74,7 +72,7 @@ export default function AddExpensePage() {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <Card className="bg-background w-full h-full py-6 border-0">
+          <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
                 className="text-lg color-pink-300"
@@ -137,7 +135,9 @@ export default function AddExpensePage() {
                 )}
                 <ChevronDown color="white" size={18} />
               </Button> */}
-              {error && <Text className="text-red-700 text-base">{error}</Text>}
+              {error && (
+                <Text className="text-red-700 text-base ">{error}</Text>
+              )}
               <Button className="w-full bg-pink-300" onPress={onSubmit}>
                 <Text>Añadir Ingreso</Text>
               </Button>

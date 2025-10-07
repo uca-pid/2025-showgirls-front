@@ -75,7 +75,7 @@ export default function AddExpensePage() {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <Card className="bg-background w-full h-full py-6 border-0">
+          <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
                 className="text-lg color-pink-300"
