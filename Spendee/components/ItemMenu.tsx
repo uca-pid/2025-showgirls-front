@@ -1,8 +1,6 @@
 import { View, Text, Pressable } from 'react-native'
 import React from 'react'
-import { ChevronRight, LucideIcon, Pencil } from 'lucide-react-native'
-import { Button } from './ui/button'
-import { router } from 'expo-router'
+import { LucideIcon, Pencil } from 'lucide-react-native'
 
 export interface IconButtonProps {
   text: string
@@ -11,6 +9,7 @@ export interface IconButtonProps {
   color: string
   editable?: boolean
   gasto?: number
+  onEdit?: () => void
 }
 
 const ItemMenu = ({
@@ -20,19 +19,37 @@ const ItemMenu = ({
   color,
   editable,
   gasto,
+  onEdit,
 }: IconButtonProps) => {
   return (
-    <Pressable onPress={onPress}>
-      <View className="flex-row items-center">
-        <View className="pr-8 bg-foreground flex-row items-center gap-4 flex-1">
+    <View className="flex-row items-center bg-foreground px-4 py-3 rounded-2xl gap-3">
+      <Pressable onPress={onPress} className="flex-1">
+        <View className="flex-row items-center gap-2">
           <Icon color={color} />
-          <Text className="text-lg">{text}</Text>
-          {editable && <Pencil size={18} color="gray" onPress={onPress} />}
-          <Text>${gasto}</Text>
+          <View className="flex-1 flex-row items-center gap-2">
+            <Text className="text-lg flex-1" numberOfLines={1}>
+              {text}
+            </Text>
+            {editable && (
+              <Pressable
+                onPress={(event) => {
+                  event.stopPropagation?.()
+                  onEdit?.()
+                }}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={`Editar ${text}`}
+              >
+                <Pencil size={18} color="gray" />
+              </Pressable>
+            )}
+          </View>
         </View>
-        <ChevronRight size={22} color="black" />
+      </Pressable>
+      <View className="px-3 py-1 rounded-full bg-secondary/20 min-w-[70px] items-end">
+        <Text className="text-base font-medium">${gasto ?? 0}</Text>
       </View>
-    </Pressable>
+    </View>
   )
 }
 
