@@ -75,6 +75,10 @@ function RootNavigator() {
         options={{ title: 'Detalle del Gasto' }}
       />
       <Stack.Screen
+        name="expense/perCategorie/[id]"
+        options={{ title: 'Gastos por categoría' }}
+      />
+      <Stack.Screen
         name="income/modal/add"
         options={{
           headerShown: false,

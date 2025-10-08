@@ -109,9 +109,9 @@ const index = () => {
             c.totalGastos ?? c.value ?? c.amount ?? c.total ?? c.monto ?? 0,
           ),
           categoryColor: c.color ?? '#A78BFA',
-          categoryName: c.categoria ?? c.name ?? '',
+          categoryName: c.categoria ?? c.nombre ?? '',
           categoryId: c.id ?? c._id ?? null,
-          editable: c.editable ?? true,
+          editable: c.editable,
         }))
 
         if (mounted) setChartData(mapped)
@@ -193,7 +193,7 @@ const index = () => {
                           color="#F9A8D4"
                           editable={item.editable}
                           gasto={item.value}
-                          onPress={() => {
+                          onEdit={() => {
                             router.push({
                               pathname: '/category/edit-category',
                               params: {
@@ -202,6 +202,20 @@ const index = () => {
                                   item.categoryDescription ?? '',
                                 categoryIcon: item.categoryIcon,
                                 categoryId: item.categoryId,
+                              },
+                            })
+                          }}
+                          onPress={() => {
+                            if (!item.categoryId) {
+                              console.warn('No category id provided for item', item)
+                              return
+                            }
+
+                            router.push({
+                              pathname: '/expense/perCategorie/[id]',
+                              params: {
+                                id: String(item.categoryId),
+                                name: item.categoryName ?? '',
                               },
                             })
                           }}

@@ -21,6 +21,14 @@ class ExpenseService {
     return await ApiService.post('/gasto', body)
   }
 
+  public async update(expenseId: number, body: any) {
+    return await ApiService.put(`/gasto/${expenseId}`, body)
+  }
+  
+  public async deleteExpense(expenseId: number) {
+    return await ApiService.delete(`/gasto/${expenseId}`)
+  }
+
   public async edit(formCategoryId: number, toCategoryId: number) {
     return await ApiService.put(`/moverGastosCategoria/`, {
       categoriaOrigenId: formCategoryId,
