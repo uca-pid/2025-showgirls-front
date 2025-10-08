@@ -1,8 +1,9 @@
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import { Home, LucideIcon, User } from 'lucide-react-native'
-import { View, TouchableOpacity, Pressable } from 'react-native'
 import { Text } from '@/components/ui/text'
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
+import { BlurView } from 'expo-blur'
+import { Home, LucideIcon, User } from 'lucide-react-native'
 import React from 'react'
+import { Pressable } from 'react-native'
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const icons: Record<string, LucideIcon> = {
@@ -10,7 +11,10 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     'profile/index': User,
   }
   return (
-    <View className="flex-row absolute justify-between items-center bg-black bottom-0 rounded-[30px] shadow-color: #000 shadow-offset: {width: 0, height: 10} py-[10px] m-10 ">
+    <BlurView
+      experimentalBlurMethod="dimezisBlurView"
+      className=" flex-row absolute justify-between items-center border-[0.2px] border-black bottom-0 overflow-hidden rounded-[30px] py-[13px] m-10"
+    >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key]
         const label =
@@ -49,10 +53,10 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             testID={options.tabBarButtonTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            className="flex-1 justify-center items-center gap-1"
+            className="flex-1 justify-center items-center"
           >
             {React.createElement(icons[route.name], {
-              color: isFocused ? '#F9A8D4' : '#fff',
+              color: isFocused ? '#f9a8d4' : '#fff',
             })}
             <Text className={isFocused ? 'text-pink-300' : 'text-white'}>
               {label.toString()}
@@ -60,6 +64,6 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           </Pressable>
         )
       })}
-    </View>
+    </BlurView>
   )
 }
