@@ -1,10 +1,7 @@
-import React from 'react'
-import { Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { PortalHost } from '@rn-primitives/portal'
-import { useAuth } from '@/context/AuthContext'
 import { TabBar } from '@/components/TabBar'
+import { useAuth } from '@/context/AuthContext'
+import { Tabs } from 'expo-router'
+import React from 'react'
 
 export default function TabsLayout() {
   const { user, loading } = useAuth()
@@ -18,8 +15,6 @@ export default function TabsLayout() {
           tabBarLabel: 'Home',
           headerTitleAlign: 'left',
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: '#F9A8D4' },
-          headerShown: true,
         }}
       />
       <Tabs.Screen

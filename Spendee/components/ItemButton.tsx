@@ -1,7 +1,7 @@
-import { View, Pressable } from 'react-native'
-import React from 'react'
-import { ChevronRight, Ellipsis, LucideIcon, Pencil } from 'lucide-react-native'
 import { router } from 'expo-router'
+import { ChevronRight, Ellipsis, LucideIcon, Pencil } from 'lucide-react-native'
+import React from 'react'
+import { Pressable, View } from 'react-native'
 import { Badge } from './ui/badge'
 import { Text } from './ui/text'
 
@@ -39,7 +39,11 @@ const ItemButton = ({
           className={`pr-8 bg-${background} flex-row items-center gap-4 flex-1 `}
         >
           <IconLeft color={iconLeftColor} />
-          <Text className="text-lg">{text}</Text>
+          <Text
+            className={`text-lg text-${background === 'foreground' ? 'black' : 'white'}`}
+          >
+            {text}
+          </Text>
           {editable && (
             <Pencil
               size={18}
