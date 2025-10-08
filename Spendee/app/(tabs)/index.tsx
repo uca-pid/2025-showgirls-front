@@ -10,9 +10,13 @@ import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
 import { getIcon } from '@/lib/getIcon'
-import { Link, router } from 'expo-router'
-import { BanknoteArrowDown, BanknoteArrowUp } from 'lucide-react-native'
-import { FlatList, ScrollView, View } from 'react-native'
+import { router } from 'expo-router'
+import {
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  ChevronRight,
+} from 'lucide-react-native'
+import { FlatList, Pressable, ScrollView, View } from 'react-native'
 
 const actions = [
   {
@@ -35,21 +39,22 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
-  const { categoriesData } = useCategories()
-  const { balanceData } = useBalance(user?.uid ?? '')
-  const { expensesData } = useExpenses(user?.uid ?? '', 5)
-  const { chartData, isLoading } = useChartData()
+  const { categoriesData, isLoading: loadingCategories } = useCategories()
+  const { balanceData, isLoading: loadingBalance } = useBalance(user?.uid ?? '')
+  const { expensesData, isLoading: loadingExpenses } = useExpenses(
+    user?.uid ?? '',
+    5,
+  )
+  const { chartData, isLoading: loadingChartData } = useChartData()
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       className="w-screen h-screen"
-      contentContainerClassName="align-center items-center gap-4 p-6"
+      contentContainerClassName="align-center items-center gap-4 p-6 pb-[100px]"
     >
-      <Card
-        className={`w-full border-0 rounded-[30px] p-6 gap-2 justify-center`}
-      >
+      <Card className="w-full border-0 rounded-[30px] p-6 gap-2 justify-center">
         <CardContent className="gap-2 p-0 flex-row justify-between">
           <View>
             <Text className="text-muted-foreground">Tu balance</Text>
@@ -61,11 +66,13 @@ export default function HomePage() {
               }
               numberOfLines={1}
             >
-              $
-              {new Intl.NumberFormat('es-AR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(balanceData.balance)}
+              {!loadingBalance
+                ? '$ ' +
+                  new Intl.NumberFormat('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(balanceData.balance)
+                : '...'}
             </Text>
           </View>
           <Avatar alt="avatar" className="size-16">
@@ -78,18 +85,17 @@ export default function HomePage() {
         </CardContent>
       </Card>
 
-      <Card className="w-full border-0 rounded-[30px] p-6 gap-2 justify-center">
-        <Link href="/expense" asChild>
-          <Text className="text-muted-foreground">Mis gastos</Text>
-        </Link>
-        <CardContent
-          className="justify-center items-center"
-          onTouchEnd={() => router.push('/expense')}
-        >
+      <Card
+        className="w-full border-0 rounded-[30px] p-6 gap-2 justify-center"
+        onPress={() => router.push('/expense')}
+      >
+        <Text className="text-muted-foreground">Mis gastos</Text>
+
+        <CardContent className="justify-center items-center gap-4">
           <DonutChart
             data={chartData}
             centerText={
-              isLoading
+              loadingChartData
                 ? ''
                 : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
             }
@@ -97,61 +103,104 @@ export default function HomePage() {
             size={210}
             strokeWidth={20}
           />
+          <View className="flex-row items-center">
+            <Text className="text-muted-foreground">
+              Ver gastos por categoría
+            </Text>
+            <ChevronRight color="gray" />
+          </View>
         </CardContent>
       </Card>
-      <FlatList
-        scrollEnabled={false}
-        data={expensesData}
-        renderItem={({ item, index }) => (
-          <Card
-            className={`border-0 flex-row w-full justify-between p-4 items-center mb-${index !== expensesData.length - 1 ? '2' : '[120px]'}`}
-          >
-            <View className="gap-1">
-              <View className="flex-row items-center gap-2">
-                <Text>
-                  Gasto en{' '}
-                  {
-                    categoriesData.find((cat) => cat.id === item.categoriaId)
-                      ?.nombre
-                  }
+      {!loadingExpenses && (
+        <View className="gap-4 w-full">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-white text-2xl text-left">
+              Últimos gastos
+            </Text>
+            <Pressable onPress={() => router.push('/expense')}>
+              <View className="flex-row items-center">
+                <Text className="text-muted-foreground text-base text-right">
+                  Ver todos
                 </Text>
+                <ChevronRight color="gray" />
               </View>
-              <Text className="text-muted-foreground">
-                {new Date(item.fecha).toLocaleDateString('en-GB')}
-              </Text>
-            </View>
-            <View className="flex-row items-center gap-2">
-              <Icon
-                size={20}
-                color={
-                  categoriesData.find((cat) => cat.id === item.categoriaId)
-                    ?.color
-                }
-                as={getIcon(
-                  categoriesData.find((cat) => cat.id === item.categoriaId)
-                    ?.icono ?? '',
-                )}
-              />
-              <Badge variant="outline">
-                <Text className="text-sm">{String('$' + item.gasto)}</Text>
-              </Badge>
-            </View>
-          </Card>
-          //   <ItemButton
-          //     key={item.id}
-          //     text={String('$ ' + item.gasto)}
-          //     borderBottom={index !== expensesData.length - 1}
-          //     iconLeft={getIcon(
-          //       categoriesData.find((cat) => cat.id === item.categoriaId)
-          //         ?.icono ?? '',
-          //     )}
-          //     iconLeftColor={
-          //       categoriesData.find((cat) => cat.id === item.categoriaId)
-          //         ?.color
-          //     }
-          //   />
-        )}
-      />
+            </Pressable>
+          </View>
+          <FlatList
+            scrollEnabled={false}
+            data={expensesData}
+            renderItem={({ item, index }) => (
+              <Pressable
+                onPress={() => {
+                  router.push({
+                    pathname: '/expense/[id]',
+                    params: { id: item.id },
+                  })
+                }}
+              >
+                <Card
+                  className="border-0 flex-row w-full justify-between p-4 items-center mb-2"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/expense/[id]',
+                      params: { id: item.id },
+                    })
+                  }
+                >
+                  <View className="gap-1">
+                    <View className="flex-row items-center gap-2">
+                      <Text>
+                        Gasto en{' '}
+                        {
+                          categoriesData.find(
+                            (cat) => cat.id === item.categoriaId,
+                          )?.nombre
+                        }
+                      </Text>
+                    </View>
+                    <Text className="text-muted-foreground">
+                      {new Date(item.fecha).toLocaleDateString('en-GB')}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center gap-2">
+                    <Icon
+                      size={20}
+                      color={
+                        categoriesData.find(
+                          (cat) => cat.id === item.categoriaId,
+                        )?.color
+                      }
+                      as={getIcon(
+                        categoriesData.find(
+                          (cat) => cat.id === item.categoriaId,
+                        )?.icono ?? '',
+                      )}
+                    />
+                    <Badge variant="outline">
+                      <Text className="text-base">
+                        {String('-$' + item.gasto)}
+                      </Text>
+                    </Badge>
+                  </View>
+                </Card>
+              </Pressable>
+              //   <ItemButton
+              //     key={item.id}
+              //     text={String('$ ' + item.gasto)}
+              //     borderBottom={index !== expensesData.length - 1}
+              //     iconLeft={getIcon(
+              //       categoriesData.find((cat) => cat.id === item.categoriaId)
+              //         ?.icono ?? '',
+              //     )}
+              //     iconLeftColor={
+              //       categoriesData.find((cat) => cat.id === item.categoriaId)
+              //         ?.color
+              //     }
+              //   />
+            )}
+          />
+        </View>
+      )}
     </ScrollView>
   )
 }

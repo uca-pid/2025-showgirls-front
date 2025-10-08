@@ -53,7 +53,10 @@ function RootNavigator() {
           headerBackTitle: 'Volver',
         }}
       />
-      <Stack.Screen name="expense/index" options={{ title: 'Mis Gastos' }} />
+      <Stack.Screen
+        name="expense/index"
+        options={{ title: 'Mis Gastos', headerBackTitle: 'Home' }}
+      />
       <Stack.Screen
         name="expense/modal/add"
         options={{

@@ -25,7 +25,7 @@ export default function AddExpensePage() {
     var userId = user.uid
   }
   const router = useRouter()
-  const { categories } = useCategories()
+  const { categoriesData } = useCategories()
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
@@ -124,11 +124,12 @@ export default function AddExpensePage() {
                 }
               >
                 <Text className="text-base">Categoría: </Text>
-                {categories && categoryId ? (
+                {categoriesData && categoryId ? (
                   <Text className="text-base font-semibold">
                     {
-                      categories.find((cat) => cat.id === Number(categoryId))
-                        ?.nombre
+                      categoriesData.find(
+                        (cat) => cat.id === Number(categoryId),
+                      )?.nombre
                     }
                   </Text>
                 ) : (
