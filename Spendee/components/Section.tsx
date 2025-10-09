@@ -32,12 +32,12 @@ const Section = ({
             <View className="flex-row items-center justify-between">
               <Text className="text-white text-2xl text-left">{title}</Text>
               <Pressable onPress={onActionPress}>
-                <View className="flex-row items-center">
+                <View className="flex-row items-center gap-1">
                   <Text className="text-muted-foreground text-base text-right">
                     {actionText}
                   </Text>
                   {actionIcon && (
-                    <Icon as={actionIcon} size={24} color="gray" />
+                    <Icon as={actionIcon} size={22} color="gray" />
                   )}
                 </View>
               </Pressable>

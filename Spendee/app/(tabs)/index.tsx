@@ -1,5 +1,6 @@
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
+import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
@@ -16,12 +17,13 @@ import {
   BanknoteArrowDown,
   BanknoteArrowUp,
   ChevronRight,
+  Plus,
 } from 'lucide-react-native'
 import { FlatList, View } from 'react-native'
 
 const actions = [
   {
-    text: 'Ingresar',
+    text: 'Ingreso',
     textColor: 'white',
     icon: BanknoteArrowUp,
     onPress: () => {
@@ -29,7 +31,7 @@ const actions = [
     },
   },
   {
-    text: 'Egresar',
+    text: 'Egreso',
     textColor: 'white',
     icon: BanknoteArrowDown,
     onPress: () => {
@@ -48,60 +50,88 @@ export default function HomePage() {
   )
   const { chartData, isLoading: loadingChartData } = useChartData()
 
+  const formattedBalance = new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(balanceData.balance)
+
   return (
     <Container>
-      <SectionCard activity={loadingBalance} justify="between" flex="row">
-        <View>
-          <Text className="text-muted-foreground">Tu balance</Text>
-          <Text
-            className={
-              balanceData.balance.toString().length > 8
-                ? 'text-2xl'
-                : 'text-4xl'
-            }
-            numberOfLines={1}
-          >
-            {!loadingBalance
-              ? '$ ' +
-                new Intl.NumberFormat('es-AR', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(balanceData.balance)
-              : '...'}
-          </Text>
-        </View>
-        <Avatar alt="avatar" className="size-16">
-          <AvatarImage
-            source={{
-              uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
-            }}
-          />
-        </Avatar>
-      </SectionCard>
+      <Section>
+        <SectionCard activity={loadingBalance} justify="between" flex="row">
+          <View>
+            <Text className="text-muted-foreground">Tu balance</Text>
+            <Text
+              className={
+                balanceData.balance.toString().length > 8
+                  ? 'text-2xl'
+                  : 'text-4xl'
+              }
+              numberOfLines={1}
+            >
+              {'$ ' + formattedBalance}
+            </Text>
+          </View>
+          <Avatar alt="avatar" className="size-16">
+            <AvatarImage
+              source={{
+                uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
+              }}
+            />
+          </Avatar>
+        </SectionCard>
+      </Section>
 
-      <SectionCard
-        activity={loadingBalance}
-        onPress={() => router.push('/expense')}
+      <Section
+        title="Acciones Rápidas"
+        actionIcon={Plus}
+        actionText="Añadir"
+        onActionPress={() => {}}
       >
-        <Text className="text-muted-foreground">Mis gastos</Text>
-        <DonutChart
-          data={chartData}
-          centerText={
-            loadingChartData
-              ? ''
-              : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
-          }
-          centerTextColor="white"
-          size={210}
-          strokeWidth={20}
-        />
-        <View className="flex-row items-center">
-          <Text className="text-muted-foreground">
-            Ver gastos por categoría
-          </Text>
-          <ChevronRight color="gray" />
-        </View>
-      </SectionCard>
+        <SectionCard flex="row">
+          <FlatList
+            contentContainerClassName="justify-between"
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={actions}
+            renderItem={({ item }) => (
+              <IconButton
+                text={item.text}
+                textColor={item.textColor}
+                icon={item.icon}
+                onPress={item.onPress}
+              />
+            )}
+          />
+        </SectionCard>
+      </Section>
+
+      <Section title="Mis Gastos">
+        <SectionCard
+          activity={loadingBalance}
+          onPress={() => router.push('/expense')}
+        >
+          <Text className="text-muted-foreground">Mis gastos</Text>
+          <DonutChart
+            data={chartData}
+            centerText={
+              loadingChartData
+                ? ''
+                : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
+            }
+            centerTextColor="white"
+            size={210}
+            strokeWidth={20}
+          />
+          <View className="flex-row items-center">
+            <Text className="text-muted-foreground">
+              Ver gastos por categoría
+            </Text>
+            <ChevronRight color="gray" />
+          </View>
+        </SectionCard>
+      </Section>
+
       <Section
         title="Últimos gastos"
         actionText="Ver gastos"

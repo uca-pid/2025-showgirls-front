@@ -19,12 +19,14 @@ const IconButton = ({
   className,
 }: IconButtonProps) => {
   return (
-    <View className="flex-col items-center">
+    <View className="flex-col items-center w-[100px]">
       <Pressable onPress={onPress} className="items-center">
-        <View className={cn('p-4 rounded-full bg-pink-100 mb-2', className)}>
+        <View className={cn('p-4 rounded-full bg-pink-300/30 mb-2', className)}>
           <Icon color={'#F9A8D4'} />
         </View>
-        <Text className={`text-${textColor}`}>{text}</Text>
+        <Text className={`text-${textColor}`} numberOfLines={1}>
+          {text}
+        </Text>
       </Pressable>
     </View>
   )
