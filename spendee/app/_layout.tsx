@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { ToastProvider } from '@/context/ToastContext'
+import { auth } from '@/firebase.config'
 import '@/global.css'
 import {
   DarkTheme,
@@ -8,14 +9,28 @@ import {
 } from '@react-navigation/native'
 import { PortalHost } from '@rn-primitives/portal'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Stack } from 'expo-router'
-import React from 'react'
+import { router, Stack } from 'expo-router'
+import { onAuthStateChanged } from 'firebase/auth'
+import React, { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
   const queryClient = new QueryClient()
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace('/')
+      } else {
+        router.replace('./sign-in')
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
   return (
     <ThemeProvider value={theme}>
       <AuthProvider>

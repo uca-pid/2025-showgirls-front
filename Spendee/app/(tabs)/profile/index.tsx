@@ -7,34 +7,25 @@ import { router } from 'expo-router'
 import { ChevronRight, LogOut, User2 } from 'lucide-react-native'
 import { auth } from '@/firebase.config'
 import userService from '@/services/user.service'
+import { useAuth } from '@/context/AuthContext'
+import IconButton from '@/components/IconButton'
+import ItemCard from '@/components/ItemCard'
 
 export default function ProfilePage() {
-  const user = auth.currentUser
+  const { user } = useAuth()
 
   const menuItems = [
     {
       title: 'Editar Perfil',
-      description: user?.email,
-      icon: <User2 size={25} color="white" />,
+      description: user !== null && user.email ? user.email : '',
+      icon: User2,
       action: () => router.push('../edit-profile'),
     },
-    /**
-     * 
-    {
-      title: "Notificaciones",
-      description: "Mute",
-      icon: <BellDot size={25} color="white" />,
-    },
-    {
-      title: "Configuración",
-      description: "Seguridad, Privacidad",
-      icon: <Settings size={25} color="white" />,
-    },
-    */
+
     {
       title: 'Cerrar Sesión',
       description: 'Salir de la cuenta',
-      icon: <LogOut size={25} color="white" />,
+      icon: LogOut,
       action: () => handleSignOut(),
       variant: 'destructive',
     },
@@ -84,42 +75,12 @@ export default function ProfilePage() {
         className="w-screen p-4"
         data={menuItems}
         renderItem={({ item, index }) => (
-          <Pressable onPress={item.action}>
-            <Card
-              className="rounded-none border-0 relative"
-              style={
-                index === 0 && menuItems.length > 1
-                  ? {
-                      borderTopLeftRadius: 30,
-                      borderTopRightRadius: 30,
-                      borderTopWidth: 0,
-                    }
-                  : index === menuItems.length - 1 && menuItems.length > 1
-                    ? {
-                        borderBottomLeftRadius: 30,
-                        borderBottomRightRadius: 30,
-                      }
-                    : menuItems.length === 1
-                      ? { borderRadius: 30 }
-                      : {}
-              }
-              key={index}
-            >
-              {index !== 0 && menuItems.length > 1 ? (
-                <View className="absolute border-t-[1.2px] border-secondary w-[90%] top-0 left-[5%]"></View>
-              ) : (
-                <></>
-              )}
-              <CardContent className="flex-row justify-between items-center">
-                {item.icon}
-                <View className="w-4/5 pl-4">
-                  <Text className="text-lg font-medium">{item.title}</Text>
-                  <Text className="color-gray-500">{item.description}</Text>
-                </View>
-                <ChevronRight size={22} color="white" />
-              </CardContent>
-            </Card>
-          </Pressable>
+          <ItemCard
+            title={item.title}
+            description={item.description}
+            icon={item.icon}
+            onPress={item.action}
+          />
         )}
       />
     </View>
