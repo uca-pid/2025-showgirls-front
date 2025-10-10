@@ -8,7 +8,7 @@ type IconType = React.ComponentType<{ size?: number; color?: string }>
 
 type DonutSegment = {
   value: number
-  categoryColor?: string
+  color?: string
   icon?: IconType
 }
 
@@ -51,7 +51,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke={segment.categoryColor ?? '#000'}
+                stroke={segment.color ?? '#000'}
                 strokeWidth={strokeWidth}
                 strokeDasharray={`${dash} ${gap}`}
                 strokeDashoffset={strokeDashoffset}
