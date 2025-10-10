@@ -18,7 +18,6 @@ export default function useExpenses(
   } = useQuery<ExpenseResponse[]>({
     queryKey: ['expenses', userId, limit, order],
     queryFn: async () => {
-      console.log(limit, order)
       const res = await expenseService.findByUserId(userId, limit, order)
       return res.data
     },
