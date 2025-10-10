@@ -17,6 +17,7 @@ export default function useCategories() {
       return res.data
     },
     queryKey: ['categories'],
+    refetchOnMount: false,
   })
 
   const { mutateAsync: create } = useMutation({

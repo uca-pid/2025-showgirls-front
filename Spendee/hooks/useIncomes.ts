@@ -18,6 +18,7 @@ export default function useIncomes(userId: string) {
       return res.data
     },
     enabled: !!userId,
+    refetchOnMount: false,
   })
 
   const { mutateAsync: create } = useMutation({

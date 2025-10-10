@@ -69,6 +69,7 @@ export default function useChartData() {
         icon: iconNameToEmoji[item.icono] || Ellipsis,
       }))
     },
+    refetchOnMount: false,
   })
 
   return { chartData, isLoading, refetch, ...rest }

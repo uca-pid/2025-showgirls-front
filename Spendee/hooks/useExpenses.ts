@@ -21,6 +21,7 @@ export default function useExpenses(
       const res = await expenseService.findByUserId(userId, limit, order)
       return res.data
     },
+    refetchOnMount: false,
   })
 
   const { mutateAsync: create } = useMutation({

@@ -18,6 +18,7 @@ export default function useBalance(userId: string) {
     queryFn: () => balanceService.findByUserId(userId),
     select: (response) => response.data,
     enabled: !!userId,
+    refetchOnMount: false,
   })
 
   return { balanceData, refetch, isLoading, ...rest }

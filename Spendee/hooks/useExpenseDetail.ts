@@ -23,6 +23,7 @@ export default function useExpenseDetail(expenseId: number) {
       return res.data
     },
     enabled: !!expenseId,
+    refetchOnMount: false,
   })
 
   return { expenseDetailData, refetch, isLoading, ...rest }
