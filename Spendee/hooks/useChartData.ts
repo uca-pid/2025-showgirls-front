@@ -48,11 +48,9 @@ const iconNameToEmoji: Record<string, LucideIcon> = {
 }
 
 export interface ChartData {
-  categoryIcon: LucideIcon
   value: number
-  categoryColor: string
-  categoryName: string
-  categoryId: number
+  segmentColor: string
+  icon: LucideIcon
 }
 
 export default function useChartData() {
@@ -66,11 +64,9 @@ export default function useChartData() {
     queryFn: async () => {
       const res = await categoryService.findMany()
       return res.data.map((item: any) => ({
-        categoryIcon: iconNameToEmoji[item.icono] || Ellipsis,
         value: Number(item.totalGastos ?? 0),
-        categoryColor: item.color ?? '#000000',
-        categoryName: item.nombre ?? 'Sin nombre',
-        categoryId: item.id,
+        segmentColor: item.color ?? '#000000',
+        icon: iconNameToEmoji[item.icono] || Ellipsis,
       }))
     },
   })

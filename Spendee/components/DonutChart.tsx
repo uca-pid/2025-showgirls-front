@@ -1,15 +1,14 @@
 import React from 'react'
 import { View } from 'react-native'
 
+import { LucideIcon } from 'lucide-react-native'
 import Svg, { Circle, G } from 'react-native-svg'
 import { Text } from './ui/text'
 
-type IconType = React.ComponentType<{ size?: number; color?: string }>
-
 type DonutSegment = {
   value: number
-  color?: string
-  icon?: IconType
+  segmentColor?: string
+  icon?: LucideIcon
 }
 
 type DonutChartProps = {
@@ -34,6 +33,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const total = data.reduce((acc, d) => acc + (d.value || 0), 0)
 
   let cumulative = 0
+
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size}>
@@ -51,7 +51,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke={segment.color ?? '#000'}
+                stroke={segment.segmentColor}
                 strokeWidth={strokeWidth}
                 strokeDasharray={`${dash} ${gap}`}
                 strokeDashoffset={strokeDashoffset}
