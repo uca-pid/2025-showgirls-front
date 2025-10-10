@@ -3,7 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const defaultExpenses: ExpenseResponse[] = []
 
-export default function useExpenses(userId: string, limit?: number) {
+export default function useExpenses(
+  userId: string,
+  limit?: number,
+  order: 'asc' | 'desc' = 'asc',
+) {
   const queryClient = useQueryClient()
 
   const {
@@ -12,18 +16,20 @@ export default function useExpenses(userId: string, limit?: number) {
     isLoading,
     ...rest
   } = useQuery<ExpenseResponse[]>({
-    queryKey: ['expenses', userId, limit],
+    queryKey: ['expenses', userId, limit, order],
     queryFn: async () => {
-      const res = await expenseService.findByUserId(userId)
-      return limit ? res.data.slice(0, limit) : res.data
+      console.log(limit, order)
+      const res = await expenseService.findByUserId(userId, limit, order)
+      return res.data
     },
-    enabled: !!userId,
   })
 
   const { mutateAsync: create } = useMutation({
     mutationFn: expenseService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses', userId, limit] })
+      queryClient.invalidateQueries({
+        queryKey: ['expenses', userId, limit, order],
+      })
     },
   })
 

@@ -47,6 +47,7 @@ export default function HomePage() {
   const { expensesData, isLoading: loadingExpenses } = useExpenses(
     user?.uid ?? '',
     5,
+    'desc',
   )
   const { chartData, isLoading: loadingChartData } = useChartData()
 
@@ -111,7 +112,16 @@ export default function HomePage() {
           activity={loadingBalance}
           onPress={() => router.push('/expense')}
         >
-          <Text className="text-muted-foreground">Mis gastos</Text>
+          <View className="flex-row items-center gap-2 w-full flex-wrap">
+            <View className="rounded-full w-2 h-2 bg-red-500" />
+            <Text className="text-muted-foreground">Mis gastos</Text>
+            <View className="rounded-full w-2 h-2 bg-red-500" />
+            <Text className="text-muted-foreground">Mis gastos</Text>
+            <View className="rounded-full w-2 h-2 bg-red-500" />
+            <Text className="text-muted-foreground">Mis gastos</Text>
+            <View className="rounded-full w-2 h-2 bg-red-500" />
+            <Text className="text-muted-foreground">Mis gastos</Text>
+          </View>
           <DonutChart
             data={chartData}
             centerText={

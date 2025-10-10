@@ -10,8 +10,14 @@ export interface ExpenseResponse {
 }
 
 class ExpenseService {
-  public async findByUserId(userId: string) {
-    return await ApiService.get<ExpenseResponse[]>(`/gasto/${userId}`)
+  public async findByUserId(
+    userId: string,
+    limit: number | undefined,
+    order: string,
+  ) {
+    return await ApiService.get<ExpenseResponse[]>(
+      `/gasto/${userId}?limit=${limit}&order=${order}`,
+    )
   }
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
@@ -24,7 +30,7 @@ class ExpenseService {
   public async update(expenseId: number, body: any) {
     return await ApiService.put(`/gasto/${expenseId}`, body)
   }
-  
+
   public async deleteExpense(expenseId: number) {
     return await ApiService.delete(`/gasto/${expenseId}`)
   }
