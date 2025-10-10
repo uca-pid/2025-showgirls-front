@@ -19,7 +19,7 @@ import {
   ChevronRight,
   Plus,
 } from 'lucide-react-native'
-import { FlatList, View } from 'react-native'
+import { FlatList, RefreshControl, View } from 'react-native'
 
 const actions = [
   {
@@ -42,24 +42,58 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
-  const { categoriesData, isLoading: loadingCategories } = useCategories()
-  const { balanceData, isLoading: loadingBalance } = useBalance(user?.uid ?? '')
-  const { expensesData, isLoading: loadingExpenses } = useExpenses(
-    user?.uid ?? '',
-    5,
-    'desc',
-  )
-  const { chartData, isLoading: loadingChartData } = useChartData()
+  const {
+    categoriesData,
+    isFetching: fetchingCategories,
+    refetch: refetchCategories,
+  } = useCategories()
+
+  const {
+    balanceData,
+    isFetching: fetchingBalance,
+    refetch: refetchBalance,
+  } = useBalance(user?.uid ?? '')
+
+  const {
+    expensesData,
+    isFetching: fetchingExpenses,
+    refetch: refetchExpenses,
+  } = useExpenses(user?.uid ?? '', 5, 'desc')
+
+  const {
+    chartData,
+    isFetching: fetchingChart,
+    refetch: refetchChart,
+  } = useChartData()
 
   const formattedBalance = new Intl.NumberFormat('es-AR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(balanceData.balance)
 
+  const refreshing =
+    fetchingBalance || fetchingCategories || fetchingExpenses || fetchingChart
+
+  function handleRefresh() {
+    refetchBalance()
+    refetchCategories()
+    refetchExpenses()
+    refetchChart()
+  }
+
   return (
-    <Container>
+    <Container
+      activity={refreshing}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor="black"
+        />
+      }
+    >
       <Section>
-        <SectionCard activity={loadingBalance} justify="between" flex="row">
+        <SectionCard justify="between" flex="row">
           <View>
             <Text className="text-muted-foreground">Tu balance</Text>
             <Text
@@ -108,10 +142,7 @@ export default function HomePage() {
       </Section>
 
       <Section title="Mis Gastos">
-        <SectionCard
-          activity={loadingBalance}
-          onPress={() => router.push('/expense')}
-        >
+        <SectionCard onPress={() => router.push('/expense')}>
           <View className="flex-row items-center gap-2 w-full flex-wrap">
             <View className="rounded-full w-2 h-2 bg-red-500" />
             <Text className="text-muted-foreground">Mis gastos</Text>
@@ -124,11 +155,7 @@ export default function HomePage() {
           </View>
           <DonutChart
             data={chartData}
-            centerText={
-              loadingChartData
-                ? ''
-                : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
-            }
+            centerText={`$${chartData.reduce((sum, item) => sum + item.value, 0)}`}
             centerTextColor="white"
             size={210}
             strokeWidth={20}
