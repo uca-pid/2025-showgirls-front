@@ -97,6 +97,10 @@ function RootNavigator() {
         options={{ title: 'Gastos por categoría' }}
       />
       <Stack.Screen
+        name="expense/historical-view"
+        options={{ title: 'Evolución Mensual' }}
+      />
+      <Stack.Screen
         name="income/modal/add"
         options={{
           headerShown: false,

@@ -46,7 +46,7 @@ const CategoryDetailPage = () => {
     setLoading(true)
     setError(null)
     try {
-      const res = await expenseService.findByUserId(userId)
+      const res = await expenseService.findByUserId(userId, 10, 'desc')
       const filtered = res.data.filter(
         (expense) => expense.categoriaId === numericCategoryId,
       )

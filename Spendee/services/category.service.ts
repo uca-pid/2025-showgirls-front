@@ -9,11 +9,26 @@ export interface CategoryResponse {
   color: string
   descripcion: string
   totalGastos: number
+  editable: boolean
 }
 
 class CategoryService {
-  public async findMany() {
-    return await ApiService.get<CategoryResponse[]>(`/categories`)
+  public async findMany(params?: { month?: number; year?: number }) {
+    const queryParams = new URLSearchParams()
+
+    if (params?.month) {
+      queryParams.append('month', String(params.month))
+    }
+
+    if (params?.year) {
+      queryParams.append('year', String(params.year))
+    }
+
+    const queryString = queryParams.toString()
+
+    return await ApiService.get<CategoryResponse[]>(
+      queryString ? `/categories?${queryString}` : `/categories`,
+    )
   }
   public async create(category: {
     nombre: string

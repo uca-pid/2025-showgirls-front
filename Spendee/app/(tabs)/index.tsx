@@ -20,6 +20,7 @@ import {
   Plus,
 } from 'lucide-react-native'
 import { FlatList, RefreshControl, View } from 'react-native'
+import { useMemo } from 'react'
 
 const actions = [
   {
@@ -42,6 +43,29 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
+  const monthNames = useMemo(
+    () =>
+      [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+      ],
+    [],
+  )
+
+  const today = useMemo(() => new Date(), [])
+  const currentMonthIndex = today.getMonth()
+  const currentYear = today.getFullYear()
+  const monthLabel = `${monthNames[currentMonthIndex]}`
   const {
     categoriesData,
     isFetching: fetchingCategories,
@@ -64,7 +88,7 @@ export default function HomePage() {
     chartData,
     isFetching: fetchingChart,
     refetch: refetchChart,
-  } = useChartData()
+  } = useChartData({ month: currentMonthIndex + 1, year: currentYear })
 
   const formattedBalance = new Intl.NumberFormat('es-AR', {
     minimumFractionDigits: 2,
@@ -141,7 +165,7 @@ export default function HomePage() {
         </SectionCard>
       </Section>
 
-      <Section title="Mis Gastos">
+  <Section title={`Mis Gastos de ${monthLabel}`}>
         <SectionCard onPress={() => router.push('/expense')}>
           <Text className="text-muted-foreground">
             Categorías con más gastos:

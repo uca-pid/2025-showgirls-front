@@ -54,16 +54,21 @@ export interface ChartData {
   id: number | string
 }
 
-export default function useChartData() {
+export interface ChartFilters {
+  month?: number
+  year?: number
+}
+
+export default function useChartData(filters?: ChartFilters) {
   const {
     data: chartData = [],
     isLoading,
     refetch,
     ...rest
   } = useQuery<ChartData[]>({
-    queryKey: ['categoriesChart'],
+    queryKey: ['categoriesChart', filters?.month, filters?.year],
     queryFn: async () => {
-      const res = await categoryService.findMany()
+      const res = await categoryService.findMany(filters)
       return res.data.map((item: any) => ({
         value: Number(item.totalGastos ?? 0),
         segmentColor: item.color ?? '#000000',

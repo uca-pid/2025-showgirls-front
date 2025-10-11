@@ -10,11 +10,7 @@ import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
-import useExpenses from '@/hooks/useExpenses'
 import { getIcon } from '@/lib/getIcon'
-import ApiService from '@/services/api.service'
-import balanceService from '@/services/balance.service'
-import { useIsFocused } from '@react-navigation/native'
 import { router } from 'expo-router'
 import {
   BookOpen,
@@ -40,22 +36,117 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import React, { useEffect, useState } from 'react'
-import { FlatList, ScrollView, Text, View } from 'react-native'
+import React, { useMemo, useState } from 'react'
+import { FlatList, Pressable, Text, View } from 'react-native'
 
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
-  const { categoriesData, isLoading: loadingCategories } = useCategories()
-  const { chartData, isLoading: loadingChartData } = useChartData()
-  const { expensesData, isLoading: loadingExpenses } = useExpenses(
-    user?.uid ?? '',
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const date = new Date()
+    date.setDate(1)
+    date.setHours(0, 0, 0, 0)
+    return date
+  })
+  const todayMonth = useMemo(() => {
+    const date = new Date()
+    date.setDate(1)
+    date.setHours(0, 0, 0, 0)
+    return date
+  }, [])
+  const monthNames = useMemo(
+    () =>
+      [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+      ],
+    [],
   )
+
+  const monthLabel = useMemo(() => {
+    const monthIndex = currentMonth.getMonth()
+    const year = currentMonth.getFullYear()
+    return `${monthNames[monthIndex]} ${year}`
+  }, [currentMonth, monthNames])
+
+  const handleMonthChange = (direction: 1 | -1) => {
+    setCurrentMonth((prev) => {
+      const next = new Date(prev)
+      next.setDate(1)
+      next.setMonth(prev.getMonth() + direction)
+
+      if (
+        direction > 0 &&
+        (next.getFullYear() > todayMonth.getFullYear() ||
+          (next.getFullYear() === todayMonth.getFullYear() &&
+            next.getMonth() > todayMonth.getMonth()))
+      ) {
+        return prev
+      }
+
+      return next
+    })
+  }
+
+  const filterMonth = currentMonth.getMonth() + 1
+  const filterYear = currentMonth.getFullYear()
+
+  const filterParams = useMemo(
+    () => ({ month: filterMonth, year: filterYear }),
+    [filterMonth, filterYear],
+  )
+
+  const { categoriesData, isLoading: loadingCategories } =
+    useCategories(filterParams)
+  const { chartData, isLoading: loadingChartData } = useChartData(filterParams)
+
+  const isNextDisabled = useMemo(() => {
+    return (
+      currentMonth.getFullYear() === todayMonth.getFullYear() &&
+      currentMonth.getMonth() === todayMonth.getMonth()
+    )
+  }, [currentMonth, todayMonth])
 
   return (
     <Container>
       <Section title="Mis Gastos">
         <SectionCard activity={loadingChartData}>
-          <Text className="text-muted-foreground">Mis gastos</Text>
+          <View className="flex-row items-center justify-between w-full">
+            <Pressable
+              hitSlop={10}
+              onPress={() => handleMonthChange(-1)}
+              accessibilityLabel="Mes anterior"
+              className="px-2 py-1"
+            >
+              <Text className="text-2xl text-muted-foreground">{'<'}</Text>
+            </Pressable>
+            <Text className="text-muted-foreground text-lg font-medium">
+              {monthLabel}
+            </Text>
+            <Pressable
+              hitSlop={10}
+              onPress={() => handleMonthChange(1)}
+              accessibilityLabel="Mes siguiente"
+              className="px-2 py-1"
+              disabled={isNextDisabled}
+            >
+              <Text
+                className="text-2xl text-muted-foreground"
+                style={isNextDisabled ? { opacity: 0.3 } : undefined}
+              >
+                {'>'}
+              </Text>
+            </Pressable>
+          </View>
           <DonutChart
             data={chartData}
             centerText={
@@ -67,6 +158,17 @@ const ExpensesPage = () => {
             size={210}
             strokeWidth={20}
           />
+          <View className="flex-row items-center">
+            <Pressable
+              className="flex-row items-center"
+              onPress={() => router.push('/expense/historical-view')}
+            >
+            <Text className="text-muted-foreground">
+              Ver evolución mensual
+            </Text>
+            <ChevronRight color="gray" />
+            </Pressable>
+          </View>
         </SectionCard>
       </Section>
 
@@ -85,6 +187,24 @@ const ExpensesPage = () => {
                 description={item.descripcion}
                 icon={getIcon(item.icono)}
                 iconColor={item.color}
+                onPress={() =>
+                  router.push({
+                    pathname: '/expense/perCategorie/[id]',
+                    params: { id: item.id },
+                  })
+                }
+                editable = {item.editable}
+                onEdit={() =>
+                  router.push({
+                    pathname: '../category/edit-category',
+                    params: { 
+                      categoryIdr: item.id,
+                      categoryName: item.nombre,
+                      categoryDescription: item.descripcion ?? '',
+                      categoryIcon: item.icono,
+                    },
+                  })
+                }
               />
             )
           }}

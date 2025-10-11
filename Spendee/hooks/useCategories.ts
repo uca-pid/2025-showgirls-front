@@ -1,9 +1,14 @@
 import categoryService, { CategoryResponse } from '@/services/category.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+interface CategoryFilters {
+  month?: number
+  year?: number
+}
+
 const defaultCategories: CategoryResponse[] = []
 
-export default function useCategories() {
+export default function useCategories(filters?: CategoryFilters) {
   const queryClient = useQueryClient()
 
   const {
@@ -12,18 +17,20 @@ export default function useCategories() {
     refetch,
     ...rest
   } = useQuery<CategoryResponse[]>({
+    queryKey: ['categories', filters?.month, filters?.year],
     queryFn: async () => {
-      const res = await categoryService.findMany()
+      const res = await categoryService.findMany(filters)
       return res.data
     },
-    queryKey: ['categories'],
     refetchOnMount: false,
   })
 
   const { mutateAsync: create } = useMutation({
     mutationFn: categoryService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({
+        queryKey: ['categories', filters?.month, filters?.year],
+      })
     },
   })
 

@@ -50,8 +50,6 @@ export default function AddExpensePage() {
           montoAnterior: (await balanceData).data.balance,
           categoriaId: Number(categoryId),
         })
-        const expenses = await expenseService.findByUserId(userId)
-        console.log(expenses.data[expenses.data.length - 1])
         router.dismissAll()
         router.replace('/')
       } catch (error) {

@@ -33,7 +33,7 @@ const EditCategory = () => {
   const [description, setDescription] = useState(
     String(categoryDescription) || '',
   )
-  const [icon, setIcon] = useState('')
+  const [icon, setIcon] = useState(String(categoryIcon) || '')
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
     toastService.show(message, type === 'success' ? 'success' : undefined)
@@ -49,6 +49,7 @@ const EditCategory = () => {
   const modifyCategory = async () => {
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
+    console.log(categoryId)
     try {
       const response = await ApiService.put(`/modifyCategory/${categoryId}`, {
         categoria: name,

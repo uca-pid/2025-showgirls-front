@@ -1,6 +1,6 @@
-import { LucideIcon } from 'lucide-react-native'
+import { LucideIcon, Pencil } from 'lucide-react-native'
 import React from 'react'
-import { View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { Badge } from './ui/badge'
 import { Card } from './ui/card'
 import { Icon } from './ui/icon'
@@ -14,6 +14,8 @@ export interface ItemCardProps {
   iconColor?: string
   badgeText?: string
   badgeVariant?: 'default' | 'destructive' | 'outline' | 'secondary'
+  editable?: boolean
+  onEdit?: () => void
 }
 
 const ItemCard = ({
@@ -24,6 +26,8 @@ const ItemCard = ({
   iconColor,
   badgeText,
   badgeVariant = 'outline',
+  editable,
+  onEdit,
 }: ItemCardProps) => {
   return (
     <Card
@@ -31,18 +35,29 @@ const ItemCard = ({
       onPress={onPress}
     >
       <View className="gap-1">
-        <View className="flex-row items-center gap-2">
-          <Text className="max-w-[140px]" numberOfLines={1}>
-            {title}
-          </Text>
-        </View>
-        <Text className="text-muted-foreground max-w-[140px]" numberOfLines={1}>
-          {description}
-        </Text>
+            <View className="flex-row items-center gap-2">
+              <Text className="max-w-[140px]" numberOfLines={1}>
+                {title}
+              </Text>
+            </View>
+            <Text className="text-muted-foreground max-w-[140px]" numberOfLines={1}>
+              {description}
+            </Text>
       </View>
       <View className="flex-row items-center gap-2">
+        {editable && (
+              <Pressable
+                onPress={() => {
+                  onEdit?.()
+                }}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={`Editar ${title}`}
+              >
+                <Pencil size={18} color="gray" />
+              </Pressable>
+            )}
         {icon && <Icon size={20} color={iconColor} as={icon} />}
-
         {badgeText && (
           <Badge variant={badgeVariant}>
             <Text className="text-base" numberOfLines={1}>
