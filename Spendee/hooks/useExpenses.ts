@@ -33,5 +33,14 @@ export default function useExpenses(
     },
   })
 
-  return { expensesData, refetch, create, isLoading, ...rest }
+  const { mutateAsync: deleteExpense } = useMutation({
+    mutationFn: expenseService.deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['expenses', userId, limit, order],
+      })
+    },
+  })
+
+  return { expensesData, refetch, create, deleteExpense, isLoading, ...rest }
 }
