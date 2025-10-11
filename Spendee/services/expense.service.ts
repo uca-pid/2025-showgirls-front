@@ -22,6 +22,11 @@ class ExpenseService {
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
   }
+  public async findByCategoryId(userId: string, categoryId: number) {
+    return await ApiService.get<ExpenseResponse[]>(
+      `/gastosPorCategoria?userId=${userId}&categoryId=${categoryId}`,
+    )
+  }
 
   public async create(body: any) {
     return await ApiService.post('/gasto', body)
