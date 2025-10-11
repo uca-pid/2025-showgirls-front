@@ -51,6 +51,7 @@ export interface ChartData {
   value: number
   segmentColor: string
   icon: LucideIcon
+  id: number | string
 }
 
 export default function useChartData() {
@@ -67,6 +68,7 @@ export default function useChartData() {
         value: Number(item.totalGastos ?? 0),
         segmentColor: item.color ?? '#000000',
         icon: iconNameToEmoji[item.icono] || Ellipsis,
+        id: item.id,
       }))
     },
     refetchOnMount: false,

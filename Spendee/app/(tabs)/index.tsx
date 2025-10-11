@@ -88,7 +88,7 @@ export default function HomePage() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={handleRefresh}
-          tintColor="black"
+          tintColor={!refreshing ? 'gray' : 'black'}
         />
       }
     >
@@ -143,16 +143,33 @@ export default function HomePage() {
 
       <Section title="Mis Gastos">
         <SectionCard onPress={() => router.push('/expense')}>
-          <View className="flex-row items-center gap-2 w-full flex-wrap">
-            <View className="rounded-full w-2 h-2 bg-red-500" />
-            <Text className="text-muted-foreground">Mis gastos</Text>
-            <View className="rounded-full w-2 h-2 bg-red-500" />
-            <Text className="text-muted-foreground">Mis gastos</Text>
-            <View className="rounded-full w-2 h-2 bg-red-500" />
-            <Text className="text-muted-foreground">Mis gastos</Text>
-            <View className="rounded-full w-2 h-2 bg-red-500" />
-            <Text className="text-muted-foreground">Mis gastos</Text>
-          </View>
+          <Text className="text-muted-foreground">
+            Categorías con más gastos:
+          </Text>
+          <FlatList
+            contentContainerClassName="flex-row items-center gap-2 w-full justify-center flex-wrap"
+            horizontal
+            scrollEnabled={false}
+            data={chartData.sort((a, b) => b.value - a.value).slice(0, 3)}
+            renderItem={({ item }) => {
+              const category = categoriesData.find(
+                (category) => category.id === item.id,
+              )
+
+              return (
+                <View className="justify-center flex-row items-center gap-1 mr-2">
+                  <View
+                    className="rounded-full w-2 h-2"
+                    style={{ backgroundColor: item.segmentColor }}
+                  />
+                  <Text className="text-muted-foreground">
+                    {category?.nombre}
+                  </Text>
+                </View>
+              )
+            }}
+          />
+
           <DonutChart
             data={chartData}
             centerText={`$${chartData.reduce((sum, item) => sum + item.value, 0)}`}
@@ -173,6 +190,7 @@ export default function HomePage() {
         title="Últimos gastos"
         actionText="Ver gastos"
         actionIcon={ChevronRight}
+        onActionPress={() => router.push('/expense/list')}
       >
         <FlatList
           scrollEnabled={false}
@@ -194,6 +212,12 @@ export default function HomePage() {
                 badgeText={amount}
                 icon={icon}
                 iconColor={color}
+                onPress={() =>
+                  router.push({
+                    pathname: '/expense/[id]',
+                    params: { id: item.id },
+                  })
+                }
               />
             )
           }}

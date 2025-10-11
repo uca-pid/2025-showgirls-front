@@ -12,8 +12,8 @@ export interface ExpenseResponse {
 class ExpenseService {
   public async findByUserId(
     userId: string,
-    limit: number | undefined,
-    order: string,
+    limit?: number | undefined,
+    order?: string,
   ) {
     return await ApiService.get<ExpenseResponse[]>(
       `/gasto/${userId}?limit=${limit}&order=${order}`,

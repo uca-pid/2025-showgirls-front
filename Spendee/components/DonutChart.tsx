@@ -9,6 +9,7 @@ type DonutSegment = {
   value: number
   segmentColor?: string
   icon?: LucideIcon
+  id?: number | string
 }
 
 type DonutChartProps = {
@@ -42,7 +43,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
             const value = segment.value || 0
             const dash = (value / total) * circumference
             const gap = Math.max(0, circumference - dash)
-
             const strokeDashoffset = circumference - cumulative
 
             const circle = (
