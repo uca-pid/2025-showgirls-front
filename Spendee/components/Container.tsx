@@ -6,14 +6,17 @@ const Container = ({
   children,
   refreshControl,
   activity = false,
+  scrollEnabled = true,
 }: PropsWithChildren & {
   refreshControl?: React.ReactElement<
     React.ComponentProps<typeof RefreshControl>
   >
   activity?: boolean
+  scrollEnabled?: boolean
 }) => {
   return (
     <ScrollView
+      scrollEnabled={scrollEnabled}
       refreshControl={refreshControl}
       showsVerticalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
