@@ -38,7 +38,12 @@ const DonutChart: React.FC<DonutChartProps> = ({
   let cumulative = 0
 
   return showWhen ? (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Svg width={size} height={size}>
         <G>
           {data.map((segment, index) => {
@@ -73,11 +78,12 @@ const DonutChart: React.FC<DonutChartProps> = ({
             position: 'absolute',
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: 'transparent',
           }}
         >
           <Text
             className={`text-${centerTextColor}`}
-            style={{ fontSize: centerText.length > 9 ? 20 : 28 }}
+            style={{ fontSize: centerText.length > 9 ? 20 : 24 }}
           >
             {centerText}
           </Text>
