@@ -21,12 +21,12 @@ export default function useIncomes(userId: string) {
     refetchOnMount: false,
   })
 
-  const { mutateAsync: create } = useMutation({
+  const { mutateAsync: addIncome } = useMutation({
     mutationFn: incomeService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['incomes', userId] })
+      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
     },
   })
 
-  return { incomesData, refetch, create, isLoading, ...rest }
+  return { incomesData, refetch, addIncome, isLoading, ...rest }
 }

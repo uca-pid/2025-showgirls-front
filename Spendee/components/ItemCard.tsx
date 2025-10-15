@@ -8,6 +8,7 @@ import { Text } from './ui/text'
 
 export interface ItemCardProps {
   onPress?: () => void
+  onLongPress?: () => void
   title: string
   description?: string
   icon?: LucideIcon
@@ -19,6 +20,7 @@ export interface ItemCardProps {
 }
 
 const ItemCard = ({
+  onLongPress,
   onPress,
   title,
   description,
@@ -33,30 +35,29 @@ const ItemCard = ({
     <Card
       className="border-0 flex-row w-full justify-between p-4 items-center mb-2 max-h-[200px]"
       onPress={onPress}
+      onLongPress={onLongPress}
     >
       <View className="gap-1">
-            <View className="flex-row items-center gap-2">
-              <Text className="max-w-[140px]" numberOfLines={1}>
-                {title}
-              </Text>
-            </View>
-            <Text className="text-muted-foreground max-w-[140px]" numberOfLines={1}>
-              {description}
-            </Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="" numberOfLines={1}>
+            {title}
+          </Text>
+        </View>
+        <Text className="text-muted-foreground">{description}</Text>
       </View>
       <View className="flex-row items-center gap-2">
         {editable && (
-              <Pressable
-                onPress={() => {
-                  onEdit?.()
-                }}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel={`Editar ${title}`}
-              >
-                <Pencil size={18} color="gray" />
-              </Pressable>
-            )}
+          <Pressable
+            onPress={() => {
+              onEdit?.()
+            }}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={`Editar ${title}`}
+          >
+            <Pencil size={18} color="gray" />
+          </Pressable>
+        )}
         {icon && <Icon size={20} color={iconColor} as={icon} />}
         {badgeText && (
           <Badge variant={badgeVariant}>
