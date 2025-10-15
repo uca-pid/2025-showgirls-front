@@ -1,41 +1,15 @@
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
-import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
-import ItemMenu from '@/components/ItemMenu'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import { getIcon } from '@/lib/getIcon'
 import { router } from 'expo-router'
-import {
-  BookOpen,
-  Bus,
-  ChevronRight,
-  Ellipsis,
-  Gamepad2,
-  Heart,
-  House,
-  LucideIcon,
-  Paperclip,
-  Plus,
-  Popcorn,
-  Shield,
-  Shuffle,
-  Sigma,
-  Sprout,
-  Sun,
-  TestTube,
-  TreePalm,
-  Users,
-  Utensils,
-  Wine,
-  Wrench,
-} from 'lucide-react-native'
+import { ChevronRight } from 'lucide-react-native'
 import React, { useMemo, useState } from 'react'
 import { FlatList, Pressable, Text, View } from 'react-native'
 
@@ -54,21 +28,20 @@ const ExpensesPage = () => {
     return date
   }, [])
   const monthNames = useMemo(
-    () =>
-      [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
-      ],
+    () => [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ],
     [],
   )
 
@@ -163,10 +136,10 @@ const ExpensesPage = () => {
               className="flex-row items-center"
               onPress={() => router.push('/expense/historical-view')}
             >
-            <Text className="text-muted-foreground">
-              Ver evolución mensual
-            </Text>
-            <ChevronRight color="gray" />
+              <Text className="text-muted-foreground">
+                Ver evolución mensual
+              </Text>
+              <ChevronRight color="gray" />
             </Pressable>
           </View>
         </SectionCard>
@@ -189,15 +162,15 @@ const ExpensesPage = () => {
                 iconColor={item.color}
                 onPress={() =>
                   router.push({
-                    pathname: '/expense/perCategorie/[id]',
+                    pathname: '/expense/perCategory/[id]',
                     params: { id: item.id },
                   })
                 }
-                editable = {item.editable}
+                editable={item.editable}
                 onEdit={() =>
                   router.push({
                     pathname: '../category/edit-category',
-                    params: { 
+                    params: {
                       categoryIdr: item.id,
                       categoryName: item.nombre,
                       categoryDescription: item.descripcion ?? '',
