@@ -15,9 +15,13 @@ class ExpenseService {
     limit?: number | undefined,
     order?: string,
   ) {
-    return await ApiService.get<ExpenseResponse[]>(
-      `/gasto/${userId}?limit=${limit}&order=${order}`,
-    )
+    if (limit && order) {
+      return await ApiService.get<ExpenseResponse[]>(
+        `/gasto/${userId}?limit=${limit}&order=${order}`,
+      )
+    } else {
+      return await ApiService.get<ExpenseResponse[]>(`/gasto/${userId}`)
+    }
   }
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
