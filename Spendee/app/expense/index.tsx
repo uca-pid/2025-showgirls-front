@@ -146,8 +146,8 @@ const ExpensesPage = () => {
       </Section>
 
       <Section
-        title="Últimos gastos"
-        actionText="Ver gastos"
+        title="Categorías"
+        actionText="Ver categorías"
         actionIcon={ChevronRight}
       >
         <FlatList

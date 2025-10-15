@@ -24,14 +24,46 @@ export default function useExpenses(
     enabled: !!userId,
   })
 
-  const { mutateAsync: create } = useMutation({
-    mutationFn: expenseService.create,
+  const { mutateAsync: addExpense } = useMutation({
+    mutationFn: (body: any): any => {
+      expenseService.create(body)
+    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
       queryClient.invalidateQueries({
         queryKey: ['expenses', userId, limit, order],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory', userId],
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
+      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
     },
   })
 
-  return { expensesData, refetch, create, isLoading, ...rest }
+  const { mutateAsync: deleteExpense } = useMutation({
+    mutationFn: (expenseId: number) => expenseService.deleteExpense(expenseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
+      queryClient.invalidateQueries({
+        queryKey: ['expenses', userId, limit, order],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory', userId],
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
+      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+  })
+
+  return {
+    expensesData,
+    refetch,
+    addExpense,
+    deleteExpense,
+    isLoading,
+    ...rest,
+  }
 }

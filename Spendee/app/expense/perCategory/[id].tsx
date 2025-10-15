@@ -1,195 +1,131 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from 'react-native'
-import { useGlobalSearchParams } from 'expo-router'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import expenseService, { ExpenseResponse } from '@/services/expense.service'
-import { auth } from '@/firebase.config'
-import { useIsFocused } from '@react-navigation/native'
-import { Trash2 } from 'lucide-react-native'
-import { Pressable } from 'react-native'
+import Container from '@/components/Container'
+import ItemCard from '@/components/ItemCard'
+import Section from '@/components/Section'
+import SectionCard from '@/components/SectionCard'
+import { Icon } from '@/components/ui/icon'
+import { Text } from '@/components/ui/text'
+import { useAuth } from '@/context/AuthContext'
+import useCategories from '@/hooks/useCategories'
+import useExpenses from '@/hooks/useExpenses'
+import useExpensesByCategory from '@/hooks/useExpensesByCategory'
+import { getIcon } from '@/lib/getIcon'
+import { ExpenseResponse } from '@/services/expense.service'
+import { Link, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { ChevronRight, Trash2, X } from 'lucide-react-native'
+import React, { useLayoutEffect, useState } from 'react'
+
+import { Alert, FlatList, RefreshControl, View } from 'react-native'
 
 const CategoryDetailPage = () => {
-  const params = useGlobalSearchParams<{ id: string; name?: string | string[] }>()
+  const params = useGlobalSearchParams<{
+    id: string
+    name?: string | string[]
+  }>()
 
-  const rawName = params.name
-  const categoryName = Array.isArray(rawName)
-    ? rawName[0]
-    : rawName ?? ''
-  const categoryId = params.id
-  const title = categoryName?.trim() ? categoryName : categoryId
-  const numericCategoryId = categoryId ? Number(categoryId) : null
-
-  const [expenses, setExpenses] = useState<ExpenseResponse[]>([])
-  const [loading, setLoading] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [deletingId, setDeletingId] = useState<number | null>(null)
-
-  const isFocused = useIsFocused()
-  const userId = auth.currentUser?.uid ?? null
-
-  const fetchExpenses = useCallback(async () => {
-    if (!userId || !numericCategoryId) {
-      setExpenses([])
-      setLoading(false)
-      setRefreshing(false)
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await expenseService.findByUserId(userId, 10, 'desc')
-      const filtered = res.data.filter(
-        (expense) => expense.categoriaId === numericCategoryId,
-      )
-      setExpenses(filtered)
-    } catch (err: any) {
-      console.error('Error fetching expenses by category', err)
-      setError(
-        err?.message ?? 'No se pudieron cargar los gastos de esta categoría.',
-      )
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [numericCategoryId, userId])
-
-  useEffect(() => {
-    fetchExpenses()
-  }, [fetchExpenses, isFocused])
-
-  const totalSpent = useMemo(
-    () => expenses.reduce((acc, expense) => acc + (expense.gasto ?? 0), 0),
-    [expenses],
+  const { user } = useAuth()
+  const { expensesByCategory, isRefetching, refetch } = useExpensesByCategory(
+    user ? user.uid : '',
+    Number(params.id),
   )
+  const { deleteExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
+  const { categoriesData } = useCategories()
+  const category = categoriesData.find((cat) => cat.id === Number(params.id))
 
-  const handleRefresh = () => {
-    setRefreshing(true)
-    fetchExpenses()
-  }
+  const navigation = useNavigation()
+  useLayoutEffect(() => {
+    if (category?.nombre) {
+      navigation.setOptions({
+        title: 'Gastos de ' + category.nombre,
+      })
+    }
+  }, [category])
 
-  const handleDeleteExpense = useCallback(
-    (expenseId: number) => {
-      Alert.alert(
-        'Eliminar gasto',
-        '¿Deseas eliminar este gasto?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                setDeletingId(expenseId)
-                await expenseService.deleteExpense(expenseId)
-                setExpenses((prev) =>
-                  prev.filter((expense) => expense.id !== expenseId),
-                )
-              } catch (err: any) {
-                console.error('Error deleting expense', err)
-                Alert.alert(
-                  'Error',
-                  err?.message ??
-                    'No se pudo eliminar el gasto. Intenta nuevamente.',
-                )
-              } finally {
-                setDeletingId(null)
-                fetchExpenses()
-              }
-            },
+  const [deleteMode, setDeleteMode] = useState(false)
+
+  function handleDelete(expense: ExpenseResponse) {
+    Alert.alert(
+      '¿Estás seguro que deseas eliminar este gasto?',
+      'Esta acción es IRREVERSIBLE',
+      [
+        {
+          text: 'Cancelar',
+          style: 'destructive',
+          onPress: () => setDeleteMode(false),
+        },
+        {
+          text: 'Eliminar',
+          onPress: async () => {
+            try {
+              await deleteExpense(expense.id)
+            } catch (error) {
+              console.log(error)
+            }
           },
-        ],
-        { cancelable: true },
-      )
-    },
-    [fetchExpenses],
-  )
-
-  const renderExpense = ({ item }: { item: ExpenseResponse }) => {
-    const formattedDate = item.fecha
-      ? new Date(item.fecha).toLocaleDateString()
-      : 'Sin fecha'
-
-    return (
-      <Card className="bg-foreground border border-muted rounded-2xl">
-        <CardContent className="flex-row items-center justify-between py-3">
-          <View className="gap-1">
-            <Text className="text-base font-semibold text-foreground">
-              {formattedDate}
-            </Text>
-            {typeof item.montoAnterior === 'number' && (
-              <Text className="text-xs text-muted-foreground">
-                Saldo anterior: ${item.montoAnterior.toFixed(2)}
-              </Text>
-            )}
-          </View>
-          <View className="flex-row items-center gap-3">
-            <Text className="text-lg font-semibold text-destructive">
-              -${Number(item.gasto ?? 0).toFixed(2)}
-            </Text>
-            <Pressable
-              hitSlop={10}
-              onPress={() => handleDeleteExpense(item.id)}
-              accessibilityRole="button"
-              accessibilityLabel="Eliminar gasto"
-              disabled={deletingId === item.id}
-            >
-              {deletingId === item.id ? (
-                <ActivityIndicator size="small" color="#ef4444" />
-              ) : (
-                <Trash2 size={20} color="#ef4444" />
-              )}
-            </Pressable>
-          </View>
-        </CardContent>
-      </Card>
+        },
+      ],
     )
   }
 
-  // TODO: fetch and show category expenses using the id from params
-
   return (
-    <View className="bg-background flex-1 px-4 py-6 gap-4">
-      <Card className="w-full bg-foreground">
-        <CardContent className="gap-2">
-          <CardTitle>Categoría {title}</CardTitle>
-          <Text className="text-sm text-muted-foreground">
-            Total gastado: ${totalSpent.toFixed(2)}
+    <Container
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+      }
+    >
+      <Section>
+        <SectionCard>
+          <Text className="text-2xl">Categoría {category?.nombre}</Text>
+          <Icon
+            as={getIcon(category ? category.icono : 'ellipsis')}
+            size={40}
+            color={category?.color}
+          />
+          <Text className="text-m text-muted-foreground">
+            Total gastado: ${category?.totalGastos.toFixed(2)}
           </Text>
-        </CardContent>
-      </Card>
+        </SectionCard>
+      </Section>
 
-      {loading && !refreshing ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366f1" />
-        </View>
+      {expensesByCategory.length > 0 ? (
+        <Section
+          title="Gastos de la categoría"
+          actionText={deleteMode ? 'Cancelar' : 'Eliminar'}
+          actionIcon={deleteMode ? X : Trash2}
+          onActionPress={() => setDeleteMode(!deleteMode)}
+        >
+          <FlatList
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            data={expensesByCategory}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerClassName="h-full"
+            renderItem={({ item }) => (
+              <ItemCard
+                title={`Gasto en ${category?.nombre}`}
+                description={`${new Date(item.fecha).toLocaleDateString('gb-GB')}\nSaldo anterior: $${item.montoAnterior.toFixed(2)}`}
+                badgeText={`-$${item.gasto}`}
+                badgeVariant="destructive"
+                icon={deleteMode ? Trash2 : undefined}
+                iconColor="gray"
+                onPress={deleteMode ? () => handleDelete(item) : undefined}
+              />
+            )}
+          />
+        </Section>
       ) : (
-        <FlatList
-          data={expenses}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={renderExpense}
-          contentContainerClassName="gap-3 pb-12"
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-          ListEmptyComponent={
-            <View className="flex-1 items-center justify-center py-12">
+        <SectionCard className="items-center">
+          <Text className="text-xl">No hay gastos en esta categoría</Text>
+          <Link href="/" replace>
+            <View className="flex-row items-center">
               <Text className="text-base text-muted-foreground">
-                {error ?? 'No hay gastos registrados para esta categoría.'}
+                Volver al inicio
               </Text>
+              <ChevronRight size={20} color="gray" />
             </View>
-          }
-        />
+          </Link>
+        </SectionCard>
       )}
-    </View>
+    </Container>
   )
 }
 

@@ -28,9 +28,8 @@ export default function useCategories(filters?: CategoryFilters) {
   const { mutateAsync: create } = useMutation({
     mutationFn: categoryService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['categories', filters?.month, filters?.year],
-      })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
     },
   })
 

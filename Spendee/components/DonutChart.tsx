@@ -1,7 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 
-import { LucideIcon } from 'lucide-react-native'
+import { ChartLineIcon, LucideIcon } from 'lucide-react-native'
 import Svg, { Circle, G } from 'react-native-svg'
 import { Text } from './ui/text'
 
@@ -19,6 +19,7 @@ type DonutChartProps = {
   centerText?: string
   centerTextColor?: string
   showIcons?: boolean
+  showWhen?: boolean
 }
 
 const DonutChart: React.FC<DonutChartProps> = ({
@@ -28,6 +29,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   centerText = '',
   centerTextColor = 'black',
   showIcons = true,
+  showWhen = true,
 }) => {
   const radius = Math.max(0, (size - strokeWidth) / 2)
   const circumference = 2 * Math.PI * radius
@@ -35,7 +37,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
   let cumulative = 0
 
-  return (
+  return showWhen ? (
     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size}>
         <G>
@@ -73,11 +75,19 @@ const DonutChart: React.FC<DonutChartProps> = ({
             justifyContent: 'center',
           }}
         >
-          <Text className={`text-[28px] text-${centerTextColor}`}>
+          <Text
+            className={`text-${centerTextColor}`}
+            style={{ fontSize: centerText.length > 9 ? 20 : 28 }}
+          >
             {centerText}
           </Text>
         </View>
       )}
+    </View>
+  ) : (
+    <View className="h-[200px] items-center justify-evenly">
+      <ChartLineIcon size={24} color="white" />
+      <Text>Añadí más gastos para ver el detalle</Text>
     </View>
   )
 }
