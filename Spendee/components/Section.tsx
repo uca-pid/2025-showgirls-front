@@ -12,6 +12,7 @@ const Section = ({
   actionIcon,
   activity,
   className = '',
+  showWhen = true,
 }: PropsWithChildren & {
   onActionPress?: () => void
   title?: string
@@ -19,6 +20,7 @@ const Section = ({
   actionIcon?: LucideIcon
   activity?: boolean
   className?: string
+  showWhen?: boolean
 }) => {
   return (
     <>
@@ -26,7 +28,7 @@ const Section = ({
         <SectionCard>
           <ActivityIndicator size={24} color="gray" />
         </SectionCard>
-      ) : (
+      ) : showWhen ? (
         <View className={`gap-4 w-full ${className}`}>
           {title && (
             <View className="flex-row items-center justify-between">
@@ -37,7 +39,7 @@ const Section = ({
                     {actionText}
                   </Text>
                   {actionIcon && (
-                    <Icon as={actionIcon} size={22} color="gray" />
+                    <Icon as={actionIcon} size={20} color="gray" />
                   )}
                 </View>
               </Pressable>
@@ -45,7 +47,7 @@ const Section = ({
           )}
           {children}
         </View>
-      )}
+      ) : null}
     </>
   )
 }

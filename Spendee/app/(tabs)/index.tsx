@@ -17,7 +17,8 @@ import {
   BanknoteArrowDown,
   BanknoteArrowUp,
   ChevronRight,
-  Plus,
+  Info,
+  Pencil,
 } from 'lucide-react-native'
 import { FlatList, RefreshControl, View } from 'react-native'
 
@@ -107,7 +108,11 @@ export default function HomePage() {
               {'$ ' + formattedBalance}
             </Text>
           </View>
-          <Avatar alt="avatar" className="size-16">
+          <Avatar
+            alt="avatar"
+            className="size-16"
+            onTouchEnd={() => router.push('/profile')}
+          >
             <AvatarImage
               source={{
                 uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
@@ -117,10 +122,19 @@ export default function HomePage() {
         </SectionCard>
       </Section>
 
+      {expensesData.length === 0 && (
+        <SectionCard flex="row" className="px-4">
+          <Info size={24} color={'gray'} />
+          <Text className="text-m text-muted-foreground">
+            Para comenzar, añadí un egreso en la sección Acciones Rápidas
+          </Text>
+        </SectionCard>
+      )}
+
       <Section
         title="Acciones Rápidas"
-        actionIcon={Plus}
-        actionText="Añadir"
+        actionIcon={Pencil}
+        actionText="Editar"
         onActionPress={() => {}}
       >
         <SectionCard flex="row">
@@ -141,38 +155,40 @@ export default function HomePage() {
         </SectionCard>
       </Section>
 
-      <Section title="Mis Gastos">
+      <Section title="Mis Gastos" showWhen={expensesData.length > 0}>
         <SectionCard onPress={() => router.push('/expense')}>
-          <Text className="text-muted-foreground">
-            Categorías con más gastos:
-          </Text>
-          <FlatList
-            contentContainerClassName="flex-row items-center gap-2 w-full justify-center flex-wrap"
-            horizontal
-            scrollEnabled={false}
-            data={chartData.sort((a, b) => b.value - a.value).slice(0, 3)}
-            renderItem={({ item }) => {
-              const category = categoriesData.find(
-                (category) => category.id === item.id,
-              )
+          {chartData.filter((item) => item.value > 0).length >= 3 && (
+            <FlatList
+              contentContainerClassName="flex-row items-center gap-2 w-full justify-center flex-wrap"
+              horizontal
+              scrollEnabled={false}
+              data={chartData.sort((a, b) => b.value - a.value).slice(0, 3)}
+              renderItem={({ item }) => {
+                const category = categoriesData.find(
+                  (category) => category.id === item.id,
+                )
 
-              return (
-                <View className="justify-center flex-row items-center gap-1 mr-2">
-                  <View
-                    className="rounded-full w-2 h-2"
-                    style={{ backgroundColor: item.segmentColor }}
-                  />
-                  <Text className="text-muted-foreground">
-                    {category?.nombre}
-                  </Text>
-                </View>
-              )
-            }}
-          />
+                return (
+                  <View className="justify-center flex-row items-center gap-1 mr-2">
+                    <View
+                      className="rounded-full w-2 h-2"
+                      style={{ backgroundColor: item.segmentColor }}
+                    />
+                    <Text className="text-muted-foreground">
+                      {category?.nombre}
+                    </Text>
+                  </View>
+                )
+              }}
+            />
+          )}
 
           <DonutChart
+            showWhen={chartData.filter((item) => item.value > 0).length >= 3}
             data={chartData}
-            centerText={`$${chartData.reduce((sum, item) => sum + item.value, 0)}`}
+            centerText={`$${new Intl.NumberFormat('es-AR').format(
+              chartData.reduce((sum, item) => sum + item.value, 0),
+            )}`}
             centerTextColor="white"
             size={210}
             strokeWidth={20}
@@ -191,6 +207,7 @@ export default function HomePage() {
         actionText="Ver gastos"
         actionIcon={ChevronRight}
         onActionPress={() => router.push('/expense/list')}
+        showWhen={expensesData.length > 0}
       >
         <FlatList
           scrollEnabled={false}

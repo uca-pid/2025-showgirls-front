@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
+import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
-import expenseService from '@/services/expense.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
@@ -26,6 +27,7 @@ export default function AddExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
+  const { addExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
@@ -44,14 +46,13 @@ export default function AddExpensePage() {
       return
     } else {
       try {
-        await expenseService.create({
-          userId: userId,
+        await addExpense({
+          usuarioId: userId,
           gasto: Number(amount),
           montoAnterior: (await balanceData).data.balance,
           categoriaId: Number(categoryId),
         })
-        const expenses = await expenseService.findByUserId(userId)
-        console.log(expenses.data[expenses.data.length - 1])
+        toastService.show('Gasto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {

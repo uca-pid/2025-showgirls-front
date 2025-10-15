@@ -1,15 +1,25 @@
 import { Text, TextClassContext } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { TouchableWithoutFeedback, View, type ViewProps } from 'react-native'
+import {
+  PressableProps,
+  TouchableWithoutFeedback,
+  View,
+  type ViewProps,
+} from 'react-native'
 
 function Card({
   className,
   onPress = () => {},
+  onLongPress = () => {},
   ...props
-}: ViewProps & React.RefAttributes<View> & { onPress?: () => void }) {
+}: ViewProps &
+  React.RefAttributes<View> & { onPress?: () => void } & PressableProps) {
   return (
     <TextClassContext.Provider value="text-card-foreground">
-      <TouchableWithoutFeedback onPress={onPress}>
+      <TouchableWithoutFeedback
+        onPress={onPress}
+        onLongPress={() => onLongPress}
+      >
         <View
           className={cn(
             'bg-card border-border flex flex-col gap-6 rounded-xl border py-6 shadow-sm shadow-black/5',

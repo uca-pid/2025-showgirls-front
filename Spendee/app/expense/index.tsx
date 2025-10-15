@@ -1,47 +1,18 @@
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
-import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
-import ItemMenu from '@/components/ItemMenu'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
 import { getIcon } from '@/lib/getIcon'
-import ApiService from '@/services/api.service'
-import balanceService from '@/services/balance.service'
-import { useIsFocused } from '@react-navigation/native'
 import { router } from 'expo-router'
-import {
-  BookOpen,
-  Bus,
-  ChevronRight,
-  Ellipsis,
-  Gamepad2,
-  Heart,
-  House,
-  LucideIcon,
-  Paperclip,
-  Plus,
-  Popcorn,
-  Shield,
-  Shuffle,
-  Sigma,
-  Sprout,
-  Sun,
-  TestTube,
-  TreePalm,
-  Users,
-  Utensils,
-  Wine,
-  Wrench,
-} from 'lucide-react-native'
-import React, { useEffect, useState } from 'react'
-import { FlatList, ScrollView, Text, View } from 'react-native'
+import { ChevronRight } from 'lucide-react-native'
+import React from 'react'
+import { FlatList, Text } from 'react-native'
 
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
@@ -49,6 +20,8 @@ const ExpensesPage = () => {
   const { chartData, isLoading: loadingChartData } = useChartData()
   const { expensesData, isLoading: loadingExpenses } = useExpenses(
     user?.uid ?? '',
+    0,
+    'asc',
   )
 
   return (
@@ -71,8 +44,8 @@ const ExpensesPage = () => {
       </Section>
 
       <Section
-        title="Últimos gastos"
-        actionText="Ver gastos"
+        title="Categorías"
+        actionText="Ver categorías"
         actionIcon={ChevronRight}
       >
         <FlatList
@@ -85,6 +58,12 @@ const ExpensesPage = () => {
                 description={item.descripcion}
                 icon={getIcon(item.icono)}
                 iconColor={item.color}
+                onPress={() =>
+                  router.push({
+                    pathname: '/expense/perCategory/[id]',
+                    params: { id: item.id },
+                  })
+                }
               />
             )
           }}

@@ -21,7 +21,7 @@ const Container = ({
       showsVerticalScrollIndicator={false}
       contentInsetAdjustmentBehavior="automatic"
       className="w-screen h-screen"
-      contentContainerClassName="align-center items-center gap-4 p-6 pb-[100px]"
+      contentContainerClassName="align-center items-center gap-8 p-6 pb-[100px]"
     >
       {activity ? <DollarSignSpinner /> : children}
     </ScrollView>

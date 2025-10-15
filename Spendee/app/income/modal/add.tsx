@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
+import useIncomes from '@/hooks/useIncomes'
 import balanceService from '@/services/balance.service'
-import incomeService from '@/services/income.service'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
@@ -22,6 +23,8 @@ export default function AddExpensePage() {
     var balanceData = balanceService.findByUserId(user.uid)
     var userId = user.uid
   }
+
+  const { addIncome } = useIncomes(user ? user.uid : '')
   const router = useRouter()
   /* const { categories } = useCategories()
   const { categoryId, income } = useLocalSearchParams() */
@@ -43,12 +46,12 @@ export default function AddExpensePage() {
       return
     } */ else {
       try {
-        await incomeService.create({
+        await addIncome({
           userId: userId,
           ingreso: Number(amount),
           montoAnterior: (await balanceData).data.balance,
-          /* categoriaId: Number(categoryId), */
         })
+        toastService.show('Ingreso añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {
