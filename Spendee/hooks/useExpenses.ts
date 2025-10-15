@@ -24,23 +24,21 @@ export default function useExpenses(
     refetchOnMount: false,
   })
 
-  const { mutateAsync: create } = useMutation({
-    mutationFn: expenseService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['expenses', userId, limit, order],
-      })
-    },
-  })
-
   const { mutateAsync: deleteExpense } = useMutation({
-    mutationFn: expenseService.deleteExpense,
+    mutationFn: (expenseId: number) => expenseService.deleteExpense(expenseId),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
       queryClient.invalidateQueries({
         queryKey: ['expenses', userId, limit, order],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory', userId],
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
+      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
     },
   })
 
-  return { expensesData, refetch, create, deleteExpense, isLoading, ...rest }
+  return { expensesData, refetch, deleteExpense, isLoading, ...rest }
 }

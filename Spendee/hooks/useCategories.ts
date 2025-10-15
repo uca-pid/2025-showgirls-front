@@ -24,6 +24,7 @@ export default function useCategories() {
     mutationFn: categoryService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
     },
   })
 
