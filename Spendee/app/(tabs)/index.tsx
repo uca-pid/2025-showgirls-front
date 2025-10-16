@@ -200,7 +200,7 @@ export default function HomePage() {
         <SectionCard onPress={() => router.push('/expense')}>
           <SectionCard flex="row" className="width-full">
             <FlatList
-              data={categoriesData}
+              data={categoriesData.filter((cat) => cat.totalGastos > 0)}
               keyExtractor={(item) => item.id.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}

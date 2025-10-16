@@ -157,7 +157,7 @@ const ExpensesPage = () => {
           </View>
           <SectionCard flex="row" className="width-full">
             <FlatList
-              data={categoriesData}
+              data={categoriesData.filter((cat) => cat.totalGastos > 0)}
               keyExtractor={(item) => item.id.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -240,7 +240,7 @@ const ExpensesPage = () => {
       >
         <FlatList
           scrollEnabled={false}
-          data={categoriesData}
+          data={categoriesData.filter((cat) => cat.totalGastos > 0)}
           renderItem={({ item }) => {
             return (
               <ItemCard
