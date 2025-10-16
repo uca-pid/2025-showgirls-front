@@ -41,6 +41,9 @@ export default function HistoricalExpenseView() {
   const { user } = useAuth()
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+  const [selectedMonth, setSelectedMonth] = useState<number>(
+    new Date().getMonth(),
+  )
   const { expensesData, isLoading, isRefetching, refetch } = useExpenses(
     user?.uid ?? '',
     999, //Temporal, will be replaced by filters
@@ -59,16 +62,15 @@ export default function HistoricalExpenseView() {
     value,
     label: shortMonthNames[i],
     frontColor: '#F472B6',
+    onPress: () => {
+      setSelectedMonth(i)
+    },
   }))
 
   const totalGastos = expensesData.reduce(
     (acc, expense) => acc + expense.gasto,
     0,
   )
-
-  console.log(expensesData)
-
-  console.log(totalGastos)
   const totalYear = monthlyTotals.reduce((a, b) => a + b, 0)
   const todayYear = new Date().getFullYear()
   const isNextDisabled = currentYear >= todayYear
@@ -122,6 +124,16 @@ export default function HistoricalExpenseView() {
             yAxisThickness={0}
             xAxisThickness={0}
           />
+        </SectionCard>
+        <SectionCard className="items-center">
+          <View className="flex-row gap-5">
+            <Text className="text-lg font-semibold">
+              Gastos de {monthNames[selectedMonth]}:
+            </Text>
+            <Text className="text-lg text-muted-foreground">
+              ${monthlyTotals[selectedMonth]}
+            </Text>
+          </View>
         </SectionCard>
       </Section>
     </Container>
