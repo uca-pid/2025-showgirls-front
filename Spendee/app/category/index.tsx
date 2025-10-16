@@ -138,7 +138,7 @@ const index = () => {
       />
 
       <Text className="text-white">Seleccionar ícono</Text>
-      <View className="flex-row flex-wrap items-center justify-center h-[250px]">
+      <View className="flex-row items-center justify-center h-[250px]">
         <FlatList
           data={iconOptions}
           horizontal
