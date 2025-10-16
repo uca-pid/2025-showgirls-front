@@ -23,18 +23,30 @@ const monthNames = [
   'Diciembre',
 ]
 
-const shortMonthNames = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
+const shortMonthNames = [
+  'E',
+  'F',
+  'M',
+  'A',
+  'M',
+  'J',
+  'J',
+  'A',
+  'S',
+  'O',
+  'N',
+  'D',
+]
 
 const HistoricalExpenseView = () => {
   const { user } = useAuth()
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear())
 
-  const {
-    expensesData,
-    isLoading,
-    isRefetching,
-    refetch,
-  } = useExpenses(user?.uid ?? '', undefined, 'asc')
+  const { expensesData, isLoading, isRefetching, refetch } = useExpenses(
+    user?.uid ?? '',
+    undefined,
+    'asc',
+  )
 
   const filteredExpenses = useMemo(() => {
     if (!expensesData) return []
@@ -92,6 +104,8 @@ const HistoricalExpenseView = () => {
 
   const hasData = barData.some((item) => item.value > 0)
 
+  const currentMonth = new Date().getMonth()
+
   return (
     <Container
       refreshControl={
@@ -141,6 +155,7 @@ const HistoricalExpenseView = () => {
               barWidth={28}
               spacing={24}
               frontColor="#F472B6"
+              scrollToIndex={currentMonth}
               yAxisThickness={0}
               xAxisLabelTextStyle={{
                 color: '#6B7280',
