@@ -149,32 +149,43 @@ const ExpensesPage = () => {
             size={210}
             strokeWidth={20}
           />
-          <SectionCard flex="row" className="flex-wrap justify-center">
-            {categoriesData.map((cat) => {
-              const isSelected = selectedCategories.includes(cat.id)
-              return (
-                <TouchableOpacity
-                  key={cat.id}
-                  onPress={() => toggleCategory(cat.id)}
-                  style={{
-                    backgroundColor: isSelected ? cat.color : '#f2f2f2',
-                    borderRadius: 10,
-                    paddingHorizontal: 10,
-                    paddingVertical: 6,
-                    margin: 4,
-                  }}
-                >
-                  <Text
+          <SectionCard flex="row" className="width-full">
+            <FlatList
+              data={categoriesData}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              renderItem={({ item: cat }) => {
+                const isSelected = selectedCategories.includes(cat.id)
+                return (
+                  <TouchableOpacity
+                    onPress={() => toggleCategory(cat.id)}
+                    activeOpacity={0.7}
                     style={{
-                      color: isSelected ? 'white' : 'black',
-                      fontWeight: isSelected ? '600' : '400',
+                      backgroundColor: isSelected ? cat.color : '#f2f2f2',
+                      borderRadius: 8,
+                      paddingHorizontal: 14,
+                      paddingVertical: 8,
+                      marginHorizontal: 6,
                     }}
                   >
-                    {cat.nombre}
-                  </Text>
-                </TouchableOpacity>
-              )
-            })}
+                    <Text
+                      style={{
+                        color: isSelected ? 'white' : '#333',
+                        fontWeight: isSelected ? '600' : '500',
+                        fontSize: 14,
+                      }}
+                    >
+                      {cat.nombre}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
           </SectionCard>
           <View className="flex-row items-center">
             <Pressable
