@@ -3,7 +3,6 @@ import DonutChart from '@/components/DonutChart'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
@@ -12,10 +11,19 @@ import { getIcon } from '@/lib/getIcon'
 import { router } from 'expo-router'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react-native'
 import React, { useMemo, useState } from 'react'
-import { FlatList, Pressable, RefreshControl, View } from 'react-native'
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const [openDropdown, setOpenDropdown] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
     date.setDate(1)
@@ -99,6 +107,19 @@ const ExpensesPage = () => {
     )
   }, [currentMonth, todayMonth])
 
+  function toggleCategory(categoryId: number) {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
+    )
+  }
+
+  const filteredChartData =
+    selectedCategories.length > 0
+      ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
+      : chartData
+
   return (
     <Container
       refreshControl={
@@ -135,17 +156,54 @@ const ExpensesPage = () => {
             </Pressable>
           </View>
           <DonutChart
-            showWhen={chartData.filter((item) => item.value > 0).length >= 1}
-            data={chartData}
+            data={filteredChartData}
             centerText={
               loadingChartData
                 ? ''
-                : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
+                : `$${filteredChartData.reduce((sum, item) => sum + item.value, 0)}`
             }
             centerTextColor="white"
             size={210}
             strokeWidth={20}
           />
+          <SectionCard flex="row" className="width-full">
+            <FlatList
+              data={categoriesData}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              renderItem={({ item: cat }) => {
+                const isSelected = selectedCategories.includes(cat.id)
+                return (
+                  <TouchableOpacity
+                    onPress={() => toggleCategory(cat.id)}
+                    activeOpacity={0.7}
+                    style={{
+                      backgroundColor: isSelected ? cat.color : '#f2f2f2',
+                      borderRadius: 8,
+                      paddingHorizontal: 14,
+                      paddingVertical: 8,
+                      marginHorizontal: 6,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: isSelected ? 'white' : '#333',
+                        fontWeight: isSelected ? '600' : '500',
+                        fontSize: 14,
+                      }}
+                    >
+                      {cat.nombre}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </SectionCard>
           <View className="flex-row items-center">
             <Pressable
               className="flex-row items-center"
