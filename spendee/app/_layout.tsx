@@ -68,6 +68,7 @@ function RootNavigator() {
           headerBackTitle: 'Volver',
         }}
       />
+      <Stack.Screen name="category" options={{ headerShown: false }} />
       <Stack.Screen
         name="expense/index"
         options={{ title: 'Mis Gastos', headerBackTitle: 'Home' }}

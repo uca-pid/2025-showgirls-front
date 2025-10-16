@@ -93,7 +93,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   ) : (
     <View className="h-[200px] items-center justify-evenly">
       <ChartLineIcon size={24} color="white" />
-      <Text>Añadí más gastos para ver el detalle</Text>
+      <Text>No hay suficientes datos para mostrar</Text>
     </View>
   )
 }
