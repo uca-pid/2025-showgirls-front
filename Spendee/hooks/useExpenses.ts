@@ -26,7 +26,7 @@ export default function useExpenses(
 
   const { mutateAsync: addExpense } = useMutation({
     mutationFn: (body: any): any => {
-      expenseService.create(body)
+      return expenseService.create(body)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
