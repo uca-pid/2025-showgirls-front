@@ -126,9 +126,9 @@ export default function HistoricalExpenseView() {
           />
         </SectionCard>
         <SectionCard className="items-center">
-          <View className="flex-row gap-5">
+          <View className="flex-col items-center gap-0">
             <Text className="text-lg font-semibold">
-              Gastos de {monthNames[selectedMonth]}:
+              Gastos de {monthNames[selectedMonth]} de {currentYear}:
             </Text>
             <Text className="text-lg text-muted-foreground">
               ${monthlyTotals[selectedMonth]}
