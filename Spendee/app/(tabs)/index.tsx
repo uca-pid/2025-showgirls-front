@@ -172,9 +172,9 @@ export default function HomePage() {
 
       <Section
         title="Acciones Rápidas"
-        actionIcon={Pencil}
+        /*actionIcon={Pencil}
         actionText="Editar"
-        onActionPress={() => {}}
+        onActionPress={() => {}}*/
       >
         <SectionCard flex="row">
           <FlatList
@@ -198,51 +198,6 @@ export default function HomePage() {
         showWhen={expensesData.length > 0}
       >
         <SectionCard onPress={() => router.push('/expense')}>
-          {chartData.filter((item) => item.value > 0).length >= 3 && (
-            <FlatList
-              contentContainerStyle={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-                width: '100%',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-              }}
-              horizontal
-              scrollEnabled={false}
-              data={chartData.sort((a, b) => b.value - a.value).slice(0, 3)}
-              renderItem={({ item }) => {
-                const category = categoriesData.find(
-                  (category) => category.id === item.id,
-                )
-
-                return (
-                  <View className="justify-center flex-row items-center gap-1 mr-2">
-                    <View
-                      className="rounded-full w-2 h-2"
-                      style={{ backgroundColor: item.segmentColor }}
-                    />
-                    <Text className="text-muted-foreground">
-                      {category?.nombre}
-                    </Text>
-                  </View>
-                )
-              }}
-            />
-          )}
-
-          <DonutChart
-            showWhen={
-              filteredChartData.filter((item) => item.value > 0).length >= 0
-            }
-            data={filteredChartData}
-            centerText={`$${new Intl.NumberFormat('es-AR').format(
-              filteredChartData.reduce((sum, item) => sum + item.value, 0),
-            )}`}
-            centerTextColor="white"
-            size={210}
-            strokeWidth={20}
-          />
           <SectionCard flex="row" className="width-full">
             <FlatList
               data={categoriesData}
@@ -260,16 +215,27 @@ export default function HomePage() {
                     onPress={() => toggleCategory(cat.id)}
                     activeOpacity={0.7}
                     style={{
-                      backgroundColor: isSelected ? cat.color : '#f2f2f2',
                       borderRadius: 8,
                       paddingHorizontal: 14,
                       paddingVertical: 4,
                       marginHorizontal: 6,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                      borderWidth: isSelected ? 2 : 0,
+                      borderColor: isSelected ? cat.color : 'transparent',
+                      backgroundColor: isSelected
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(255, 255, 255, 0.05)',
                     }}
                   >
+                    <View
+                      className="rounded-full w-2 h-2"
+                      style={{ backgroundColor: cat.color }}
+                    />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : '#333',
+                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}
@@ -281,6 +247,18 @@ export default function HomePage() {
               }}
             />
           </SectionCard>
+          <DonutChart
+            showWhen={
+              filteredChartData.filter((item) => item.value > 0).length >= 0
+            }
+            data={filteredChartData}
+            centerText={`$${new Intl.NumberFormat('es-AR').format(
+              filteredChartData.reduce((sum, item) => sum + item.value, 0),
+            )}`}
+            centerTextColor="white"
+            size={210}
+            strokeWidth={20}
+          />
 
           <View className="flex-row items-center">
             <Text className="text-muted-foreground">

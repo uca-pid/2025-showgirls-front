@@ -155,17 +155,6 @@ const ExpensesPage = () => {
               />
             </Pressable>
           </View>
-          <DonutChart
-            data={filteredChartData}
-            centerText={
-              loadingChartData
-                ? ''
-                : `$${filteredChartData.reduce((sum, item) => sum + item.value, 0)}`
-            }
-            centerTextColor="white"
-            size={210}
-            strokeWidth={20}
-          />
           <SectionCard flex="row" className="width-full">
             <FlatList
               data={categoriesData}
@@ -183,16 +172,27 @@ const ExpensesPage = () => {
                     onPress={() => toggleCategory(cat.id)}
                     activeOpacity={0.7}
                     style={{
-                      backgroundColor: isSelected ? cat.color : '#f2f2f2',
                       borderRadius: 8,
                       paddingHorizontal: 14,
-                      paddingVertical: 8,
+                      paddingVertical: 4,
                       marginHorizontal: 6,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                      borderWidth: isSelected ? 2 : 0,
+                      borderColor: isSelected ? cat.color : 'transparent',
+                      backgroundColor: isSelected
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(255, 255, 255, 0.05)',
                     }}
                   >
+                    <View
+                      className="rounded-full w-2 h-2"
+                      style={{ backgroundColor: cat.color }}
+                    />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : '#333',
+                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}
@@ -204,6 +204,18 @@ const ExpensesPage = () => {
               }}
             />
           </SectionCard>
+          <DonutChart
+            data={filteredChartData}
+            centerText={
+              loadingChartData
+                ? ''
+                : `$${filteredChartData.reduce((sum, item) => sum + item.value, 0)}`
+            }
+            centerTextColor="white"
+            size={210}
+            strokeWidth={20}
+          />
+
           <View className="flex-row items-center">
             <Pressable
               className="flex-row items-center"

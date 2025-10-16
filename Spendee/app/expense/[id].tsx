@@ -91,7 +91,7 @@ const ExpenseDetailPage = () => {
             color={category?.color}
           />
           <View className="items-center flex-row gap-1">
-            <Link href="/category" asChild>
+            <Link href="/expense" asChild>
               <Text className="text-muted-foreground">
                 Ver todas las categorías
               </Text>
