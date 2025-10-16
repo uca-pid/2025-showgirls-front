@@ -25,11 +25,24 @@ export default function useCategories(filters?: CategoryFilters) {
     refetchOnMount: false,
   })
 
-  const { mutateAsync: create } = useMutation({
+  const { mutateAsync: addCategory } = useMutation({
     mutationFn: categoryService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
+      queryClient.invalidateQueries({
+        queryKey: ['expenseDetail'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+      queryClient.invalidateQueries({
+        queryKey: ['categoriesChart'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
     },
   })
   const { mutateAsync: deleteCategory } = useMutation({
@@ -53,5 +66,12 @@ export default function useCategories(filters?: CategoryFilters) {
     },
   })
 
-  return { categoriesData, isLoading, refetch, create, deleteCategory, ...rest }
+  return {
+    categoriesData,
+    isLoading,
+    refetch,
+    addCategory,
+    deleteCategory,
+    ...rest,
+  }
 }

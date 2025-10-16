@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
-import categoryService from '@/services/category.service'
+import useCategories from '@/hooks/useCategories'
 import { router } from 'expo-router'
 import {
   Paperclip,
@@ -66,6 +66,8 @@ const index = () => {
   const [icon, setIcon] = useState('')
   const [color, setColor] = useState(0)
 
+  const { addCategory, isLoading } = useCategories()
+
   const user = auth.currentUser
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
@@ -79,12 +81,11 @@ const index = () => {
     return null
   }
 
-  const addCategory = async () => {
-    const userId = user?.uid
+  const handleAddCategory = async () => {
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
-      await categoryService.create({
+      await addCategory({
         nombre: categoryName,
         icono: icon,
         color: colorOptions[color].hex,
@@ -97,7 +98,7 @@ const index = () => {
     }
   }
   return (
-    <Section className="p-4">
+    <Section className="p-4" activity={isLoading}>
       <Text className="text-white">Nombre</Text>
       <Input
         placeholder="Nombre de la categoría"
@@ -159,7 +160,7 @@ const index = () => {
           }}
         />
       </View>
-      <Button onPress={() => addCategory()}>
+      <Button onPress={() => handleAddCategory()}>
         <Text>Agregar categoría</Text>
       </Button>
     </Section>

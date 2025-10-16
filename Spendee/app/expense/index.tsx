@@ -3,6 +3,7 @@ import DonutChart from '@/components/DonutChart'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
+import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
@@ -15,7 +16,6 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
