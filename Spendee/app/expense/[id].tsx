@@ -14,7 +14,9 @@ import { Alert, Pressable, View } from 'react-native'
 
 const ExpenseDetailPage = () => {
   const { id } = useGlobalSearchParams()
-  const { expenseDetailData, deleteExpense } = useExpenseDetail(Number(id))
+  const { expenseDetailData, deleteExpense, isFetching } = useExpenseDetail(
+    Number(id),
+  )
   const { categoriesData } = useCategories()
 
   const category = categoriesData.find(
@@ -59,7 +61,7 @@ const ExpenseDetailPage = () => {
   }
 
   return (
-    <Container>
+    <Container activity={isFetching}>
       <Section>
         <SectionCard>
           <Text className="text-muted-foreground">

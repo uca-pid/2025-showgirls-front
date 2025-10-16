@@ -3,15 +3,16 @@ import DonutChart from '@/components/DonutChart'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
+import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import { getIcon } from '@/lib/getIcon'
 import { router } from 'expo-router'
-import { ChevronRight } from 'lucide-react-native'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react-native'
 import React, { useMemo, useState } from 'react'
-import { FlatList, Pressable, Text, View } from 'react-native'
+import { FlatList, Pressable, RefreshControl, View } from 'react-native'
 
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
@@ -78,9 +79,18 @@ const ExpensesPage = () => {
     [filterMonth, filterYear],
   )
 
-  const { categoriesData, isLoading: loadingCategories } =
-    useCategories(filterParams)
-  const { chartData, isLoading: loadingChartData } = useChartData(filterParams)
+  const {
+    categoriesData,
+    isLoading: loadingCategories,
+    refetch: refetchCategories,
+    isRefetching: isRefetchingCategories,
+  } = useCategories(filterParams)
+  const {
+    chartData,
+    isLoading: loadingChartData,
+    isRefetching: isRefetchingChart,
+    refetch: refetchChart,
+  } = useChartData(filterParams)
 
   const isNextDisabled = useMemo(() => {
     return (
@@ -90,7 +100,15 @@ const ExpensesPage = () => {
   }, [currentMonth, todayMonth])
 
   return (
-    <Container>
+    <Container
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetchingCategories}
+          onRefresh={refetchCategories}
+        />
+      }
+      activity={loadingCategories}
+    >
       <Section title="Mis Gastos">
         <SectionCard activity={loadingChartData}>
           <View className="flex-row items-center justify-between w-full">
@@ -100,11 +118,9 @@ const ExpensesPage = () => {
               accessibilityLabel="Mes anterior"
               className="px-2 py-1"
             >
-              <Text className="text-2xl text-muted-foreground">{'<'}</Text>
+              <ChevronLeft size={24} color={'lightgray'} />
             </Pressable>
-            <Text className="text-muted-foreground text-lg font-medium">
-              {monthLabel}
-            </Text>
+            <Text className="text-lg font-medium">{monthLabel}</Text>
             <Pressable
               hitSlop={10}
               onPress={() => handleMonthChange(1)}
@@ -112,15 +128,14 @@ const ExpensesPage = () => {
               className="px-2 py-1"
               disabled={isNextDisabled}
             >
-              <Text
-                className="text-2xl text-muted-foreground"
-                style={isNextDisabled ? { opacity: 0.3 } : undefined}
-              >
-                {'>'}
-              </Text>
+              <ChevronRight
+                size={24}
+                color={isNextDisabled ? 'gray' : 'lightgray'}
+              />
             </Pressable>
           </View>
           <DonutChart
+            showWhen={chartData.filter((item) => item.value > 0).length >= 1}
             data={chartData}
             centerText={
               loadingChartData
@@ -136,7 +151,7 @@ const ExpensesPage = () => {
               className="flex-row items-center"
               onPress={() => router.push('/expense/historical-view')}
             >
-              <Text className="text-muted-foreground">
+              <Text className="text-muted-foreground text-base">
                 Ver evolución mensual
               </Text>
               <ChevronRight color="gray" />
@@ -147,8 +162,11 @@ const ExpensesPage = () => {
 
       <Section
         title="Categorías"
-        actionText="Ver categorías"
-        actionIcon={ChevronRight}
+        actionText="Añadir categoría"
+        actionIcon={Plus}
+        onActionPress={() => router.push({ pathname: '/category' })}
+        showWhen={!loadingCategories}
+        activity={loadingCategories}
       >
         <FlatList
           scrollEnabled={false}
@@ -171,10 +189,11 @@ const ExpensesPage = () => {
                   router.push({
                     pathname: '../category/edit-category',
                     params: {
-                      categoryIdr: item.id,
+                      categoryId: item.id,
                       categoryName: item.nombre,
                       categoryDescription: item.descripcion ?? '',
                       categoryIcon: item.icono,
+                      categoryColor: item.color,
                     },
                   })
                 }

@@ -91,15 +91,19 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="expense/[id]"
-        options={{ title: 'Detalle del Gasto' }}
+        options={{ title: 'Detalle del Gasto', headerBackTitle: 'Atrás' }}
       />
       <Stack.Screen
         name="expense/perCategory/[id]"
-        options={{ title: 'Gastos por categoría' }}
+        options={{ title: 'Gastos por categoría', headerBackTitle: 'Atrás' }}
       />
       <Stack.Screen
         name="expense/historical-view"
-        options={{ title: 'Evolución Mensual' }}
+        options={{ title: 'Evolución Mensual', headerBackTitle: 'Atrás' }}
+      />
+      <Stack.Screen
+        name="expense/list"
+        options={{ title: 'Historial de Gastos', headerBackTitle: 'Atrás' }}
       />
       <Stack.Screen
         name="income/modal/add"

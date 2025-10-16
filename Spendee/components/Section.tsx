@@ -1,7 +1,8 @@
 import { LucideIcon } from 'lucide-react-native'
 import React, { PropsWithChildren } from 'react'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
-import SectionCard from './SectionCard'
+import { Pressable, Text, View } from 'react-native'
+import Container from './Container'
+import DollarSignSpinner from './ui/DollarSignSpinner'
 import { Icon } from './ui/icon'
 
 const Section = ({
@@ -25,9 +26,9 @@ const Section = ({
   return (
     <>
       {activity ? (
-        <SectionCard>
-          <ActivityIndicator size={24} color="gray" />
-        </SectionCard>
+        <Container>
+          <DollarSignSpinner />
+        </Container>
       ) : showWhen ? (
         <View className={`gap-4 w-full ${className}`}>
           {title && (

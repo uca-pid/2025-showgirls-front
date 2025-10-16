@@ -23,10 +23,8 @@ const CategoryDetailPage = () => {
   }>()
 
   const { user } = useAuth()
-  const { expensesByCategory, isRefetching, refetch } = useExpensesByCategory(
-    user ? user.uid : '',
-    Number(params.id),
-  )
+  const { expensesByCategory, isRefetching, refetch, isFetching } =
+    useExpensesByCategory(user ? user.uid : '', Number(params.id))
   const { deleteExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
   const { categoriesData } = useCategories()
   const category = categoriesData.find((cat) => cat.id === Number(params.id))
@@ -71,6 +69,7 @@ const CategoryDetailPage = () => {
       refreshControl={
         <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
       }
+      activity={isFetching}
     >
       <Section>
         <SectionCard>

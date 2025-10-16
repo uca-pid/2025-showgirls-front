@@ -1,10 +1,14 @@
-import { View, Text, ScrollView, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import IconButton from '@/components/IconButton'
+import Section from '@/components/Section'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Text } from '@/components/ui/text'
+import { useAuth } from '@/context/AuthContext'
+import { toastService } from '@/context/ToastContext'
+import useCategories from '@/hooks/useCategories'
+import useExpenses from '@/hooks/useExpenses'
+import { router, useLocalSearchParams } from 'expo-router'
 import {
-  Ellipsis,
   Paperclip,
   Popcorn,
   Shield,
@@ -19,21 +23,70 @@ import {
   Wine,
   Wrench,
 } from 'lucide-react-native'
-import { Button } from '@/components/ui/button'
-import { router, useLocalSearchParams } from 'expo-router'
+import React, { useState } from 'react'
+import { Alert, FlatList, Pressable, View } from 'react-native'
 import ApiService from '../../services/api.service'
-import { toastService } from '@/context/ToastContext'
-import categoryService from '@/services/category.service'
-import expenseService from '@/services/expense.service'
+
+const iconOptions = [
+  { icon: Wrench, name: 'Wrench' },
+  { icon: Wine, name: 'Wine' },
+  { icon: Users, name: 'Users' },
+  { icon: TreePalm, name: 'TreePalm' },
+  { icon: Popcorn, name: 'Popcorn' },
+  { icon: TestTube, name: 'TestTube' },
+  { icon: Sun, name: 'Sun' },
+  { icon: Sprout, name: 'Sprout' },
+  { icon: Sigma, name: 'Sigma' },
+  { icon: Shuffle, name: 'Shuffle' },
+  { icon: Shield, name: 'Shield' },
+  { icon: Paperclip, name: 'Paperclip' },
+]
+
+const colorOptions = [
+  { colorName: 'rose', hex: '#fda4af' },
+  { colorName: 'pink', hex: '#f9a8d4' },
+  { colorName: 'fuchsia', hex: '#f0abfc' },
+  { colorName: 'purple', hex: '#d8b4fe' },
+  { colorName: 'violet', hex: '#c4b5fd' },
+  { colorName: 'indigo', hex: '#a5b4fc' },
+  { colorName: 'blue', hex: '#93c5fd' },
+  { colorName: 'lightBlue', hex: '#7dd3fc' },
+  { colorName: 'cyan', hex: '#67e8f9' },
+  { colorName: 'teal', hex: '#5eead4' },
+  { colorName: 'emerald', hex: '#6ee7b7' },
+  { colorName: 'green', hex: '#86efac' },
+  { colorName: 'lime', hex: '#bef264' },
+  { colorName: 'yellow', hex: '#fde047' },
+  { colorName: 'amber', hex: '#fcd34d' },
+  { colorName: 'orange', hex: '#fdba74' },
+  { colorName: 'red', hex: '#ef4444' },
+  { colorName: 'warmGray', hex: '#d6d3d1' },
+]
 
 const EditCategory = () => {
-  const { categoryName, categoryDescription, categoryIcon, categoryId } =
-    useLocalSearchParams()
+  const { user } = useAuth()
+  const {
+    categoryName,
+    categoryDescription,
+    categoryIcon,
+    categoryId,
+    categoryColor,
+  } = useLocalSearchParams()
   const [name, setName] = useState(String(categoryName) || '')
   const [description, setDescription] = useState(
     String(categoryDescription) || '',
   )
   const [icon, setIcon] = useState(String(categoryIcon) || '')
+  const [color, setColor] = useState(
+    colorOptions.findIndex(
+      (color, index) => color.hex == String(categoryColor),
+    ),
+  )
+
+  const { moveExpenses, isRefetching: refetchingExpenses } = useExpenses(
+    user ? user.uid : '',
+  )
+  const { deleteCategory, isRefetching: refetchingCategories } = useCategories()
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
     toastService.show(message, type === 'success' ? 'success' : undefined)
@@ -49,12 +102,12 @@ const EditCategory = () => {
   const modifyCategory = async () => {
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
-    console.log(categoryId)
     try {
       const response = await ApiService.put(`/modifyCategory/${categoryId}`, {
         categoria: name,
         descripcion: description,
         icono: icon,
+        color: colorOptions[color].hex,
       })
 
       alert('Categoría modificada con éxito')
@@ -64,7 +117,7 @@ const EditCategory = () => {
       alert('No se pudo modificar la categoría')
     }
   }
-  const deleteCategory = async () => {
+  const handleDeleteCategory = async () => {
     Alert.alert(
       'Eliminar categoría',
       'Los gastos asociados a esta categoría pasarán a la categoría "Otros" \n¿Seguro que deseas continuar?',
@@ -77,8 +130,9 @@ const EditCategory = () => {
           text: 'Eliminar categoría',
           style: 'destructive',
           onPress: async () => {
-            await expenseService.edit(Number(categoryId), 7)
-            await categoryService.delete(Number(categoryId))
+            await moveExpenses(Number(categoryId))
+            await deleteCategory(Number(categoryId))
+            toastService.show('Categoría eliminada con éxito', 'success')
             router.back()
           },
         },
@@ -87,144 +141,69 @@ const EditCategory = () => {
   }
 
   return (
-    <View className="flex-1 p-4 gap-4">
+    <Section
+      activity={refetchingCategories || refetchingExpenses}
+      className="p-4"
+    >
       <Text className="text-gray-500">Nombre</Text>
       <Input placeholder={name} onChangeText={setName} />
       <Text className="text-gray-500">Descripcion</Text>
       <Input placeholder={description} onChangeText={setDescription} />
+      <Text className="text-gray-500">Seleccionar color</Text>
+
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={colorOptions}
+        renderItem={({ item, index }) => (
+          <Pressable onPress={() => setColor(index)}>
+            <View
+              className="w-[50px] h-[50px] rounded-full"
+              style={{
+                backgroundColor: item.hex,
+                borderWidth: color === index ? 1.5 : 0,
+                borderColor: 'white',
+              }}
+            />
+          </Pressable>
+        )}
+        contentContainerStyle={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}
+      />
       <Text className="text-gray-500">Seleccionar ícono</Text>
       <View className="w-full ">
-        <Card className="w-full h-[300]">
-          <ScrollView>
-            <CardContent className="flex-row flex-wrap gap-4 justify-between">
-              <IconButton
-                icon={Wrench}
-                text=""
-                onPress={() => setIcon('Wrench')}
-                className={
-                  icon === 'Wrench'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Wine}
-                text=""
-                onPress={() => setIcon('Wine')}
-                className={
-                  icon === 'Wine' ? 'rounded-full border-pink-300 border-4' : ''
-                }
-              />
-              <IconButton
-                icon={Users}
-                text=""
-                onPress={() => setIcon('Users')}
-                className={
-                  icon === 'Users'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={TreePalm}
-                text=""
-                onPress={() => setIcon('TreePalm')}
-                className={
-                  icon === 'TreePalm'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Popcorn}
-                text=""
-                onPress={() => setIcon('Popcorn')}
-                className={
-                  icon === 'Popcorn'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={TestTube}
-                text=""
-                onPress={() => setIcon('TestTube')}
-                className={
-                  icon === 'TestTube'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Sun}
-                text=""
-                onPress={() => setIcon('Sun')}
-                className={
-                  icon === 'Sun' ? 'rounded-full border-pink-300 border-4' : ''
-                }
-              />
-              <IconButton
-                icon={Sprout}
-                text=""
-                onPress={() => setIcon('Sprout')}
-                className={
-                  icon === 'Sprout'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Sigma}
-                text=""
-                onPress={() => setIcon('Sigma')}
-                className={
-                  icon === 'Sigma'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Shuffle}
-                text=""
-                onPress={() => setIcon('Shuffle')}
-                className={
-                  icon === 'Shuffle'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Shield}
-                text=""
-                onPress={() => setIcon('Shield')}
-                className={
-                  icon === 'Shield'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-              <IconButton
-                icon={Paperclip}
-                text=""
-                onPress={() => setIcon('Paperclip')}
-                className={
-                  icon === 'Paperclip'
-                    ? 'rounded-full border-pink-300 border-4'
-                    : ''
-                }
-              />
-            </CardContent>
-          </ScrollView>
-        </Card>
+        <FlatList
+          data={iconOptions}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <IconButton
+              icon={item.icon}
+              text=""
+              onPress={() => setIcon(item.name)}
+              className={
+                icon === item.name ? 'rounded-full bg-pink-300/50' : ''
+              }
+            />
+          )}
+          contentContainerStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        />
       </View>
       <Button onPress={() => modifyCategory()}>
         <Text>Editar categoría</Text>
       </Button>
-      <Button onPress={() => deleteCategory()} variant={'destructive'}>
+      <Button onPress={() => handleDeleteCategory()} variant={'destructive'}>
         <Trash2 size={20} color="white" />
         <Text className="text-white">Eliminar categoría</Text>
       </Button>
-    </View>
+    </Section>
   )
 }
 
