@@ -16,8 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.trinisuarez.spendee"
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -38,12 +37,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "d766c57b-1bca-4611-854b-d5c8a592afe9"
-      }
     }
   }
 }
