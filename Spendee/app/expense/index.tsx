@@ -3,18 +3,23 @@ import DonutChart from '@/components/DonutChart'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
+import { Select } from '@/components/ui/select'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import { getIcon } from '@/lib/getIcon'
+import { Button } from '@react-navigation/elements'
 import { router } from 'expo-router'
 import { ChevronRight } from 'lucide-react-native'
 import React, { useMemo, useState } from 'react'
-import { FlatList, Pressable, Text, View } from 'react-native'
+import { FlatList, Pressable, Text, TouchableOpacity, View } from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker'
 
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const [openDropdown, setOpenDropdown] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
     date.setDate(1)
@@ -89,6 +94,19 @@ const ExpensesPage = () => {
     )
   }, [currentMonth, todayMonth])
 
+  function toggleCategory(categoryId: number) {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
+    )
+  }
+
+  const filteredChartData =
+    selectedCategories.length > 0
+      ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
+      : chartData
+
   return (
     <Container>
       <Section title="Mis Gastos">
@@ -121,16 +139,43 @@ const ExpensesPage = () => {
             </Pressable>
           </View>
           <DonutChart
-            data={chartData}
+            data={filteredChartData}
             centerText={
               loadingChartData
                 ? ''
-                : `$${chartData.reduce((sum, item) => sum + item.value, 0)}`
+                : `$${filteredChartData.reduce((sum, item) => sum + item.value, 0)}`
             }
             centerTextColor="white"
             size={210}
             strokeWidth={20}
           />
+          <SectionCard flex="row" className="flex-wrap justify-center">
+            {categoriesData.map((cat) => {
+              const isSelected = selectedCategories.includes(cat.id)
+              return (
+                <TouchableOpacity
+                  key={cat.id}
+                  onPress={() => toggleCategory(cat.id)}
+                  style={{
+                    backgroundColor: isSelected ? cat.color : '#f2f2f2',
+                    borderRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    margin: 4,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: isSelected ? 'white' : 'black',
+                      fontWeight: isSelected ? '600' : '400',
+                    }}
+                  >
+                    {cat.nombre}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </SectionCard>
           <View className="flex-row items-center">
             <Pressable
               className="flex-row items-center"

@@ -20,8 +20,9 @@ import {
   Info,
   Pencil,
 } from 'lucide-react-native'
-import { useMemo } from 'react'
-import { FlatList, RefreshControl, View } from 'react-native'
+import { useMemo, useState } from 'react'
+import { FlatList, RefreshControl, TouchableOpacity, View } from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker'
 
 const actions = [
   {
@@ -44,6 +45,8 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const [openDropdown, setOpenDropdown] = useState(false)
   const monthNames = useMemo(
     () => [
       'Enero',
@@ -105,6 +108,19 @@ export default function HomePage() {
     refetchChart()
   }
 
+  function toggleCategory(categoryId: number) {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
+    )
+  }
+
+  const filteredChartData =
+    selectedCategories.length > 0
+      ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
+      : chartData
+
   return (
     <Container
       activity={refreshing}
@@ -162,7 +178,7 @@ export default function HomePage() {
       >
         <SectionCard flex="row">
           <FlatList
-            contentContainerClassName="justify-between"
+            contentContainerStyle={{ justifyContent: 'space-between' }}
             horizontal
             showsHorizontalScrollIndicator={false}
             data={actions}
@@ -177,7 +193,6 @@ export default function HomePage() {
           />
         </SectionCard>
       </Section>
-
       <Section
         title={`Mis Gastos de ${monthLabel}`}
         showWhen={expensesData.length > 0}
@@ -185,7 +200,14 @@ export default function HomePage() {
         <SectionCard onPress={() => router.push('/expense')}>
           {chartData.filter((item) => item.value > 0).length >= 3 && (
             <FlatList
-              contentContainerClassName="flex-row items-center gap-2 w-full justify-center flex-wrap"
+              contentContainerStyle={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
               horizontal
               scrollEnabled={false}
               data={chartData.sort((a, b) => b.value - a.value).slice(0, 3)}
@@ -210,15 +232,44 @@ export default function HomePage() {
           )}
 
           <DonutChart
-            showWhen={chartData.filter((item) => item.value > 0).length >= 3}
-            data={chartData}
+            showWhen={
+              filteredChartData.filter((item) => item.value > 0).length >= 0
+            }
+            data={filteredChartData}
             centerText={`$${new Intl.NumberFormat('es-AR').format(
-              chartData.reduce((sum, item) => sum + item.value, 0),
+              filteredChartData.reduce((sum, item) => sum + item.value, 0),
             )}`}
             centerTextColor="white"
             size={210}
             strokeWidth={20}
           />
+          <SectionCard flex="row" className="flex-wrap justify-center">
+            {categoriesData.map((cat) => {
+              const isSelected = selectedCategories.includes(cat.id)
+              return (
+                <TouchableOpacity
+                  key={cat.id}
+                  onPress={() => toggleCategory(cat.id)}
+                  style={{
+                    backgroundColor: isSelected ? cat.color : '#f2f2f2',
+                    borderRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    margin: 4,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: isSelected ? 'white' : 'black',
+                      fontWeight: isSelected ? '600' : '400',
+                    }}
+                  >
+                    {cat.nombre}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </SectionCard>
           <View className="flex-row items-center">
             <Text className="text-muted-foreground">
               Ver gastos por categoría
