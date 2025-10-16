@@ -34,7 +34,7 @@ export default function useExpenseDetail(expenseId: number) {
         queryKey: ['expenseDetail'],
         exact: false,
       })
-      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
       queryClient.invalidateQueries({
         queryKey: ['expensesByCategory'],
         exact: false,

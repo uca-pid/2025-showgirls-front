@@ -32,6 +32,26 @@ export default function useCategories(filters?: CategoryFilters) {
       queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
     },
   })
+  const { mutateAsync: deleteCategory } = useMutation({
+    mutationFn: categoryService.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['expenseDetail'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+      queryClient.invalidateQueries({
+        queryKey: ['categoriesChart'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
+    },
+  })
 
-  return { categoriesData, isLoading, refetch, create, ...rest }
+  return { categoriesData, isLoading, refetch, create, deleteCategory, ...rest }
 }
