@@ -3,52 +3,59 @@ import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Icon } from '@/components/ui/icon'
 import { Text } from '@/components/ui/text'
+import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
 import { getIcon } from '@/lib/getIcon'
-import { Link, router, useGlobalSearchParams } from 'expo-router'
-import { ChevronRight } from 'lucide-react-native'
-import React from 'react'
-import { View } from 'react-native'
-import expenseService from '../../services/expense.service'
+import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { ChevronRight, Trash2 } from 'lucide-react-native'
+import React, { useLayoutEffect } from 'react'
+import { Alert, Pressable, View } from 'react-native'
 
 const ExpenseDetailPage = () => {
   const { id } = useGlobalSearchParams()
-  const { expenseDetailData } = useExpenseDetail(Number(id))
+  const { expenseDetailData, deleteExpense } = useExpenseDetail(Number(id))
   const { categoriesData } = useCategories()
 
   const category = categoriesData.find(
     (cat) => cat.id === expenseDetailData.categoriaId,
   )
 
-  async function handleDeleteExpense() {
-    if (!id) return
-
-    const confirmed =
-      typeof (global as any).confirm === 'function'
-        ? (global as any).confirm('¿Desea eliminar este gasto?')
-        : true
-    if (!confirmed) return
-
-    try {
-      const svc: any = expenseService
-
-      if (typeof svc.deleteExpense === 'function') {
-        await svc.deleteExpense(Number(id))
-      } else if (typeof svc.delete === 'function') {
-        await svc.delete(Number(id))
-      } else if (typeof svc.remove === 'function') {
-        await svc.remove(Number(id))
-      } else if (typeof svc.deleteByExpenseId === 'function') {
-        await svc.deleteByExpenseId(Number(id))
-      } else {
-        throw new Error('Delete method not available on expenseService')
-      }
-
-      router.back()
-    } catch (error) {
-      console.error('Failed to delete expense:', error)
+  const navigation = useNavigation()
+  useLayoutEffect(() => {
+    if (category?.nombre) {
+      navigation.setOptions({
+        headerRight: () => (
+          <Pressable className="flex-row" onPress={handleDeleteExpense}>
+            <Text className="text-sm text-muted-foreground">Eliminar </Text>
+            <Trash2 size={20} color="gray" />
+          </Pressable>
+        ),
+      })
     }
+  }, [category])
+
+  async function handleDeleteExpense() {
+    Alert.alert(
+      '¿Estás seguro que deseas eliminar este gasto?',
+      'Esta acción es IRREVERSIBLE',
+      [
+        { text: 'Cancelar' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteExpense(Number(id))
+              router.back()
+            } catch (error) {
+              console.log(error)
+              toastService.show('Error al eliminar gasto', 'success')
+            }
+          },
+        },
+      ],
+    )
   }
 
   return (

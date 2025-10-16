@@ -1,5 +1,5 @@
 import expenseService, { ExpenseResponse } from '@/services/expense.service'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const defaultExpense: ExpenseResponse = {
   id: 0,
@@ -11,6 +11,7 @@ const defaultExpense: ExpenseResponse = {
 }
 
 export default function useExpenseDetail(expenseId: number) {
+  const queryClient = useQueryClient()
   const {
     data: expenseDetailData = defaultExpense,
     refetch,
@@ -26,5 +27,26 @@ export default function useExpenseDetail(expenseId: number) {
     refetchOnMount: false,
   })
 
-  return { expenseDetailData, refetch, isLoading, ...rest }
+  const { mutateAsync: deleteExpense } = useMutation({
+    mutationFn: expenseService.deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['expenseDetail'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({
+        queryKey: ['expensesByCategory'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+      queryClient.invalidateQueries({
+        queryKey: ['categoriesChart'],
+        exact: false,
+      })
+      queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
+    },
+  })
+
+  return { expenseDetailData, deleteExpense, refetch, isLoading, ...rest }
 }
