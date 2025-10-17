@@ -1,424 +1,312 @@
-import React, { useEffect, useState } from 'react'
-import {
-  View,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  FlatList,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Pressable,
-} from 'react-native'
-import { Card, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import Container from '@/components/Container'
+import DonutChart from '@/components/DonutChart'
+import IconButton from '@/components/IconButton'
+import ItemCard from '@/components/ItemCard'
+import Section from '@/components/Section'
+import SectionCard from '@/components/SectionCard'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
-import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
+import useBalance from '@/hooks/useBalance'
+import useCategories from '@/hooks/useCategories'
+import useChartData from '@/hooks/useChartData'
+import useExpenses from '@/hooks/useExpenses'
+import { getIcon } from '@/lib/getIcon'
+import { router } from 'expo-router'
 import {
-  ArrowBigDown,
   BanknoteArrowDown,
   BanknoteArrowUp,
-  BookOpen,
-  Bus,
-  Ellipsis,
-  Gamepad2,
-  Heart,
-  House,
-  Icon,
-  LucideIcon,
-  Minus,
-  Paperclip,
-  Plus,
-  Popcorn,
-  Shield,
-  Shuffle,
-  Sigma,
-  Sprout,
-  Sun,
-  TestTube,
-  TreePalm,
-  Users,
-  Utensils,
-  Wine,
-  Wrench,
+  ChevronRight,
+  Info,
+  Pencil,
 } from 'lucide-react-native'
-import { useHeaderHeight } from '@react-navigation/elements'
-import { useIsFocused } from '@react-navigation/native'
-import { LinearGradient } from 'expo-linear-gradient'
-import { auth } from '@/firebase.config'
-import ApiService from '../services/api.service'
-import balanceService from '../services/balance.service'
-import IconButton from '@/components/IconButton'
-import IconMenu from '@/components/IconMenu'
-import { PieChart } from 'react-native-gifted-charts'
-import { router } from 'expo-router'
-import expenseService from '../services/expense.service'
-import { ExpenseResponse } from '../services/expense.service'
-import ItemMenu from '@/components/ItemMenu'
-import { Input } from '@/components/ui/input'
+import { useMemo, useState } from 'react'
+import { FlatList, RefreshControl, TouchableOpacity, View } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
 
+const actions = [
+  {
+    text: 'Ingreso',
+    textColor: 'white',
+    icon: BanknoteArrowUp,
+    onPress: () => {
+      router.push('/income/modal/add')
+    },
+  },
+  {
+    text: 'Egreso',
+    textColor: 'white',
+    icon: BanknoteArrowDown,
+    onPress: () => {
+      router.push('/expense/modal/add')
+    },
+  },
+]
+
 export default function HomePage() {
-  const [balance, setBalance] = useState(0)
-  const [income, setIncome] = useState(0)
-  const [expense, setExpense] = useState(0)
-  const [userExpenses, setUserExpenses] = useState<ExpenseResponse[]>([])
-  const [transaccion, setTransaccion] = useState<string>('')
-  const [amount, setAmount] = useState<string>('')
-  const [modalVisible, setModalVisible] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<number>(0)
+  const { user } = useAuth()
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const [openDropdown, setOpenDropdown] = useState(false)
+  const monthNames = useMemo(
+    () => [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ],
+    [],
+  )
 
-  const user = auth.currentUser
+  const today = useMemo(() => new Date(), [])
+  const currentMonthIndex = today.getMonth()
+  const currentYear = today.getFullYear()
+  const monthLabel = `${monthNames[currentMonthIndex]}`
+  const {
+    categoriesData,
+    isFetching: fetchingCategories,
+    refetch: refetchCategories,
+  } = useCategories()
 
-  useEffect(() => {
-    const userId = user?.uid
-    if (userId !== undefined) setData(userId)
-  }, [user])
+  const {
+    balanceData,
+    isFetching: fetchingBalance,
+    refetch: refetchBalance,
+  } = useBalance(user?.uid ?? '')
 
-  const calculateBalance = (balance: number, amount: number, type: string) => {
-    if (type === 'income') {
-      return balance + amount
-    } else if (type === 'expense') {
-      return balance - amount
-    }
-    return balance
+  const {
+    expensesData,
+    isFetching: fetchingExpenses,
+    refetch: refetchExpenses,
+  } = useExpenses(user?.uid ?? '', 5, 'desc')
+
+  const {
+    chartData,
+    isFetching: fetchingChart,
+    refetch: refetchChart,
+  } = useChartData({ month: currentMonthIndex + 1, year: currentYear })
+
+  const formattedBalance = new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(balanceData.balance)
+
+  const refreshing =
+    fetchingBalance || fetchingCategories || fetchingExpenses || fetchingChart
+
+  function handleRefresh() {
+    refetchBalance()
+    refetchCategories()
+    refetchExpenses()
+    refetchChart()
   }
 
-  const handleTransaction = async () => {
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    if (transaccion === 'income') {
-      setIncome(income + numericAmount)
-      await addIncome()
-    }
-    if (transaccion === 'expense') {
-      setExpense(expense + numericAmount)
-      await addExpense()
-    }
-    setBalance(calculateBalance(balance, numericAmount, transaccion))
+  function toggleCategory(categoryId: number) {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
+    )
   }
 
-  const verifyAmount = () => {
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      alert('Por favor, ingrese un monto válido mayor que cero.')
-      return
-    }
-    setAmount(amount)
-    handleTransaction()
-  }
-
-  const addIncome = async () => {
-    const userId = user?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    await ApiService.post('/ingreso', {
-      userId: userId,
-      ingreso: numericAmount,
-      montoAnterior: balance,
-    })
-  }
-
-  const addExpense = async () => {
-    const userId = user?.uid
-    const numericAmount = parseFloat(amount.replace(',', '.'))
-    await ApiService.post('/gasto', {
-      userId: userId,
-      gasto: numericAmount,
-      montoAnterior: balance,
-      categoriaId: selectedCategory,
-    })
-  }
-
-  const fetchExpenses = async (userId: string) => {
-    try {
-      const res = await expenseService.findByUserId(userId)
-      setUserExpenses(res.data)
-    } catch (err) {
-      console.warn('Error fetching expenses:', err)
-    }
-  }
-
-  const setData = async (userId: string) => {
-    fetchExpenses(userId)
-    await balanceService
-      .findByUserId(userId)
-      .then((res) => res.data)
-      .then((data) => {
-        setIncome(data.sumaIngresos)
-        setExpense(data.sumaGastos)
-        setBalance(data.balance)
-      })
-  }
-
-  const actions = [
-    {
-      text: 'Ingresar',
-      icon: BanknoteArrowUp,
-      onPress: () => {
-        setTransaccion('income')
-        setModalVisible(true)
-      },
-    },
-    {
-      text: 'Egresar',
-      icon: BanknoteArrowDown,
-      onPress: () => {
-        setTransaccion('expense')
-        setModalVisible(true)
-      },
-    },
-  ]
-
-  const [chartData, setChartData] = useState<any[]>([])
-  const [chartLoading, setChartLoading] = useState(false)
-  const isFocused = useIsFocused()
-
-  const iconNameToEmoji: Record<string, LucideIcon> = {
-    bus: Bus,
-    utensils: Utensils,
-    home: House,
-    heart: Heart,
-    gamepad: Gamepad2,
-    book: BookOpen,
-    Wrench: Wrench,
-    Wine: Wine,
-    Sprout: Sprout,
-    Users: Users,
-    TreePalm: TreePalm,
-    TestTube: TestTube,
-    Sun: Sun,
-    Sigma: Sigma,
-    Popcorn: Popcorn,
-    Shuffle: Shuffle,
-    Shield: Shield,
-    Paperclip: Paperclip,
-    '': Ellipsis,
-    'ellipsis-h': Ellipsis,
-  }
-
-  useEffect(() => {
-    let mounted = true
-    const fetchCategories = async () => {
-      setChartLoading(true)
-      try {
-        const res = await ApiService.get('/categories')
-        const items = res?.data ?? []
-        if (!Array.isArray(items)) return
-
-        const mapped = items.map((c: any) => {
-          return {
-            categoryIcon: iconNameToEmoji[c.icono],
-            value: Number(c.totalGastos),
-            categoryColor: c.color,
-            categoryName: c.nombre,
-            categoryId: c.id,
-          }
-        })
-        if (mounted) {
-          setChartData(mapped)
-        }
-      } catch (err) {
-        console.warn('Error fetching categories:', err)
-      } finally {
-        if (mounted) setChartLoading(false)
-      }
-    }
-
-    if (isFocused) fetchCategories()
-
-    return () => {
-      mounted = false
-    }
-  }, [isFocused])
+  const filteredChartData =
+    selectedCategories.length > 0
+      ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
+      : chartData
 
   return (
-    <LinearGradient
-      colors={['#F9A8D4', '#FCA5A5']}
-      style={{
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        flex: 1,
-        gap: 20,
-      }}
-      start={{ x: 0.5, y: 0.0 }}
-      end={{ x: 0.5, y: 1.0 }}
-      locations={[0, 0.7]}
+    <Container
+      activity={refreshing}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={!refreshing ? 'gray' : 'black'}
+        />
+      }
     >
-      <ScrollView
-        className="w-screen h-screen"
-        contentContainerClassName="align-center items-center gap-4 pb-4"
-      >
-        <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
-          <CardTitle className="text-secondary text-m pl-2">
-            Balance actual
-          </CardTitle>
-          <CardContent className="gap-2">
-            <Text className="text-4xl font-bold text-secondary text-left">
-              $
-              {new Intl.NumberFormat('es-AR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(balance)}
+      <Section>
+        <SectionCard justify="between" flex="row">
+          <View>
+            <Text className="text-muted-foreground">Tu balance</Text>
+            <Text
+              className={
+                balanceData.balance.toString().length > 8
+                  ? 'text-2xl'
+                  : 'text-4xl'
+              }
+              numberOfLines={1}
+            >
+              {'$ ' + formattedBalance}
             </Text>
-            <IconMenu actions={actions} />
-          </CardContent>
-        </Card>
-
-        <Card className="w-[92%] bg-foreground border-0 rounded-m p-2 py-4 gap-2 justify-center">
-          <Pressable onPress={() => router.push('/expense')}>
-            <CardTitle className="text-secondary text-m pl-2">
-              Gastos por categoría
-            </CardTitle>
-            <CardContent className="gap-2 items-center">
-              {chartLoading ? (
-                <View className="items-center py-6">
-                  <Text className="text-gray-500">Cargando categorías...</Text>
-                </View>
-              ) : chartData && chartData.length > 0 ? (
-                <PieChart
-                  donut
-                  innerRadius={95}
-                  strokeColor="#fafafa"
-                  strokeWidth={5}
-                  data={chartData}
-                  centerLabelComponent={() => (
-                    <View className="items-center">
-                      <Text className="text-lg font-semibold text-gray-800">
-                        Gastos Totales
-                      </Text>
-                      <Text className="text-xl font-bold text-gray-800">
-                        ${expense}
-                      </Text>
-                    </View>
-                  )}
-                />
-              ) : (
-                <View className="items-center py-6">
-                  <Text className="text-gray-500">
-                    No hay categorías para mostrar.
-                  </Text>
-                </View>
-              )}
-            </CardContent>
-          </Pressable>
-          <CardFooter className="p-0 items-center">
-            <FlatList
-              scrollEnabled={false}
-              className="w-full"
-              data={userExpenses}
-              renderItem={({ item, index }) => (
-                <Card
-                  className="rounded-none bg-foreground border-0 relative py-2" //Hacer variable este padding para el componente en un futuro
-                  style={
-                    index === 0 && userExpenses.length > 1
-                      ? {
-                          borderTopLeftRadius: 30,
-                          borderTopRightRadius: 30,
-                          borderTopWidth: 0,
-                        }
-                      : index === userExpenses.length - 1 &&
-                          userExpenses.length > 1
-                        ? {
-                            borderBottomLeftRadius: 30,
-                            borderBottomRightRadius: 30,
-                          }
-                        : userExpenses.length === 1
-                          ? { borderRadius: 30 }
-                          : {}
-                  }
-                  key={item.id}
-                >
-                  {index !== 0 && userExpenses.length > 1 ? (
-                    <View className="absolute border-t-[1.2px] border-gray-300 w-[90%] top-0 left-[5%]"></View>
-                  ) : (
-                    <></>
-                  )}
-                  <CardContent className="flex-row justify-between items-center">
-                    <ItemMenu
-                      onPress={() => {
-                        router.push({
-                          pathname: '/expense/[id]',
-                          params: { id: item.id },
-                        })
-                      }}
-                      text={`$ ${item.gasto.toString()}`}
-                      icon={ArrowBigDown}
-                      color="#F9A8D4"
-                    />
-                  </CardContent>
-                </Card>
-              )}
-            />
-          </CardFooter>
-        </Card>
-
-        <Modal transparent={true} visible={modalVisible} animationType="fade">
-          <View className="flex-1 bg-black/50 justify-center items-center">
-            <View className="bg-white rounded-2xl p-6 w-4/5 shadow-lg">
-              <Text className="text-xl font-bold text-gray-800 mb-4">
-                {transaccion === 'income'
-                  ? 'Agregar Ingreso'
-                  : 'Agregar Egreso'}
-              </Text>
-
-              <TextInput
-                placeholder="Ingrese monto"
-                placeholderTextColor="gray"
-                keyboardType="numeric"
-                onChangeText={setAmount}
-                className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
-              />
-              {transaccion === 'expense' && (
-                <View className="w-full ">
-                  <Text className="text-sm color-muted-foreground pl-4">
-                    CATEGORÍAS
-                  </Text>
-                  <Card className="w-full bg-white border-0">
-                    <CardContent className="w-full gap-2 flex-wrap flex-row justify-center">
-                      {chartData.map((item) => {
-                        return (
-                          <Button
-                            key={item.categoryId}
-                            variant={
-                              item.categoryId === selectedCategory
-                                ? 'secondary'
-                                : 'default'
-                            }
-                            onPress={() => {
-                              setSelectedCategory(item.categoryId)
-                            }}
-                          >
-                            <Text className="text-black">
-                              {item.categoryName}
-                            </Text>
-                          </Button>
-                        )
-                      })}
-                    </CardContent>
-                  </Card>
-                </View>
-              )}
-
-              <View className="flex-row justify-between">
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  className="bg-gray-400 rounded-xl px-5 py-3"
-                >
-                  <Text className="text-white font-semibold">Cancelar</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={async () => {
-                    await verifyAmount()
-                    setModalVisible(false)
-                  }}
-                  className="bg-blue-500 rounded-xl px-5 py-3"
-                >
-                  <Text className="text-white font-semibold">Confirmar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
           </View>
-        </Modal>
-      </ScrollView>
-    </LinearGradient>
+          <Avatar
+            alt="avatar"
+            className="size-16"
+            onTouchEnd={() => router.push('/profile')}
+          >
+            <AvatarImage
+              source={{
+                uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
+              }}
+            />
+          </Avatar>
+        </SectionCard>
+      </Section>
+
+      {expensesData.length === 0 && (
+        <SectionCard flex="row" className="px-4">
+          <Info size={24} color={'gray'} />
+          <Text className="text-m text-muted-foreground">
+            Para comenzar, añadí un egreso en la sección Acciones Rápidas
+          </Text>
+        </SectionCard>
+      )}
+
+      <Section
+        title="Acciones Rápidas"
+        /*actionIcon={Pencil}
+        actionText="Editar"
+        onActionPress={() => {}}*/
+      >
+        <SectionCard flex="row">
+          <FlatList
+            contentContainerStyle={{ justifyContent: 'space-between' }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={actions}
+            renderItem={({ item }) => (
+              <IconButton
+                text={item.text}
+                textColor={item.textColor}
+                icon={item.icon}
+                onPress={item.onPress}
+              />
+            )}
+          />
+        </SectionCard>
+      </Section>
+      <Section
+        title={`Mis Gastos de ${monthLabel}`}
+        showWhen={expensesData.length > 0}
+      >
+        <SectionCard onPress={() => router.push('/expense')}>
+          <SectionCard flex="row" className="width-full">
+            <FlatList
+              data={categoriesData.filter((cat) => cat.totalGastos > 0)}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              renderItem={({ item: cat }) => {
+                const isSelected = selectedCategories.includes(cat.id)
+                return (
+                  <TouchableOpacity
+                    onPress={() => toggleCategory(cat.id)}
+                    activeOpacity={0.7}
+                    style={{
+                      borderRadius: 8,
+                      paddingHorizontal: 14,
+                      paddingVertical: 4,
+                      marginHorizontal: 6,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                      borderWidth: isSelected ? 2 : 0,
+                      borderColor: isSelected ? cat.color : 'transparent',
+                      backgroundColor: isSelected
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : 'rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
+                    <View
+                      className="rounded-full w-2 h-2"
+                      style={{ backgroundColor: cat.color }}
+                    />
+                    <Text
+                      style={{
+                        color: isSelected ? 'white' : 'white',
+                        fontWeight: isSelected ? '600' : '500',
+                        fontSize: 14,
+                      }}
+                    >
+                      {cat.nombre}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              }}
+            />
+          </SectionCard>
+          <DonutChart
+            showWhen={
+              filteredChartData.filter((item) => item.value > 0).length >= 0
+            }
+            data={filteredChartData}
+            centerText={`$${new Intl.NumberFormat('es-AR').format(
+              filteredChartData.reduce((sum, item) => sum + item.value, 0),
+            )}`}
+            centerTextColor="white"
+            size={210}
+            strokeWidth={20}
+          />
+
+          <View className="flex-row items-center">
+            <Text className="text-muted-foreground">
+              Ver gastos por categoría
+            </Text>
+            <ChevronRight color="gray" />
+          </View>
+        </SectionCard>
+      </Section>
+
+      <Section
+        title="Últimos gastos"
+        actionText="Ver gastos"
+        actionIcon={ChevronRight}
+        onActionPress={() => router.push('/expense/list')}
+        showWhen={expensesData.length > 0}
+      >
+        <FlatList
+          scrollEnabled={false}
+          data={expensesData}
+          renderItem={({ item }) => {
+            const category = categoriesData.find(
+              (cat) => cat.id === item.categoriaId,
+            )
+            const title = 'Gasto en ' + category?.nombre
+            const icon = getIcon(category?.icono ?? '')
+            const color = category?.color ?? 'white'
+            const date = new Date(item.fecha).toLocaleDateString('en-GB')
+            const amount = `-$${item.gasto}`
+
+            return (
+              <ItemCard
+                title={title}
+                description={date}
+                badgeText={amount}
+                icon={icon}
+                iconColor={color}
+                onPress={() =>
+                  router.push({
+                    pathname: '/expense/[id]',
+                    params: { id: item.id },
+                  })
+                }
+              />
+            )
+          }}
+        />
+      </Section>
+    </Container>
   )
 }

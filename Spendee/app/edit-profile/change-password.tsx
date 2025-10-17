@@ -12,7 +12,7 @@ import {
 } from 'firebase/auth'
 import { toastService } from '@/context/ToastContext'
 import { router } from 'expo-router'
-import userService from '../services/user.service'
+import userService from '../../services/user.service'
 
 const ChangePasswordPage = () => {
   const [loading, setLoading] = useState(false)

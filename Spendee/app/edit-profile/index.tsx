@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Toast from 'react-native-toast-message'
 import { Trash2 } from 'lucide-react-native'
-import userService from '../services/user.service'
+import userService from '../../services/user.service'
 import { auth } from '../../firebase.config'
 import { router } from 'expo-router'
 

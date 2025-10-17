@@ -13,7 +13,11 @@ export default function ExpenseLayout() {
         <Stack.Screen name="index" options={{ title: 'Categoría Nueva' }} />
         <Stack.Screen
           name="edit-category"
-          options={{ title: 'Editar Categoria' }}
+          options={{
+            title: 'Editar Categoría',
+            headerBackTitle: 'Atrás',
+            headerBackVisible: true,
+          }}
         />
       </Stack>
     </GestureHandlerRootView>
