@@ -8,34 +8,55 @@ import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
 import { getIcon } from '@/lib/getIcon'
 import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
-import { ChevronRight, Trash2 } from 'lucide-react-native'
+import { ChevronRight } from 'lucide-react-native'
 import React, { useLayoutEffect } from 'react'
 import { Alert, Pressable, View } from 'react-native'
 
 const ExpenseDetailPage = () => {
   const { id } = useGlobalSearchParams()
-  const { expenseDetailData, deleteExpense, isFetching } = useExpenseDetail(
-    Number(id),
-  )
+  const { expenseDetailData, updateExpense, deleteExpense, isFetching } =
+    useExpenseDetail(Number(id))
   const { categoriesData } = useCategories()
 
   const category = categoriesData.find(
     (cat) => cat.id === expenseDetailData.categoriaId,
   )
 
+  const alertButtons = categoriesData.map((cat) => {
+    return {
+      text: cat.nombre,
+      onPress: () => {
+        updateExpense({ id: Number(id), toCategoryId: cat.id })
+          .then(() => {
+            toastService.show('Gasto actualizado con éxito', 'success')
+            router.back()
+          })
+          .catch(() => toastService.show('Error al actualizar gasto', 'error'))
+      },
+    }
+  })
+
   const navigation = useNavigation()
   useLayoutEffect(() => {
     if (category?.nombre) {
       navigation.setOptions({
         headerRight: () => (
-          <Pressable className="flex-row" onPress={handleDeleteExpense}>
-            <Text className="text-sm text-muted-foreground">Eliminar </Text>
-            <Trash2 size={20} color="gray" />
-          </Pressable>
+          <>
+            <Pressable className="flex-row" onPress={handleEditExpense}>
+              <Text className="text-sm text-muted-foreground">Editar </Text>
+            </Pressable>
+            <Pressable className="flex-row" onPress={handleDeleteExpense}>
+              <Text className="text-sm text-muted-foreground">Eliminar </Text>
+            </Pressable>
+          </>
         ),
       })
     }
   }, [category])
+
+  async function handleEditExpense() {
+    Alert.alert('Selecciona categoría', '', alertButtons)
+  }
 
   async function handleDeleteExpense() {
     Alert.alert(
@@ -52,7 +73,7 @@ const ExpenseDetailPage = () => {
               router.back()
             } catch (error) {
               console.log(error)
-              toastService.show('Error al eliminar gasto', 'success')
+              toastService.show('Error al eliminar gasto', 'error')
             }
           },
         },

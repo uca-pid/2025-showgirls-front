@@ -12,6 +12,24 @@ const defaultExpense: ExpenseResponse = {
 
 export default function useExpenseDetail(expenseId: number) {
   const queryClient = useQueryClient()
+  const onMutationSuccess = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['expenseDetail'],
+      exact: false,
+    })
+    queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
+    queryClient.invalidateQueries({
+      queryKey: ['expensesByCategory'],
+      exact: false,
+    })
+    queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+    queryClient.invalidateQueries({
+      queryKey: ['categoriesChart'],
+      exact: false,
+    })
+    queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
+  }
+
   const {
     data: expenseDetailData = defaultExpense,
     refetch,
@@ -27,26 +45,22 @@ export default function useExpenseDetail(expenseId: number) {
     refetchOnMount: false,
   })
 
-  const { mutateAsync: deleteExpense } = useMutation({
-    mutationFn: expenseService.deleteExpense,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['expenseDetail'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
-      queryClient.invalidateQueries({
-        queryKey: ['expensesByCategory'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
-      queryClient.invalidateQueries({
-        queryKey: ['categoriesChart'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
-    },
+  const { mutateAsync: updateExpense } = useMutation({
+    mutationFn: (body: any) => expenseService.update(expenseId, body),
+    onSuccess: onMutationSuccess,
   })
 
-  return { expenseDetailData, deleteExpense, refetch, isLoading, ...rest }
+  const { mutateAsync: deleteExpense } = useMutation({
+    mutationFn: expenseService.deleteExpense,
+    onSuccess: onMutationSuccess,
+  })
+
+  return {
+    expenseDetailData,
+    updateExpense,
+    deleteExpense,
+    refetch,
+    isLoading,
+    ...rest,
+  }
 }

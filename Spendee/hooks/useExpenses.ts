@@ -10,6 +10,19 @@ export default function useExpenses(
 ) {
   const queryClient = useQueryClient()
 
+  function onMutationSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
+    queryClient.invalidateQueries({
+      queryKey: ['expenses', userId, limit, order],
+    })
+    queryClient.invalidateQueries({
+      queryKey: ['expensesByCategory', userId],
+    })
+    queryClient.invalidateQueries({ queryKey: ['balance', userId] })
+    queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
+    queryClient.invalidateQueries({ queryKey: ['categories'] })
+  }
+
   const {
     data: expensesData = defaultExpenses,
     refetch,
@@ -28,51 +41,19 @@ export default function useExpenses(
     mutationFn: (body: any) => {
       return expenseService.create(body)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
-      queryClient.invalidateQueries({
-        queryKey: ['expenses', userId, limit, order],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['expensesByCategory', userId],
-      })
-      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
-      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-    },
+    onSuccess: onMutationSuccess,
   })
 
   const { mutateAsync: deleteExpense } = useMutation({
     mutationFn: (expenseId: number) => expenseService.deleteExpense(expenseId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
-      queryClient.invalidateQueries({
-        queryKey: ['expenses', userId, limit, order],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['expensesByCategory', userId],
-      })
-      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
-      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-    },
+    onSuccess: onMutationSuccess,
   })
+
   const { mutateAsync: moveExpenses } = useMutation({
     mutationFn: async (categoryId: number) => {
       await expenseService.moveExpenses(categoryId, 7)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
-      queryClient.invalidateQueries({
-        queryKey: ['expenses', userId, limit, order],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['expensesByCategory', userId],
-      })
-      queryClient.invalidateQueries({ queryKey: ['balance', userId] })
-      queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-    },
+    onSuccess: onMutationSuccess,
   })
 
   return {

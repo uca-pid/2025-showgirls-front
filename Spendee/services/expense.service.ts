@@ -37,7 +37,7 @@ class ExpenseService {
   }
 
   public async update(expenseId: number, body: any) {
-    return await ApiService.put(`/gasto/${expenseId}`, body)
+    return await ApiService.put(`/gastoPorId/${expenseId}`, body)
   }
 
   public async deleteExpense(expenseId: number) {
