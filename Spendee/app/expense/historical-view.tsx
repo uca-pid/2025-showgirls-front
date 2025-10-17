@@ -61,16 +61,11 @@ export default function HistoricalExpenseView() {
   const barData = monthlyTotals.map((value, i) => ({
     value,
     label: shortMonthNames[i],
-    frontColor: '#F472B6',
+    frontColor: i % 2 === 0 ? 'rgb(38, 96, 172)' : 'rgb(38, 96, 172,0.7)',
     onPress: () => {
       setSelectedMonth(i)
     },
   }))
-
-  const totalGastos = expensesData.reduce(
-    (acc, expense) => acc + expense.gasto,
-    0,
-  )
   const totalYear = monthlyTotals.reduce((a, b) => a + b, 0)
   const todayYear = new Date().getFullYear()
   const isNextDisabled = currentYear >= todayYear
@@ -119,10 +114,20 @@ export default function HistoricalExpenseView() {
             hideRules
             xAxisLabelTextStyle={{ color: 'gray' }}
             yAxisTextStyle={{ color: 'gray' }}
-            barWidth={28}
-            spacing={24}
+            barWidth={24}
+            spacing={20}
             yAxisThickness={0}
             xAxisThickness={0}
+            roundedTop
+            roundedBottom
+            // autoCenterTooltip
+            // renderTooltip={(barItem: any) => (
+            //   <View className="bg-background px-3 py-2 rounded-xl border border-border">
+            //     <Text className="text-xs text-muted-foreground">
+            //       {monthNames[barItem.index]}: ${barItem.value.toFixed(2)}
+            //     </Text>
+            //   </View>
+            // )}
           />
         </SectionCard>
         <SectionCard className="items-center">
