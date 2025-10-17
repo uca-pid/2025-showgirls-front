@@ -240,7 +240,7 @@ const ExpensesPage = () => {
       >
         <FlatList
           scrollEnabled={false}
-          data={categoriesData.filter((cat) => cat.totalGastos > 0)}
+          data={categoriesData}
           renderItem={({ item }) => {
             return (
               <ItemCard
