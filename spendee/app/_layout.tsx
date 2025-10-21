@@ -90,6 +90,13 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="expense/categories-list"
+        options={{
+          headerTitle: 'Editar categoría',
+          headerBackTitle: 'Atrás',
+        }}
+      />
+      <Stack.Screen
         name="expense/[id]"
         options={{ title: 'Detalle del Gasto', headerBackTitle: 'Atrás' }}
       />

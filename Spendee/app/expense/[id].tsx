@@ -1,4 +1,5 @@
 import Container from '@/components/Container'
+import Dropdown, { DropdownRef } from '@/components/Dropdown'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Icon } from '@/components/ui/icon'
@@ -8,12 +9,12 @@ import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
 import { getIcon } from '@/lib/getIcon'
 import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
-import { ChevronRight } from 'lucide-react-native'
-import React, { useLayoutEffect } from 'react'
-import { Alert, Pressable, View } from 'react-native'
+import { ChevronRight, Pencil, Trash2 } from 'lucide-react-native'
+import React, { useLayoutEffect, useRef } from 'react'
+import { Alert, View } from 'react-native'
 
 const ExpenseDetailPage = () => {
-  const { id } = useGlobalSearchParams()
+  const { id, toCategoryId } = useGlobalSearchParams()
   const { expenseDetailData, updateExpense, deleteExpense, isFetching } =
     useExpenseDetail(Number(id))
   const { categoriesData } = useCategories()
@@ -22,40 +23,44 @@ const ExpenseDetailPage = () => {
     (cat) => cat.id === expenseDetailData.categoriaId,
   )
 
-  const alertButtons = categoriesData.map((cat) => {
-    return {
-      text: cat.nombre,
-      onPress: () => {
-        updateExpense({ id: Number(id), toCategoryId: cat.id })
-          .then(() => {
-            toastService.show('Gasto actualizado con éxito', 'success')
-            router.back()
-          })
-          .catch(() => toastService.show('Error al actualizar gasto', 'error'))
-      },
-    }
-  })
+  const dropdownRef = useRef<DropdownRef>(null)
 
   const navigation = useNavigation()
   useLayoutEffect(() => {
     if (category?.nombre) {
       navigation.setOptions({
         headerRight: () => (
-          <>
-            <Pressable className="flex-row" onPress={handleEditExpense}>
-              <Text className="text-sm text-muted-foreground">Editar </Text>
-            </Pressable>
-            <Pressable className="flex-row" onPress={handleDeleteExpense}>
-              <Text className="text-sm text-muted-foreground">Eliminar </Text>
-            </Pressable>
-          </>
+          <Dropdown
+            width={200}
+            data={[
+              {
+                value: 'edit',
+                label: 'Editar gasto',
+                icon: Pencil,
+                onPress: () => handleEditExpense(),
+              },
+              {
+                value: 'delete',
+                label: 'Eliminar gasto',
+                icon: Trash2,
+                destructive: true,
+                onPress: () => handleDeleteExpense(),
+              },
+            ]}
+            onChange={() => {}}
+            type="button"
+          />
         ),
       })
     }
   }, [category])
 
   async function handleEditExpense() {
-    Alert.alert('Selecciona categoría', '', alertButtons)
+    dropdownRef.current?.close
+    router.push({
+      pathname: '/expense/categories-list',
+      params: { expenseId: id },
+    })
   }
 
   async function handleDeleteExpense() {
