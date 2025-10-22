@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/text'
+import { useFocusEffect } from '@react-navigation/native'
 import { BlurView } from 'expo-blur'
 import {
   ChevronDown,
@@ -71,6 +72,14 @@ const Dropdown = forwardRef<DropdownRef, DropDownProps>(
       left: 0,
       width: '100%' as number | `${number}%`,
     })
+
+    useFocusEffect(
+      useCallback(() => {
+        return () => {
+          if (expanded) closeDropdown()
+        }
+      }, [expanded]),
+    )
 
     const scaleAnim = useRef(new Animated.Value(0.9)).current
     const opacityAnim = useRef(new Animated.Value(0)).current
@@ -182,35 +191,38 @@ const Dropdown = forwardRef<DropdownRef, DropDownProps>(
                     data={data}
                     keyExtractor={(item) => item.value}
                     renderItem={({ item, index }) => (
-                      <BlurView
-                        experimentalBlurMethod="dimezisBlurView"
-                        intensity={100}
-                        tint="default"
-                        style={styles.options}
-                        className={`${index === data.length - 1 ? '' : 'border-b-[0.3px]'} border-gray-600 ${index === 0 ? 'rounded-t-[8px]' : index === data.length - 1 ? 'rounded-b-[8px]' : ''}`}
+                      <View
+                        className={`${index === data.length - 1 ? '' : 'border-b-[0.3px]'} border-gray-600 ${index === 0 ? 'rounded-t-[8px]' : index === data.length - 1 ? 'rounded-b-[8px]' : ''} overflow-hidden`}
                       >
-                        <TouchableOpacity
-                          onPress={() => {
-                            type === 'select'
-                              ? onSelect(item)
-                              : item.onPress && item.onPress()
-                          }}
-                          className="flex-row gap-4 items-center content-center py-1 justify-between"
+                        <BlurView
+                          experimentalBlurMethod="dimezisBlurView"
+                          intensity={100}
+                          tint="default"
+                          style={styles.options}
                         >
-                          <Text
-                            className={`font-light ${
-                              item.destructive ? 'text-red-700' : ''
-                            }`}
+                          <TouchableOpacity
+                            onPress={() => {
+                              type === 'select'
+                                ? onSelect(item)
+                                : item.onPress && item.onPress()
+                            }}
+                            className="flex-row gap-4 items-center content-center py-1 justify-between"
                           >
-                            {item.label}
-                          </Text>
-                          <Icon
-                            as={item.icon || Ellipsis}
-                            size={18}
-                            color={item.destructive ? '#b91c1c' : 'white'}
-                          />
-                        </TouchableOpacity>
-                      </BlurView>
+                            <Text
+                              className={`font-light ${
+                                item.destructive ? 'text-red-700' : ''
+                              }`}
+                            >
+                              {item.label}
+                            </Text>
+                            <Icon
+                              as={item.icon || Ellipsis}
+                              size={18}
+                              color={item.destructive ? '#b91c1c' : 'white'}
+                            />
+                          </TouchableOpacity>
+                        </BlurView>
+                      </View>
                     )}
                   />
                 </Animated.View>

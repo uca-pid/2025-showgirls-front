@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import Dropdown, { DropdownRef } from '@/components/Dropdown'
+import Dropdown from '@/components/Dropdown'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Icon } from '@/components/ui/icon'
@@ -10,20 +10,19 @@ import useExpenseDetail from '@/hooks/useExpenseDetail'
 import { getIcon } from '@/lib/getIcon'
 import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react-native'
-import React, { useLayoutEffect, useRef } from 'react'
+import React, { useLayoutEffect } from 'react'
 import { Alert, View } from 'react-native'
 
 const ExpenseDetailPage = () => {
-  const { id, toCategoryId } = useGlobalSearchParams()
-  const { expenseDetailData, updateExpense, deleteExpense, isFetching } =
-    useExpenseDetail(Number(id))
+  const { id } = useGlobalSearchParams()
+  const { expenseDetailData, deleteExpense, isFetching } = useExpenseDetail(
+    Number(id),
+  )
   const { categoriesData } = useCategories()
 
   const category = categoriesData.find(
     (cat) => cat.id === expenseDetailData.categoriaId,
   )
-
-  const dropdownRef = useRef<DropdownRef>(null)
 
   const navigation = useNavigation()
   useLayoutEffect(() => {
@@ -56,7 +55,6 @@ const ExpenseDetailPage = () => {
   }, [category])
 
   async function handleEditExpense() {
-    dropdownRef.current?.close
     router.push({
       pathname: '/expense/categories-list',
       params: { expenseId: id },
