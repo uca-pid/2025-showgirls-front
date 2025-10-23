@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
-import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import { router } from 'expo-router'
 import {
@@ -67,8 +66,6 @@ const index = () => {
   const [color, setColor] = useState(0)
 
   const { addCategory, isLoading } = useCategories()
-
-  const user = auth.currentUser
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
     toastService.show(message, type === 'success' ? 'success' : undefined)

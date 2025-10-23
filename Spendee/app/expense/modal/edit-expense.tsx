@@ -27,15 +27,10 @@ export default function EditExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
-  const { addExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
+  const { addExpense } = useExpenses(user ? user.uid : '')
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
-
-  const formatAmount = (value: string) => {
-    if (!value) return ''
-    return parseInt(value, 10).toLocaleString('es-AR')
-  }
 
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {

@@ -3,7 +3,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const defaultIncomes: IncomeResponse[] = []
 
-export default function useIncomes(userId: string) {
+export interface IncomeFilters {
+  limit?: number
+  order?: 'asc' | 'desc'
+  month?: number
+  year?: number
+}
+
+export default function useIncomes(
+  userId: string,
+  filters: IncomeFilters = {},
+) {
   const queryClient = useQueryClient()
 
   const {
@@ -12,9 +22,9 @@ export default function useIncomes(userId: string) {
     isLoading,
     ...rest
   } = useQuery<IncomeResponse[]>({
-    queryKey: ['incomes', userId],
+    queryKey: ['incomes', userId, filters],
     queryFn: async () => {
-      const res = await incomeService.findByUserId(userId)
+      const res = await incomeService.findByUserId(userId, filters)
       return res.data
     },
     enabled: !!userId,

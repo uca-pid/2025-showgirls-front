@@ -7,10 +7,9 @@ import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
-import useExpensesByCategory from '@/hooks/useExpensesByCategory'
 import { getIcon } from '@/lib/getIcon'
 import { ExpenseResponse } from '@/services/expense.service'
-import { Link, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
 import { ChevronRight, Trash2, X } from 'lucide-react-native'
 import React, { useLayoutEffect, useState } from 'react'
 
@@ -23,9 +22,11 @@ const CategoryDetailPage = () => {
   }>()
 
   const { user } = useAuth()
-  const { expensesByCategory, isRefetching, refetch, isFetching } =
-    useExpensesByCategory(user ? user.uid : '', Number(params.id))
-  const { deleteExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
+  const { expensesData, isRefetching, refetch, isFetching } = useExpenses(
+    user ? user.uid : '',
+    { categoryId: Number(params.id), order: 'desc' },
+  )
+  const { deleteExpense } = useExpenses(user ? user.uid : '', {})
   const { categoriesData } = useCategories()
   const category = categoriesData.find((cat) => cat.id === Number(params.id))
 
@@ -85,7 +86,7 @@ const CategoryDetailPage = () => {
         </SectionCard>
       </Section>
 
-      {expensesByCategory.length > 0 ? (
+      {expensesData.length > 0 ? (
         <Section
           title="Gastos de la categoría"
           actionText={deleteMode ? 'Cancelar' : 'Eliminar'}
@@ -95,7 +96,7 @@ const CategoryDetailPage = () => {
           <FlatList
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
-            data={expensesByCategory}
+            data={expensesData}
             keyExtractor={(item) => String(item.id)}
             contentContainerClassName="h-full"
             renderItem={({ item }) => (
@@ -106,7 +107,15 @@ const CategoryDetailPage = () => {
                 badgeVariant="destructive"
                 icon={deleteMode ? Trash2 : undefined}
                 iconColor="gray"
-                onPress={deleteMode ? () => handleDelete(item) : undefined}
+                onPress={
+                  deleteMode
+                    ? () => handleDelete(item)
+                    : () =>
+                        router.push({
+                          pathname: '/expense/[id]',
+                          params: { id: item.id },
+                        })
+                }
               />
             )}
           />

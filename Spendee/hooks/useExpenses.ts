@@ -17,8 +17,6 @@ export default function useExpenses(
 ) {
   const queryClient = useQueryClient()
 
-  const { limit, order = 'asc', month, year, categoryId } = filters
-
   function onMutationSuccess() {
     queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
     queryClient.invalidateQueries({ queryKey: ['expenses', userId, filters] })

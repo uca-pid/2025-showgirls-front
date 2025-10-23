@@ -23,7 +23,6 @@ import {
 const ExpensesPage = () => {
   const { user } = auth.currentUser ? useAuth() : { user: null }
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
-  const [openDropdown, setOpenDropdown] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
     date.setDate(1)

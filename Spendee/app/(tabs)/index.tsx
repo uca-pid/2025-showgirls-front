@@ -50,7 +50,6 @@ const actions = [
 export default function HomePage() {
   const { user } = useAuth()
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
-  const [openDropdown, setOpenDropdown] = useState(false)
   const monthNames = useMemo(
     () => [
       'Enero',

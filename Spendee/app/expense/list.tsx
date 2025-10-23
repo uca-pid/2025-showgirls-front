@@ -12,10 +12,9 @@ import { FlatList, RefreshControl, Text as RNText, View } from 'react-native'
 
 const ExpensesList = () => {
   const { user } = useAuth()
-  const { expensesData, isLoading, isRefetching, refetch } = useExpenses(
+  const { expensesData, isRefetching, refetch } = useExpenses(
     user ? user.uid : '',
-    999, //Temporal, will be replaced by an infinite query in a future
-    'desc',
+    { order: 'desc' },
   )
   const { categoriesData } = useCategories()
 

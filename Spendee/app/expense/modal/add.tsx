@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
-import useBalance from '@/hooks/useBalance'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
@@ -28,8 +27,7 @@ export default function AddExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
-  const { addExpense } = useExpenses(user ? user.uid : '', 0, 'asc')
-  const { refetch } = useBalance(user ? user.uid : '')
+  const { addExpense } = useExpenses(user ? user.uid : '')
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')

@@ -46,8 +46,7 @@ export default function HistoricalExpenseView() {
   )
   const { expensesData, isLoading, isRefetching, refetch } = useExpenses(
     user?.uid ?? '',
-    999, //Temporal, will be replaced by filters
-    'asc',
+    { order: 'desc' },
   )
 
   const monthlyTotals = Array(12).fill(0)

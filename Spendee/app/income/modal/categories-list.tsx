@@ -52,7 +52,7 @@ const iconNameToEmoji: Record<string, LucideIcon> = {
 }
 
 const CategoriesList = () => {
-  const { categories } = useCategories()
+  const { categoriesData } = useCategories()
   const { income } = useLocalSearchParams()
 
   return (
@@ -63,10 +63,10 @@ const CategoriesList = () => {
       </Text>
       <View className="w-full p-4">
         <FlatList
-          data={categories}
+          data={categoriesData}
           renderItem={({ item, index }) => (
             <ItemButton
-              borderBottom={index !== (categories?.length ?? 0) - 1}
+              borderBottom={index !== (categoriesData?.length ?? 0) - 1}
               editable={false}
               iconLeft={iconNameToEmoji[item.icono]}
               iconLeftColor={item.color}
