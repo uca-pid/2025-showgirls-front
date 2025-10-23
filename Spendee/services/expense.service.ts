@@ -1,3 +1,4 @@
+import { ExpenseFilters } from '@/hooks/useExpenses'
 import ApiService from './api.service'
 
 export interface ExpenseResponse {
@@ -10,19 +11,12 @@ export interface ExpenseResponse {
 }
 
 class ExpenseService {
-  public async findByUserId(
-    userId: string,
-    limit?: number | undefined,
-    order?: string,
-  ) {
-    if (limit && order) {
-      return await ApiService.get<ExpenseResponse[]>(
-        `/gasto/${userId}?limit=${limit}&order=${order}`,
-      )
-    } else {
-      return await ApiService.get<ExpenseResponse[]>(`/gasto/${userId}`)
-    }
+  public async findByUserId(userId: string, filters: ExpenseFilters) {
+    return await ApiService.get<ExpenseResponse[]>('/gasto', {
+      params: { userId, ...filters },
+    })
   }
+
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
   }

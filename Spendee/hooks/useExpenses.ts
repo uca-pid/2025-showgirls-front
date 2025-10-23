@@ -3,21 +3,26 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const defaultExpenses: ExpenseResponse[] = []
 
+export interface ExpenseFilters {
+  limit?: number
+  order?: 'asc' | 'desc'
+  month?: number
+  year?: number
+  categoryId?: number
+}
+
 export default function useExpenses(
   userId: string,
-  limit?: number,
-  order: 'asc' | 'desc' = 'asc',
+  filters: ExpenseFilters = {},
 ) {
   const queryClient = useQueryClient()
 
+  const { limit, order = 'asc', month, year, categoryId } = filters
+
   function onMutationSuccess() {
     queryClient.invalidateQueries({ queryKey: ['expenses', userId] })
-    queryClient.invalidateQueries({
-      queryKey: ['expenses', userId, limit, order],
-    })
-    queryClient.invalidateQueries({
-      queryKey: ['expensesByCategory', userId],
-    })
+    queryClient.invalidateQueries({ queryKey: ['expenses', userId, filters] })
+    queryClient.invalidateQueries({ queryKey: ['expensesByCategory', userId] })
     queryClient.invalidateQueries({ queryKey: ['balance', userId] })
     queryClient.invalidateQueries({ queryKey: ['categoriesChart'] })
     queryClient.invalidateQueries({ queryKey: ['categories'] })
@@ -29,18 +34,16 @@ export default function useExpenses(
     isLoading,
     ...rest
   } = useQuery<ExpenseResponse[]>({
-    queryKey: ['expenses', userId, limit, order],
+    queryKey: ['expenses', userId, filters],
     queryFn: async () => {
-      const res = await expenseService.findByUserId(userId, limit, order)
+      const res = await expenseService.findByUserId(userId, filters)
       return res.data
     },
     enabled: !!userId,
   })
 
   const { mutateAsync: addExpense } = useMutation({
-    mutationFn: (body: any) => {
-      return expenseService.create(body)
-    },
+    mutationFn: (body: any) => expenseService.create(body),
     onSuccess: onMutationSuccess,
   })
 

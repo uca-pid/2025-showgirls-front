@@ -14,7 +14,7 @@ interface ApiError {
 }
 
 interface RequestConfig extends RequestInit {
-  params?: Record<string, string>
+  params?: Record<string, string | number | boolean>
 }
 
 class ApiService {
@@ -66,8 +66,22 @@ class ApiService {
     config: RequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const { params, headers, ...restConfig } = config
-    const url = this.baseUrl + endpoint
+    let url = this.baseUrl + endpoint
     const authHeader = await this.getAuthHeader()
+
+    if (params && Object.keys(params).length > 0) {
+      const queryString = new URLSearchParams(
+        Object.entries(params).reduce(
+          (acc, [key, value]) => {
+            acc[key] = String(value)
+            return acc
+          },
+          {} as Record<string, string>,
+        ),
+      ).toString()
+      url += `?${queryString}`
+    }
+    console.log(url)
 
     const response = await fetch(url, {
       method: 'GET',

@@ -18,11 +18,15 @@ import {
   BanknoteArrowUp,
   ChevronRight,
   Info,
-  Pencil,
 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { FlatList, RefreshControl, TouchableOpacity, View } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker'
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 
 const actions = [
   {
@@ -85,7 +89,7 @@ export default function HomePage() {
     expensesData,
     isFetching: fetchingExpenses,
     refetch: refetchExpenses,
-  } = useExpenses(user?.uid ?? '', 5, 'desc')
+  } = useExpenses(user?.uid ?? '', { limit: 5, order: 'desc' })
 
   const {
     chartData,
@@ -135,17 +139,19 @@ export default function HomePage() {
       <Section>
         <SectionCard justify="between" flex="row">
           <View>
-            <Text className="text-muted-foreground">Tu balance</Text>
-            <Text
-              className={
-                balanceData.balance.toString().length > 8
-                  ? 'text-2xl'
-                  : 'text-4xl'
-              }
-              numberOfLines={1}
-            >
-              {'$ ' + formattedBalance}
-            </Text>
+            <Pressable onPress={() => router.push('/transactions')}>
+              <Text className="text-muted-foreground">Tu balance</Text>
+              <Text
+                className={
+                  balanceData.balance.toString().length > 8
+                    ? 'text-2xl'
+                    : 'text-4xl'
+                }
+                numberOfLines={1}
+              >
+                {'$ ' + formattedBalance}
+              </Text>
+            </Pressable>
           </View>
           <Avatar
             alt="avatar"
