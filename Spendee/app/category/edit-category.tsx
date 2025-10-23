@@ -7,61 +7,13 @@ import { useAuth } from '@/context/AuthContext'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
+import { colorOptions } from '@/lib/colors'
+import { iconOptions } from '@/lib/icons'
 import { router, useLocalSearchParams } from 'expo-router'
-import {
-  Paperclip,
-  Popcorn,
-  Shield,
-  Shuffle,
-  Sigma,
-  Sprout,
-  Sun,
-  TestTube,
-  Trash2,
-  TreePalm,
-  Users,
-  Wine,
-  Wrench,
-} from 'lucide-react-native'
+import { Trash2 } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { Alert, FlatList, Pressable, View } from 'react-native'
 import ApiService from '../../services/api.service'
-
-const iconOptions = [
-  { icon: Wrench, name: 'Wrench' },
-  { icon: Wine, name: 'Wine' },
-  { icon: Users, name: 'Users' },
-  { icon: TreePalm, name: 'TreePalm' },
-  { icon: Popcorn, name: 'Popcorn' },
-  { icon: TestTube, name: 'TestTube' },
-  { icon: Sun, name: 'Sun' },
-  { icon: Sprout, name: 'Sprout' },
-  { icon: Sigma, name: 'Sigma' },
-  { icon: Shuffle, name: 'Shuffle' },
-  { icon: Shield, name: 'Shield' },
-  { icon: Paperclip, name: 'Paperclip' },
-]
-
-const colorOptions = [
-  { colorName: 'rose', hex: '#fda4af' },
-  { colorName: 'pink', hex: '#f9a8d4' },
-  { colorName: 'fuchsia', hex: '#f0abfc' },
-  { colorName: 'purple', hex: '#d8b4fe' },
-  { colorName: 'violet', hex: '#c4b5fd' },
-  { colorName: 'indigo', hex: '#a5b4fc' },
-  { colorName: 'blue', hex: '#93c5fd' },
-  { colorName: 'lightBlue', hex: '#7dd3fc' },
-  { colorName: 'cyan', hex: '#67e8f9' },
-  { colorName: 'teal', hex: '#5eead4' },
-  { colorName: 'emerald', hex: '#6ee7b7' },
-  { colorName: 'green', hex: '#86efac' },
-  { colorName: 'lime', hex: '#bef264' },
-  { colorName: 'yellow', hex: '#fde047' },
-  { colorName: 'amber', hex: '#fcd34d' },
-  { colorName: 'orange', hex: '#fdba74' },
-  { colorName: 'red', hex: '#ef4444' },
-  { colorName: 'warmGray', hex: '#d6d3d1' },
-]
 
 const EditCategory = () => {
   const { user } = useAuth()
