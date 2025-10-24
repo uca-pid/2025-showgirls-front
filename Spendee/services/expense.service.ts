@@ -10,6 +10,11 @@ export interface ExpenseResponse {
   categoriaId: number | null
 }
 
+export interface ExpensesByMonthResponse {
+  items: ExpenseResponse[]
+  month: string
+}
+
 class ExpenseService {
   public async findByUserId(userId: string, filters: ExpenseFilters) {
     return await ApiService.get<ExpenseResponse[]>('/gasto', {
@@ -19,6 +24,12 @@ class ExpenseService {
 
   public async findByExpenseId(expenseId: number) {
     return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
+  }
+
+  public async findExpensesByMonth(userId: string) {
+    return await ApiService.get<ExpensesByMonthResponse[]>('/gasto/agrupado', {
+      params: { userId },
+    })
   }
 
   public async create(body: any) {
