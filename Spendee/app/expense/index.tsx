@@ -4,8 +4,6 @@ import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Text } from '@/components/ui/text'
-import { useAuth } from '@/context/AuthContext'
-import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import { getIcon } from '@/lib/getIcon'
@@ -21,7 +19,6 @@ import {
 } from 'react-native'
 
 const ExpensesPage = () => {
-  const { user } = auth.currentUser ? useAuth() : { user: null }
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
@@ -123,11 +120,15 @@ const ExpensesPage = () => {
     <Container
       refreshControl={
         <RefreshControl
-          refreshing={isRefetchingCategories}
-          onRefresh={refetchCategories}
+          tintColor="black"
+          refreshing={loadingCategories || loadingChartData}
+          onRefresh={() => {
+            refetchChart()
+            refetchCategories()
+          }}
         />
       }
-      activity={loadingCategories}
+      activity={loadingCategories || loadingChartData}
     >
       <Section title="Mis Gastos">
         <SectionCard activity={loadingChartData}>
