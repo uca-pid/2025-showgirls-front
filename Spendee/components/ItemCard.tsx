@@ -14,7 +14,12 @@ export interface ItemCardProps {
   icon?: LucideIcon
   iconColor?: string
   badgeText?: string
-  badgeVariant?: 'default' | 'destructive' | 'outline' | 'secondary'
+  badgeVariant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'positive'
   editable?: boolean
   onEdit?: () => void
 }
