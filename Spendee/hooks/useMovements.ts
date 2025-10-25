@@ -5,6 +5,7 @@ export interface MovementsFilters {
   startDate?: 'string'
   endDate?: 'string'
   groupBy?: 'day' | 'month' | 'year'
+  order?: 'asc' | 'desc'
 }
 
 export default function useMovements(
@@ -16,5 +17,5 @@ export default function useMovements(
     queryFn: async () =>
       (await balanceService.findMovements(userId, filters)).data,
   })
-  return { movementsData: data }
+  return { movementsData: data, ...rest }
 }

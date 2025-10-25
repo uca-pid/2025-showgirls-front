@@ -20,6 +20,8 @@ export interface MovementsItem {
 export interface MovementsResponse {
   period: string
   items: MovementsItem[]
+  totalEgresos: number
+  totalIngresos: number
 }
 
 class BalanceService {
