@@ -138,7 +138,7 @@ export default function HomePage() {
       <Section>
         <SectionCard justify="between" flex="row">
           <View>
-            <Pressable onPress={() => router.push('/transactions')}>
+            <Pressable onPress={() => router.push('/movements')}>
               <Text className="text-muted-foreground">Tu balance</Text>
               <Text
                 className={

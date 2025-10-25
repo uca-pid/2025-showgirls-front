@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import { BlurView } from 'expo-blur'
-import { Home, LucideIcon, User } from 'lucide-react-native'
+import { ArrowLeftRight, Home, LucideIcon, User } from 'lucide-react-native'
 import React from 'react'
 import { Pressable } from 'react-native'
 
@@ -9,6 +9,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const icons: Record<string, LucideIcon> = {
     index: Home,
     'profile/index': User,
+    movements: ArrowLeftRight,
   }
   return (
     <BlurView
@@ -58,7 +59,10 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             {React.createElement(icons[route.name], {
               color: isFocused ? '#f9a8d4' : '#fff',
             })}
-            <Text className={isFocused ? 'text-pink-300' : 'text-white'}>
+            <Text
+              numberOfLines={1}
+              className={isFocused ? 'text-pink-300' : 'text-white'}
+            >
               {label.toString()}
             </Text>
           </Pressable>

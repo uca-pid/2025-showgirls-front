@@ -18,6 +18,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="movements"
+        options={{
+          title: 'Mis Movimientos',
+          tabBarLabel: 'Movimientos',
+        }}
+      />
+      <Tabs.Screen
         name="profile/index"
         options={{
           title: 'Perfil',
