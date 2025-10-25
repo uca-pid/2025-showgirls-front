@@ -15,8 +15,6 @@ const TransactionsPage = () => {
     order: 'desc',
   })
 
-  console.log(movementsData)
-
   return (
     <Container>
       <Section title="Movimientos Históricos">
