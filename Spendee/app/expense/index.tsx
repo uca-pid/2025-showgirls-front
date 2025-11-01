@@ -3,6 +3,7 @@ import DonutChart from '@/components/DonutChart'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
+import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
@@ -227,6 +228,12 @@ const ExpensesPage = () => {
               <ChevronRight color="gray" />
             </Pressable>
           </View>
+        </SectionCard>
+      </Section>
+
+      <Section>
+        <SectionCard>
+          <Progress value={50} />
         </SectionCard>
       </Section>
 
