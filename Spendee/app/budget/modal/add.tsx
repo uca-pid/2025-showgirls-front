@@ -113,59 +113,60 @@ export default function AddExpensePage() {
                   />
                 </View>
               </View>
-
-              <Button
-                variant="ghost"
-                className="gap-0"
-                onPress={() =>
-                  router.push({
-                    pathname: '/expense/modal/categories-list',
-                    params: { expense: amount },
-                  })
-                }
-              >
-                <Text className="text-base">Categoría: </Text>
-                {categoriesData && categoryId ? (
-                  <Text className="text-base font-semibold">
-                    {
-                      categoriesData.find(
-                        (cat) => cat.id === Number(categoryId),
-                      )?.nombre
-                    }
-                  </Text>
-                ) : (
-                  <Text className="text-muted-foreground text-base">
-                    Seleccionar
-                  </Text>
-                )}
-                <ChevronDown color="white" size={18} />
-              </Button>
-              <Button
-                variant="ghost"
-                className="gap-0"
-                onPress={() =>
-                  router.push({
-                    pathname: '/budget/modal/date-picker',
-                    params: { expense: amount },
-                  })
-                }
-              >
-                <Text className="text-base">Categoría: </Text>
-                {categoriesData && categoryId ? (
-                  <Text className="text-base font-semibold">
-                    {
-                      categoriesData.find(
-                        (cat) => cat.id === Number(categoryId),
-                      )?.nombre
-                    }
-                  </Text>
-                ) : (
-                  <Text className="text-muted-foreground text-base">
-                    Seleccionar
-                  </Text>
-                )}
-                <ChevronDown color="white" size={18} />
-              </Button>
+              <View className="gap-0">
+                <Button
+                  variant="ghost"
+                  className="gap-0"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/budget/modal/category-picker',
+                      params: { expense: amount },
+                    })
+                  }
+                >
+                  <Text className="text-base">Categoría: </Text>
+                  {categoriesData && categoryId ? (
+                    <Text className="text-base font-semibold">
+                      {
+                        categoriesData.find(
+                          (cat) => cat.id === Number(categoryId),
+                        )?.nombre
+                      }
+                    </Text>
+                  ) : (
+                    <Text className="text-muted-foreground text-base">
+                      Seleccionar
+                    </Text>
+                  )}
+                  <ChevronDown color="white" size={18} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="gap-0"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/budget/modal/date-picker',
+                      params: { expense: amount },
+                    })
+                  }
+                >
+                  <Text className="text-base">Fecha: </Text>
+                  {categoriesData && categoryId ? (
+                    <Text className="text-base font-semibold">
+                      {
+                        categoriesData.find(
+                          (cat) => cat.id === Number(categoryId),
+                        )?.nombre
+                      }
+                    </Text>
+                  ) : (
+                    <Text className="text-muted-foreground text-base">
+                      Seleccionar
+                    </Text>
+                  )}
+                  <ChevronDown color="white" size={18} />
+                </Button>
+              </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
               <Button className="w-full bg-pink-300" onPress={onSubmit}>
                 <Text>Añadir Presupuesto</Text>

@@ -152,6 +152,13 @@ function RootNavigator() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="budget/modal/category-picker"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   )
 }
