@@ -128,6 +128,30 @@ function RootNavigator() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="budget/index"
+        options={{
+          title: 'Presupuestos',
+          headerBackTitle: 'Atrás',
+          headerBackVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="budget/modal/add"
+        options={{
+          headerShown: false,
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.5],
+          sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="budget/modal/date-picker"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   )
 }
