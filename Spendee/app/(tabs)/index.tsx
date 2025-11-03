@@ -5,6 +5,7 @@ import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useBalance from '@/hooks/useBalance'
@@ -196,6 +197,16 @@ export default function HomePage() {
               />
             )}
           />
+        </SectionCard>
+      </Section>
+      <Section
+        title="Presupuesto Actual"
+        actionText="Ver más"
+        actionIcon={ChevronRight}
+        onActionPress={() => router.push('/budget')}
+      >
+        <SectionCard onPress={() => router.push('/budget')}>
+          <Progress value={50} />
         </SectionCard>
       </Section>
       <Section
