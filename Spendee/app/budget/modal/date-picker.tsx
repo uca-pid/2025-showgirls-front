@@ -7,6 +7,7 @@ import DateTimePicker, {
   DateType,
   useDefaultStyles,
 } from 'react-native-ui-datepicker'
+import { router } from 'expo-router'
 
 const DatePicker = () => {
   const defaultStyles = useDefaultStyles()
@@ -33,7 +34,18 @@ const DatePicker = () => {
             minDate={new Date()}
           />
         </View>
-        <Button className="w-full bg-pink-300" onPress={() => {}}>
+        <Button
+          className="w-full bg-pink-300"
+          onPress={() => {
+            router.dismissTo({
+              pathname: '/budget/modal/add',
+              params: {
+                startDate: selectedRange.startDate?.toString(),
+                endDate: selectedRange.endDate?.toString(),
+              },
+            })
+          }}
+        >
           <Text>Confirmar fecha</Text>
         </Button>
       </Container>

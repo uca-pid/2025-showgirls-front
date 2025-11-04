@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
+import budgetService from '@/services/budget.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
@@ -27,32 +28,34 @@ export default function AddExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
-  const { addExpense } = useExpenses(user ? user.uid : '')
-  const { categoryId, expense } = useLocalSearchParams()
+  const { expense, startDate, endDate } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
-
-  const formatAmount = (value: string) => {
-    if (!value) return ''
-    return parseInt(value, 10).toLocaleString('es-AR')
-  }
 
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
-    } else if (!categoryId) {
-      setError('Selecciona una categoría')
+    } else if (!startDate || !endDate) {
+      setError('Selecciona un rango de fechas')
       return
     } else {
       try {
-        await addExpense({
+        budgetService.createBudget({
           usuarioId: userId,
-          gasto: Number(amount),
-          montoAnterior: (await balanceData).data.balance,
-          categoriaId: Number(categoryId),
+          monto: Number(amount),
+          fechaInicio: new Date(startDate as string),
+          fechaFin: new Date(endDate as string),
+          PresupuestoCategoria: [
+            {
+              id: 0,
+              presupuestoId: 0,
+              categoriaId: 1,
+              monto: Number(amount),
+            },
+          ],
         })
-        toastService.show('Gasto añadido con éxito', 'success')
+        toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {
@@ -124,8 +127,8 @@ export default function AddExpensePage() {
                     })
                   }
                 >
-                  <Text className="text-base">Categoría: </Text>
-                  {categoriesData && categoryId ? (
+                  <Text className="text-base">Categoría: Seleccionar</Text>
+                  {/* {categoriesData && categoryId ? (
                     <Text className="text-base font-semibold">
                       {
                         categoriesData.find(
@@ -137,7 +140,7 @@ export default function AddExpensePage() {
                     <Text className="text-muted-foreground text-base">
                       Seleccionar
                     </Text>
-                  )}
+                  )} */}
                   <ChevronDown color="white" size={18} />
                 </Button>
                 <Button
@@ -146,18 +149,14 @@ export default function AddExpensePage() {
                   onPress={() =>
                     router.push({
                       pathname: '/budget/modal/date-picker',
-                      params: { expense: amount },
                     })
                   }
                 >
                   <Text className="text-base">Fecha: </Text>
-                  {categoriesData && categoryId ? (
-                    <Text className="text-base font-semibold">
-                      {
-                        categoriesData.find(
-                          (cat) => cat.id === Number(categoryId),
-                        )?.nombre
-                      }
+                  {startDate && endDate ? (
+                    <Text className="text-base">
+                      {new Date(startDate as string).toLocaleDateString()} -{' '}
+                      {new Date(endDate as string).toLocaleDateString()}
                     </Text>
                   ) : (
                     <Text className="text-muted-foreground text-base">
