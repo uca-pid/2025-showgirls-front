@@ -138,19 +138,7 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="budget/modal/add"
-        options={{
-          headerShown: false,
-          presentation: 'formSheet',
-          sheetAllowedDetents: [0.5],
-          sheetGrabberVisible: true,
-        }}
-      />
-      <Stack.Screen
-        name="budget/modal/date-picker"
-        options={{
-          headerShown: false,
-          presentation: 'modal',
-        }}
+        options={{ title: 'Nuevo Presupuesto', headerBackTitle: 'Atrás' }}
       />
       <Stack.Screen
         name="budget/modal/category-picker"

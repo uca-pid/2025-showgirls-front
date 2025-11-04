@@ -1,8 +1,6 @@
 import ApiService from './api.service'
 
 export interface BudgetCategoryResponse {
-  id: number
-  presupuestoId: number
   categoriaId: number
   monto: number
 }
