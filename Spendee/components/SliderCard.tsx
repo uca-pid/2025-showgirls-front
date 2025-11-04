@@ -5,6 +5,8 @@ import Slider from '@react-native-community/slider'
 import Container from './Container'
 import Section from './Section'
 import SectionCard from './SectionCard'
+import { router } from 'expo-router'
+import { Button } from './ui/button'
 
 export interface Category {
   nombre: string
@@ -34,23 +36,22 @@ const SliderCard = ({ categories, amount }: SliderCardProps) => {
   return (
     <Container>
       <Section>
-        <View style={{ marginBottom: 20 }}>
+        <View className="position-absolute left-0 items-center">
           <Text className="text-xl font-bold text-center">
             Monto total: ${amount.toFixed(0)}
           </Text>
-          <Text className="text-lg text-center text-gray-600">
+          <Text className="text-m text-center text-gray-600">
             Restante: ${remaining.toFixed(0)}
           </Text>
         </View>
-
         {categories.map((category, index) => (
-          <View key={index} style={{ marginBottom: 20 }}>
-            <Text className={`text-lg font-medium mb-2`}>
+          <View key={index} className="mb-1">
+            <Text className="text-lg font-medium mb-2">
               {category.nombre}: ${values[index].toFixed(0)}
             </Text>
-            <SectionCard>
+            <SectionCard className="p-5">
               <Slider
-                style={{ width: '100%', height: 40 }}
+                style={{ width: '100%', height: 20 }}
                 minimumValue={0}
                 maximumValue={amount}
                 step={1}
@@ -63,6 +64,12 @@ const SliderCard = ({ categories, amount }: SliderCardProps) => {
             </SectionCard>
           </View>
         ))}
+        <Button
+          className="w-full bg-pink-300"
+          onPress={() => router.dismissTo('/budget/modal/add')}
+        >
+          <Text>Aceptar</Text>
+        </Button>
       </Section>
     </Container>
   )
