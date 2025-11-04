@@ -7,10 +7,12 @@ import Section from './Section'
 import SectionCard from './SectionCard'
 import { router } from 'expo-router'
 import { Button } from './ui/button'
+import { LucideDollarSign } from 'lucide-react-native'
 
 export interface Category {
   nombre: string
   color: string
+  id: number
 }
 
 export interface SliderCardProps {
@@ -20,17 +22,33 @@ export interface SliderCardProps {
 
 const SliderCard = ({ categories, amount }: SliderCardProps) => {
   const [values, setValues] = useState<number[]>(categories.map(() => 0))
+
   const totalAssigned = values.reduce((acc, val) => acc + val, 0)
   const remaining = amount - totalAssigned
+
   const handleValueChange = (value: number, index: number) => {
     const newValues = [...values]
     const currentTotal = newValues.reduce((acc, v) => acc + v, 0)
     const difference = value - newValues[index]
-    if (currentTotal + difference > amount) {
-      return
-    }
+
+    if (currentTotal + difference > amount) return
+
     newValues[index] = value
     setValues(newValues)
+  }
+
+  const handleAccept = () => {
+    const catValues = categories
+      .map((category, index) => ({
+        categoriaId: category.id,
+        monto: values[index],
+      }))
+      .filter((cat) => cat.monto > 0)
+
+    router.dismissTo({
+      pathname: '/budget/modal/add',
+      params: { catValues: JSON.stringify(catValues) },
+    })
   }
 
   return (
@@ -44,8 +62,9 @@ const SliderCard = ({ categories, amount }: SliderCardProps) => {
             Restante: ${remaining.toFixed(0)}
           </Text>
         </View>
+
         {categories.map((category, index) => (
-          <View key={index} className="mb-1">
+          <View key={category.id} className="mb-1">
             <Text className="text-lg font-medium mb-2">
               {category.nombre}: ${values[index].toFixed(0)}
             </Text>
@@ -64,10 +83,8 @@ const SliderCard = ({ categories, amount }: SliderCardProps) => {
             </SectionCard>
           </View>
         ))}
-        <Button
-          className="w-full bg-pink-300"
-          onPress={() => router.dismissTo('/budget/modal/add')}
-        >
+
+        <Button className="w-full bg-pink-300" onPress={handleAccept}>
           <Text>Aceptar</Text>
         </Button>
       </Section>

@@ -19,8 +19,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
+import DateTimePicker, {
+  DateType,
+  useDefaultStyles,
+} from 'react-native-ui-datepicker'
 
-export default function AddExpensePage() {
+export default function AddBudgetPage() {
   const user = auth.currentUser
   if (user) {
     var balanceData = balanceService.findByUserId(user.uid)
@@ -28,32 +32,32 @@ export default function AddExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
-  const { expense, startDate, endDate } = useLocalSearchParams()
+  const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
-
+  const defaultStyles = useDefaultStyles()
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: new Date() as DateType,
+    endDate: new Date() as DateType,
+  })
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
-    } else if (!startDate || !endDate) {
+    } else if (!selectedRange.startDate || !selectedRange.endDate) {
       setError('Selecciona un rango de fechas')
+      return
+    } else if (catValues == undefined) {
+      setError('Selecciona las categorías')
       return
     } else {
       try {
         budgetService.createBudget({
           usuarioId: userId,
           monto: Number(amount),
-          fechaInicio: new Date(startDate as string),
-          fechaFin: new Date(endDate as string),
-          PresupuestoCategoria: [
-            {
-              id: 0,
-              presupuestoId: 0,
-              categoriaId: 1,
-              monto: Number(amount),
-            },
-          ],
+          fechaInicio: new Date(selectedRange.startDate as string),
+          fechaFin: new Date(selectedRange.endDate as string),
+          PresupuestoCategoria: JSON.parse(catValues as string),
         })
         toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
@@ -80,19 +84,6 @@ export default function AddExpensePage() {
           keyboardShouldPersistTaps="handled"
         >
           <Card className="bg-background w-full h-screen py-6 border-0">
-            <CardHeader className="w-full justify-between flex-row">
-              <Text
-                className="text-lg color-pink-300"
-                onPress={() => router.back()}
-              >
-                Cerrar
-              </Text>
-              <Text className="font-semibold text-lg">Nuevo Presupuesto</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
-                Agregar
-              </Text>
-            </CardHeader>
-
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
                 <Text className="text-3xl color-pink-300">$</Text>
@@ -116,10 +107,11 @@ export default function AddExpensePage() {
                   />
                 </View>
               </View>
-              <View className="gap-0">
+              <View className="gap-2">
                 <Button
                   variant="ghost"
                   className="gap-0"
+                  disabled={!amount}
                   onPress={() =>
                     router.push({
                       pathname: '/budget/modal/category-picker',
@@ -127,37 +119,9 @@ export default function AddExpensePage() {
                     })
                   }
                 >
-                  <Text className="text-base">Categoría: Seleccionar</Text>
-                  {/* {categoriesData && categoryId ? (
-                    <Text className="text-base font-semibold">
-                      {
-                        categoriesData.find(
-                          (cat) => cat.id === Number(categoryId),
-                        )?.nombre
-                      }
-                    </Text>
-                  ) : (
-                    <Text className="text-muted-foreground text-base">
-                      Seleccionar
-                    </Text>
-                  )} */}
-                  <ChevronDown color="white" size={18} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="gap-0"
-                  onPress={() =>
-                    router.push({
-                      pathname: '/budget/modal/date-picker',
-                    })
-                  }
-                >
-                  <Text className="text-base">Fecha: </Text>
-                  {startDate && endDate ? (
-                    <Text className="text-base">
-                      {new Date(startDate as string).toLocaleDateString()} -{' '}
-                      {new Date(endDate as string).toLocaleDateString()}
-                    </Text>
+                  <Text className="text-base">Categoría: </Text>
+                  {catValues != undefined ? (
+                    <Text className="text-base font-semibold">Asignadas</Text>
                   ) : (
                     <Text className="text-muted-foreground text-base">
                       Seleccionar
@@ -165,6 +129,16 @@ export default function AddExpensePage() {
                   )}
                   <ChevronDown color="white" size={18} />
                 </Button>
+                <DateTimePicker
+                  mode="range"
+                  startDate={selectedRange.startDate}
+                  endDate={selectedRange.endDate}
+                  onChange={({ startDate, endDate }) => {
+                    setSelectedRange({ startDate, endDate })
+                  }}
+                  styles={defaultStyles}
+                  minDate={new Date()}
+                />
               </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
               <Button className="w-full bg-pink-300" onPress={onSubmit}>
