@@ -1,82 +1,93 @@
-import { cn } from '@/lib/utils';
-import * as ProgressPrimitive from '@rn-primitives/progress';
-import { Platform, View } from 'react-native';
+import { cn } from '@/lib/utils'
+import * as ProgressPrimitive from '@rn-primitives/progress'
+import { Platform, View } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 function Progress({
   className,
   value,
   indicatorClassName,
+  color,
   ...props
 }: ProgressPrimitive.RootProps &
   React.RefAttributes<ProgressPrimitive.RootRef> & {
-    indicatorClassName?: string;
+    indicatorClassName?: string
   }) {
   return (
     <ProgressPrimitive.Root
-      className={cn('bg-primary/20 relative h-2 w-full overflow-hidden rounded-full', className)}
-      {...props}>
-      <Indicator value={value} className={indicatorClassName} />
+      className={cn(
+        'bg-primary/20 relative h-2 w-full overflow-hidden rounded-full',
+        className,
+      )}
+      {...props}
+    >
+      <Indicator value={value} className={indicatorClassName} color={color} />
     </ProgressPrimitive.Root>
-  );
+  )
 }
 
-export { Progress };
+export { Progress }
 
 const Indicator = Platform.select({
   web: WebIndicator,
   native: NativeIndicator,
   default: NullIndicator,
-});
+})
 
 type IndicatorProps = {
-  value: number | undefined | null;
-  className?: string;
-};
+  value: number | undefined | null
+  className?: string
+  color?: string
+}
 
 function WebIndicator({ value, className }: IndicatorProps) {
   if (Platform.OS !== 'web') {
-    return null;
+    return null
   }
 
   return (
     <View
-      className={cn('bg-primary h-full w-full flex-1 transition-all', className)}
-      style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}>
+      className={cn('h-full w-full flex-1 transition-all', className)}
+      style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
+    >
       <ProgressPrimitive.Indicator className={cn('h-full w-full', className)} />
     </View>
-  );
+  )
 }
 
-function NativeIndicator({ value, className }: IndicatorProps) {
-  const progress = useDerivedValue(() => value ?? 0);
+function NativeIndicator({ value, className, color }: IndicatorProps) {
+  const progress = useDerivedValue(() => value ?? 0)
 
   const indicator = useAnimatedStyle(() => {
     return {
       width: withSpring(
         `${interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP)}%`,
-        { overshootClamping: true }
+        { overshootClamping: true },
       ),
-    };
-  }, [value]);
+      backgroundColor: value && value >= 100 ? 'darkred' : color || 'white',
+    }
+  }, [value])
 
   if (Platform.OS === 'web') {
-    return null;
+    return null
   }
 
   return (
     <ProgressPrimitive.Indicator asChild>
-      <Animated.View style={indicator} className={cn('bg-foreground h-full', className)} />
+      <Animated.View
+        style={indicator}
+        className={cn('bg-foreground h-full', className)}
+      />
     </ProgressPrimitive.Indicator>
-  );
+  )
 }
 
 function NullIndicator(_props: IndicatorProps) {
-  return null;
+  return null
 }

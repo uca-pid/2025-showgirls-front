@@ -21,7 +21,7 @@ const IconButton = ({
   className,
 }: IconButtonProps) => {
   return (
-    <View className={`border flex-col items-center ${text ? 'w-[100px]' : ''}`}>
+    <View className={`flex-col items-center ${text ? 'w-[100px]' : ''}`}>
       <Pressable onPress={onPress} className="items-center">
         <View
           className={cn(`p-4 rounded-full ${text && 'mb-2'}`, className)}
