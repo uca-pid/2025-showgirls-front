@@ -13,9 +13,20 @@ export interface BudgetResponse {
   PresupuestoCategoria: BudgetCategoryResponse[]
 }
 
+export interface BudgetGroupResponse {
+  futureBudgets: BudgetResponse[]
+  currentBudget: BudgetResponse
+  pastBudgets: BudgetResponse[]
+}
+
 class BudgetService {
   public async createBudget(body: BudgetResponse) {
     return await ApiService.post('/budget', body)
+  }
+  public async getBudget(userId: string) {
+    return await ApiService.get<BudgetGroupResponse>(
+      `/budgets?usuarioId=${userId}`,
+    )
   }
 }
 

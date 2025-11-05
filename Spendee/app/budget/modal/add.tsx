@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
+import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
@@ -32,6 +33,9 @@ export default function AddBudgetPage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
+  const { addBudget, futureBudgets, pastBudgets, currentBudgets } = useBudgets(
+    userId!,
+  )
   const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
@@ -52,7 +56,7 @@ export default function AddBudgetPage() {
       return
     } else {
       try {
-        budgetService.createBudget({
+        addBudget({
           usuarioId: userId,
           monto: Number(amount),
           fechaInicio: new Date(selectedRange.startDate as string),
@@ -62,6 +66,7 @@ export default function AddBudgetPage() {
         toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
+        router.push('/budget')
       } catch (error) {
         console.log(error)
       }

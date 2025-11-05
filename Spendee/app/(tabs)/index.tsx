@@ -9,6 +9,8 @@ import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useBalance from '@/hooks/useBalance'
+import useBudget from '@/hooks/useBudget'
+import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
@@ -51,6 +53,9 @@ const actions = [
 export default function HomePage() {
   const { user } = useAuth()
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const { futureBudgets, currentBudgets, pastBudgets } = useBudgets(
+    user?.uid ?? '',
+  )
   const monthNames = useMemo(
     () => [
       'Enero',
