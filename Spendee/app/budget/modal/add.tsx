@@ -1,13 +1,9 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
-import useCategories from '@/hooks/useCategories'
-import useExpenses from '@/hooks/useExpenses'
-import balanceService from '@/services/balance.service'
-import budgetService from '@/services/budget.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
@@ -28,14 +24,10 @@ import DateTimePicker, {
 export default function AddBudgetPage() {
   const user = auth.currentUser
   if (user) {
-    var balanceData = balanceService.findByUserId(user.uid)
     var userId = user.uid
   }
   const router = useRouter()
-  const { categoriesData } = useCategories()
-  const { addBudget, futureBudgets, pastBudgets, currentBudgets } = useBudgets(
-    userId!,
-  )
+  const { addBudget } = useBudgets(userId!)
   const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
