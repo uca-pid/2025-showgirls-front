@@ -3,6 +3,8 @@ import ApiService from './api.service'
 export interface BudgetCategoryResponse {
   categoriaId: number
   monto: number
+  gastado: number
+  porcentaje: number
 }
 
 export interface BudgetResponse {

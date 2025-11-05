@@ -25,7 +25,6 @@ export default function useBudgets(usuarioId: string) {
     mutationFn: (body: any) => budgetService.createBudget(body),
     onSuccess: onMutationSuccess,
   })
-  console.log(budgetsData?.futureBudgets)
   return {
     futureBudgets: budgetsData?.futureBudgets,
     currentBudget: budgetsData?.currentBudget,
