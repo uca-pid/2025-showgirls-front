@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import budgetService, { BudgetGroupResponse } from '@/services/budget.service'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function useBudgets(usuarioId: string) {
   const queryClient = useQueryClient()
@@ -28,7 +28,7 @@ export default function useBudgets(usuarioId: string) {
   console.log(budgetsData?.futureBudgets)
   return {
     futureBudgets: budgetsData?.futureBudgets,
-    currentBudgets: budgetsData?.currentBudget,
+    currentBudget: budgetsData?.currentBudget,
     pastBudgets: budgetsData?.pastBudgets,
     isLoading,
     refetch,
