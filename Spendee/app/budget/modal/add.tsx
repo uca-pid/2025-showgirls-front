@@ -27,14 +27,14 @@ export default function AddBudgetPage() {
     var userId = user.uid
   }
   const router = useRouter()
-  const { addBudget } = useBudgets(userId!)
+  const { addBudget, budgetDates } = useBudgets(userId!)
   const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
   const defaultStyles = useDefaultStyles()
   const [selectedRange, setSelectedRange] = useState({
-    startDate: new Date() as DateType,
-    endDate: new Date() as DateType,
+    startDate: null as DateType | null,
+    endDate: null as DateType | null,
   })
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {
@@ -128,13 +128,14 @@ export default function AddBudgetPage() {
                 </Button>
                 <DateTimePicker
                   mode="range"
-                  startDate={selectedRange.startDate}
-                  endDate={selectedRange.endDate}
+                  startDate={selectedRange.startDate || null}
+                  endDate={selectedRange.endDate || null}
                   onChange={({ startDate, endDate }) => {
                     setSelectedRange({ startDate, endDate })
                   }}
                   styles={defaultStyles}
                   minDate={new Date()}
+                  disabledDates={budgetDates}
                 />
               </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
