@@ -19,6 +19,7 @@ export interface BudgetGroupResponse {
   futureBudgets: BudgetResponse[]
   currentBudget: BudgetResponse
   pastBudgets: BudgetResponse[]
+  allBudgetDates: Date[]
 }
 
 class BudgetService {

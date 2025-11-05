@@ -29,6 +29,7 @@ export default function useBudgets(usuarioId: string) {
     futureBudgets: budgetsData?.futureBudgets,
     currentBudget: budgetsData?.currentBudget,
     pastBudgets: budgetsData?.pastBudgets,
+    budgetDates: budgetsData?.allBudgetDates.map((date) => new Date(date)),
     isLoading,
     refetch,
     addBudget,

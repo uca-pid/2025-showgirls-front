@@ -27,7 +27,7 @@ export default function AddBudgetPage() {
     var userId = user.uid
   }
   const router = useRouter()
-  const { addBudget } = useBudgets(userId!)
+  const { addBudget, budgetDates } = useBudgets(userId!)
   const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
@@ -36,6 +36,7 @@ export default function AddBudgetPage() {
     startDate: new Date() as DateType,
     endDate: new Date() as DateType,
   })
+  console.log(budgetDates)
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
@@ -135,6 +136,7 @@ export default function AddBudgetPage() {
                   }}
                   styles={defaultStyles}
                   minDate={new Date()}
+                  disabledDates={budgetDates}
                 />
               </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}

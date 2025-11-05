@@ -15,11 +15,10 @@ import { View } from 'react-native'
 
 const Budget = () => {
   const { user } = useAuth()
-  const { currentBudget, futureBudgets, pastBudgets } = useBudgets(
+  const { currentBudget, futureBudgets, pastBudgets, budgetDates } = useBudgets(
     user ? user.uid : '',
   )
   const { categoriesData } = useCategories()
-
   const montoPresupuestado = currentBudget?.monto
   const montoTotalGastado = currentBudget?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
