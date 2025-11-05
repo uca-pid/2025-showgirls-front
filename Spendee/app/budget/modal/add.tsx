@@ -33,10 +33,9 @@ export default function AddBudgetPage() {
   const [error, setError] = useState('')
   const defaultStyles = useDefaultStyles()
   const [selectedRange, setSelectedRange] = useState({
-    startDate: new Date() as DateType,
-    endDate: new Date() as DateType,
+    startDate: null as DateType | null,
+    endDate: null as DateType | null,
   })
-  console.log(budgetDates)
   const onSubmit = async () => {
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
@@ -129,8 +128,8 @@ export default function AddBudgetPage() {
                 </Button>
                 <DateTimePicker
                   mode="range"
-                  startDate={selectedRange.startDate}
-                  endDate={selectedRange.endDate}
+                  startDate={selectedRange.startDate || null}
+                  endDate={selectedRange.endDate || null}
                   onChange={({ startDate, endDate }) => {
                     setSelectedRange({ startDate, endDate })
                   }}
