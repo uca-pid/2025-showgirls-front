@@ -10,6 +10,7 @@ export interface IconButtonProps {
   iconColor?: string
   onPress?: () => void
   className?: string
+  size?: 'sm' | 'md' | 'lg'
 }
 
 const IconButton = ({
@@ -19,15 +20,22 @@ const IconButton = ({
   iconColor = '#F9A8D4',
   onPress,
   className,
+  size = 'lg',
 }: IconButtonProps) => {
   return (
     <View className={`flex-col items-center ${text ? 'w-[100px]' : ''}`}>
       <Pressable onPress={onPress} className="items-center">
         <View
-          className={cn(`p-4 rounded-full ${text && 'mb-2'}`, className)}
+          className={cn(
+            `${size === 'sm' || size === 'md' ? 'p-3' : 'p-4'} rounded-full ${text && 'mb-2'}`,
+            className,
+          )}
           style={{ backgroundColor: `${iconColor}30` }}
         >
-          <Icon color={iconColor} />
+          <Icon
+            color={iconColor}
+            size={size === 'sm' ? 15 : size === 'md' ? 22 : 26}
+          />
         </View>
         {text && (
           <Text className={`text-${textColor}`} numberOfLines={1}>
