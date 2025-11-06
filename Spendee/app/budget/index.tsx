@@ -65,7 +65,7 @@ const Budget = () => {
       </Section>
       <Section>
         <SectionCard>
-          <View className="flex-row justify-between w-full">
+          <View className="flex-row justify-between w-full items-center">
             <View>
               <Text className="text-muted-foreground">Restante</Text>
               <Text
@@ -74,6 +74,11 @@ const Budget = () => {
                 ${montoRestante}
               </Text>
             </View>
+            <Text
+              className={`${porcentajePresupuesto >= 100 && 'text-red-800'} text-2xl`}
+            >
+              {porcentajePresupuesto.toFixed(0)}%
+            </Text>
             <View>
               <Text className="text-muted-foreground">Presupuesto</Text>
               <Text>${montoPresupuestado?.toLocaleString('GB-gb')}</Text>
@@ -94,6 +99,7 @@ const Budget = () => {
                 <View className="flex-row items-center justify-between w-full flex-1">
                   <View className="flex-row items-center gap-2 flex-1">
                     <IconButton
+                      size="md"
                       text=""
                       icon={getIcon(categoria?.icono || 'ellipsis')}
                       iconColor={categoria?.color}
