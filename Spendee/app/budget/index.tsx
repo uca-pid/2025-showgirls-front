@@ -52,6 +52,16 @@ const Budget = () => {
     ((montoTotalGastado ?? 0) / (montoPresupuestado ?? 0)) * 100
   return (
     <Container>
+      <Button
+        onPress={() =>
+          router.push({
+            pathname: '/budget/edit-budget',
+            params: { budgetId: 16 }, //cambiarlo por el id real
+          })
+        }
+      >
+        <Text>Edit Budget</Text>
+      </Button>
       <Section>
         <SectionCard className="bg-transparent">
           <Text className="text-muted-foreground text-lg">Llevás gastado</Text>

@@ -147,6 +147,10 @@ function RootNavigator() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="budget/edit-budget"
+        options={{ title: 'Editar Presupuesto', headerBackTitle: 'Atrás' }}
+      />
     </Stack>
   )
 }
