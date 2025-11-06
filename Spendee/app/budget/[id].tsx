@@ -24,6 +24,12 @@ const Budget = () => {
   )
   const { deleteBudget, refetch } = useBudgets(user ? user.uid : '')
   const { categoriesData } = useCategories()
+
+  const isNotFuture =
+    new Date(budgetDetailData?.fechaFin!) < new Date() ||
+    (new Date() <= new Date(budgetDetailData?.fechaFin!) &&
+      new Date() >= new Date(budgetDetailData?.fechaInicio!))
+
   const montoPresupuestado = budgetDetailData?.monto
   const montoTotalGastado = budgetDetailData?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
@@ -57,39 +63,63 @@ const Budget = () => {
       headerRight: () => (
         <Dropdown
           width={200}
-          data={[
-            {
-              value: 'history',
-              label: 'Ver historial',
-              icon: History,
-              onPress: () => router.push('/budget/history'),
-            },
-            {
-              value: 'add',
-              label: 'Agregar',
-              icon: Plus,
-              onPress: () => router.push('/budget/modal/add'),
-            },
-            {
-              value: 'edit',
-              label: 'Editar',
-              icon: Pencil,
-              onPress: () => handleEditBudget(),
-            },
-            {
-              value: 'delete',
-              label: 'Eliminar',
-              icon: Trash2,
-              destructive: true,
-              onPress: () => handleDeleteBudget(),
-            },
-          ]}
+          data={
+            !isNotFuture
+              ? [
+                  {
+                    value: 'history',
+                    label: 'Ver historial',
+                    icon: History,
+                    onPress: () => router.push('/budget/history'),
+                  },
+                  {
+                    value: 'add',
+                    label: 'Agregar',
+                    icon: Plus,
+                    onPress: () => router.push('/budget/modal/add'),
+                  },
+                  {
+                    value: 'edit',
+                    label: 'Editar',
+                    icon: Pencil,
+                    onPress: () => handleEditBudget(),
+                  },
+                  {
+                    value: 'delete',
+                    label: 'Eliminar',
+                    icon: Trash2,
+                    destructive: true,
+                    onPress: () => handleDeleteBudget(),
+                  },
+                ]
+              : [
+                  {
+                    value: 'history',
+                    label: 'Ver historial',
+                    icon: History,
+                    onPress: () => router.push('/budget/history'),
+                  },
+                  {
+                    value: 'add',
+                    label: 'Agregar',
+                    icon: Plus,
+                    onPress: () => router.push('/budget/modal/add'),
+                  },
+                  {
+                    value: 'delete',
+                    label: 'Eliminar',
+                    icon: Trash2,
+                    destructive: true,
+                    onPress: () => handleDeleteBudget(),
+                  },
+                ]
+          }
           onChange={() => {}}
           type="button"
         />
       ),
     })
-  }, [])
+  }, [isNotFuture])
 
   async function handleEditBudget() {
     router.push({
