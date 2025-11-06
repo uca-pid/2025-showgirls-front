@@ -1,4 +1,7 @@
-import budgetService, { BudgetGroupResponse } from '@/services/budget.service'
+import budgetService, {
+  BudgetGroupResponse,
+  BudgetResponse,
+} from '@/services/budget.service'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function useBudgets(usuarioId: string) {
@@ -25,6 +28,22 @@ export default function useBudgets(usuarioId: string) {
     mutationFn: (body: any) => budgetService.createBudget(body),
     onSuccess: onMutationSuccess,
   })
+  const { mutateAsync: deleteBudget } = useMutation({
+    mutationFn: (budgetId: number) => budgetService.deleteBudget(budgetId),
+    onSuccess: onMutationSuccess,
+  })
+  const { mutateAsync: modifyBudget } = useMutation({
+    mutationFn: async ({
+      budgetId,
+      body,
+    }: {
+      budgetId: number
+      body: Partial<BudgetResponse>
+    }) => {
+      return budgetService.modifyBudget(budgetId, body)
+    },
+    onSuccess: onMutationSuccess,
+  })
   return {
     futureBudgets: budgetsData?.futureBudgets,
     currentBudget: budgetsData?.currentBudget,
@@ -33,6 +52,8 @@ export default function useBudgets(usuarioId: string) {
     isLoading,
     refetch,
     addBudget,
+    deleteBudget,
+    modifyBudget,
     ...rest,
   }
 }
