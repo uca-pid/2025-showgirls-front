@@ -5,8 +5,7 @@ import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
-import { useAuth } from '@/context/AuthContext'
-import useBudgets from '@/hooks/useBudget'
+import useBudgetDetail from '@/hooks/useBudgetDetail'
 import useCategories from '@/hooks/useCategories'
 import { getIcon } from '@/lib/getIcon'
 import { router, useGlobalSearchParams, useNavigation } from 'expo-router'
@@ -16,29 +15,31 @@ import { View } from 'react-native'
 
 const Budget = () => {
   const { id } = useGlobalSearchParams()
-  const { user } = useAuth()
-  const { currentBudget, isFetching, isRefetching } = useBudgets(
-    user ? user.uid : '',
+  const { budgetDetailData, isRefetching, isFetching } = useBudgetDetail(
+    Number(id),
   )
   const { categoriesData } = useCategories()
-  const montoPresupuestado = currentBudget?.monto
-  const montoTotalGastado = currentBudget?.PresupuestoCategoria.reduce(
+  console.log(budgetDetailData)
+  const montoPresupuestado = budgetDetailData?.monto
+  const montoTotalGastado = budgetDetailData?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
     0,
   )
   const montoRestante = (
     (montoPresupuestado ?? 0) - (montoTotalGastado ?? 0)
   ).toLocaleString('es-AR')
-  const fechaInicio = new Date(currentBudget?.fechaInicio!).toLocaleDateString(
+  const fechaInicio = new Date(
+    budgetDetailData?.fechaInicio!,
+  ).toLocaleDateString(
     'es-ES',
-    new Date(currentBudget?.fechaInicio!).getFullYear() ===
+    new Date(budgetDetailData?.fechaInicio!).getFullYear() ===
       new Date().getFullYear()
       ? { day: 'numeric', month: 'long' }
       : {},
   )
-  const fechaFin = new Date(currentBudget?.fechaFin!).toLocaleDateString(
+  const fechaFin = new Date(budgetDetailData?.fechaFin!).toLocaleDateString(
     'es-ES',
-    new Date(currentBudget?.fechaInicio!).getFullYear() ===
+    new Date(budgetDetailData?.fechaInicio!).getFullYear() ===
       new Date().getFullYear()
       ? { day: 'numeric', month: 'long' }
       : {},
@@ -116,7 +117,7 @@ const Budget = () => {
           </View>
           <Progress value={porcentajePresupuesto} />
         </SectionCard>
-        {currentBudget?.PresupuestoCategoria.map(
+        {budgetDetailData?.PresupuestoCategoria.map(
           (presupuestoCategoria, index) => {
             const categoriaId = presupuestoCategoria.categoriaId
             const montoCategoriaPresupuestado = presupuestoCategoria.monto
@@ -145,14 +146,14 @@ const Budget = () => {
 
                   <View className="items-end">
                     <Text className="text-lg text-muted-foreground">
-                      ${montoCategoriaPresupuestado.toLocaleString('es-AR')}
+                      ${montoCategoriaPresupuestado?.toLocaleString('es-AR')}
                     </Text>
                   </View>
                 </View>
                 <View className="w-full gap-2">
                   <View className="flex-row justify-between">
                     <Text className="font-semibold">
-                      ${montoCategoriaGastado.toLocaleString('es-AR')}
+                      ${montoCategoriaGastado?.toLocaleString('es-AR')}
                     </Text>
                     <Text className="font-semibold">
                       $
