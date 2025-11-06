@@ -8,6 +8,7 @@ export interface BudgetCategoryResponse {
 }
 
 export interface BudgetResponse {
+  budgetId?: number
   usuarioId: string
   monto: number
   fechaInicio: Date
@@ -36,6 +37,9 @@ class BudgetService {
   }
   public async modifyBudget(budgetId: number, body: Partial<BudgetResponse>) {
     return await ApiService.put(`/budget/${budgetId}`, body)
+  }
+  public async findByBudgetId(budgetId: number) {
+    return await ApiService.get<BudgetResponse>(`/budget/${budgetId}`)
   }
 }
 
