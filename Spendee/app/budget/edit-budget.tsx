@@ -4,9 +4,10 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
+import useBudgetsDetail from '@/hooks/useBudgetDetail'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -21,47 +22,99 @@ import DateTimePicker, {
   useDefaultStyles,
 } from 'react-native-ui-datepicker'
 
-export default function AddBudgetPage() {
+const EditBudget = () => {
   const user = auth.currentUser
-  if (user) {
-    var userId = user.uid
-  }
+  const userId = user?.uid
   const router = useRouter()
-  const { addBudget, budgetDates } = useBudgets(userId!)
-  const { expense, catValues } = useLocalSearchParams()
-  const [amount, setAmount] = useState(expense ? (expense as string) : '')
-  const [error, setError] = useState('')
+  const { budgetId } = useLocalSearchParams()
+
+  const { budgetDetailData } = useBudgetsDetail(parseInt(budgetId as string))
+  const { modifyBudget, budgetDates } = useBudgets(userId!)
+  const { catValues } = useLocalSearchParams()
+
   const defaultStyles = useDefaultStyles()
-  const [selectedRange, setSelectedRange] = useState({
-    startDate: null as DateType | null,
-    endDate: null as DateType | null,
+
+  const [amountState, setAmountState] = useState<string>('')
+  const [categoriesValues, setCategoriesValues] = useState<string | undefined>(
+    undefined,
+  )
+  const [selectedRange, setSelectedRange] = useState<{
+    startDate: DateType | null
+    endDate: DateType | null
+  }>({
+    startDate: (budgetDetailData?.fechaInicio as DateType) || null,
+    endDate: (budgetDetailData?.fechaFin as DateType) || null,
   })
+  const [amountChanged, setAmountChanged] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (budgetDetailData) {
+      setAmountState(budgetDetailData.monto.toString())
+
+      setCategoriesValues(
+        JSON.stringify(
+          budgetDetailData.PresupuestoCategoria.map((c) => ({
+            categoriaId: c.categoriaId,
+            monto: c.monto,
+          })),
+        ),
+      )
+
+      setSelectedRange({
+        startDate: budgetDetailData.fechaInicio,
+        endDate: budgetDetailData.fechaFin,
+      })
+    }
+  }, [budgetDetailData])
+  useEffect(() => {
+    if (catValues) {
+      setCategoriesValues(catValues as string)
+    }
+  }, [catValues])
+
+  const handleAmountChange = (value: string) => {
+    setAmountState(value)
+
+    if (!amountChanged) {
+      setAmountChanged(true)
+      setCategoriesValues(undefined)
+    }
+  }
+
   const onSubmit = async () => {
-    if (!amount || Number(amount) <= 0) {
+    if (!amountState || Number(amountState) <= 0) {
       setError('Ingresa un monto')
       return
-    } else if (!selectedRange.startDate || !selectedRange.endDate) {
+    }
+
+    if (!selectedRange.startDate || !selectedRange.endDate) {
       setError('Selecciona un rango de fechas')
       return
-    } else if (catValues == undefined) {
+    }
+
+    if (!categoriesValues) {
       setError('Selecciona las categorías')
       return
-    } else {
-      try {
-        addBudget({
+    }
+    try {
+      await modifyBudget({
+        budgetId: parseInt(budgetId as string),
+        body: {
           usuarioId: userId,
-          monto: Number(amount),
+          monto: Number(amountState),
           fechaInicio: new Date(selectedRange.startDate as string),
           fechaFin: new Date(selectedRange.endDate as string),
-          PresupuestoCategoria: JSON.parse(catValues as string),
-        })
-        toastService.show('Presupuesto añadido con éxito', 'success')
-        router.dismissAll()
-        router.replace('/')
-        router.push('/budget')
-      } catch (error) {
-        console.log(error)
-      }
+          PresupuestoCategoria: JSON.parse(categoriesValues),
+        },
+      })
+
+      toastService.show('Presupuesto modificado con éxito', 'success')
+      router.dismissAll()
+      router.replace('/')
+      router.push('/budget')
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -78,7 +131,6 @@ export default function AddBudgetPage() {
             justifyContent: 'center',
             alignItems: 'center',
           }}
-          keyboardShouldPersistTaps="handled"
         >
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardContent className="gap-6 w-full h-full items-center">
@@ -97,8 +149,8 @@ export default function AddBudgetPage() {
                     keyboardType="number-pad"
                     returnKeyType="next"
                     onSubmitEditing={onSubmit}
-                    onChangeText={setAmount}
-                    value={amount}
+                    onChangeText={handleAmountChange}
+                    value={amountState}
                     placeholder="0"
                     placeholderTextColor="white"
                   />
@@ -108,16 +160,20 @@ export default function AddBudgetPage() {
                 <Button
                   variant="ghost"
                   className="gap-0"
-                  disabled={!amount}
+                  disabled={!amountState}
                   onPress={() =>
                     router.push({
                       pathname: '/budget/modal/category-picker',
-                      params: { expense: amount, path: '/budget/modal/add' },
+                      params: {
+                        expense: amountState,
+                        path: '/budget/edit-budget',
+                        budgetId: budgetId,
+                      },
                     })
                   }
                 >
                   <Text className="text-base">Categoría: </Text>
-                  {catValues != undefined ? (
+                  {categoriesValues ? (
                     <Text className="text-base font-semibold">Asignadas</Text>
                   ) : (
                     <Text className="text-muted-foreground text-base">
@@ -128,19 +184,21 @@ export default function AddBudgetPage() {
                 </Button>
                 <DateTimePicker
                   mode="range"
-                  startDate={selectedRange.startDate || null}
-                  endDate={selectedRange.endDate || null}
-                  onChange={({ startDate, endDate }) => {
+                  startDate={selectedRange.startDate}
+                  endDate={selectedRange.endDate}
+                  onChange={({ startDate, endDate }) =>
                     setSelectedRange({ startDate, endDate })
-                  }}
+                  }
                   styles={defaultStyles}
                   minDate={new Date()}
                   disabledDates={budgetDates}
                 />
               </View>
+
               {error && <Text className="text-red-700 text-base">{error}</Text>}
+
               <Button className="w-full bg-pink-300" onPress={onSubmit}>
-                <Text>Añadir Presupuesto</Text>
+                <Text>Editar Presupuesto</Text>
               </Button>
             </CardContent>
           </Card>
@@ -149,3 +207,5 @@ export default function AddBudgetPage() {
     </KeyboardAvoidingView>
   )
 }
+
+export default EditBudget

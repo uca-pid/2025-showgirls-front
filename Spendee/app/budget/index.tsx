@@ -3,6 +3,7 @@ import Dropdown from '@/components/Dropdown'
 import IconButton from '@/components/IconButton'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
+import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
@@ -81,6 +82,16 @@ const Budget = () => {
 
   return (
     <Container activity={isRefetching || isFetching}>
+      <Button
+        onPress={() =>
+          router.push({
+            pathname: '/budget/edit-budget',
+            params: { budgetId: 16 }, //cambiarlo por el id real
+          })
+        }
+      >
+        <Text>Edit Budget</Text>
+      </Button>
       <Section>
         <SectionCard className="bg-transparent">
           <Text className="text-muted-foreground text-lg">Llevás gastado</Text>

@@ -7,7 +7,6 @@ import Section from './Section'
 import SectionCard from './SectionCard'
 import { router } from 'expo-router'
 import { Button } from './ui/button'
-import { LucideDollarSign } from 'lucide-react-native'
 
 export interface Category {
   nombre: string

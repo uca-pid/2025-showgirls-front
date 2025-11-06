@@ -1,17 +1,86 @@
 import { View } from 'react-native'
+import React, { useState } from 'react'
 import { Text } from '@/components/ui/text'
-import React from 'react'
-import SliderCard from '@/components/SliderCard'
+import Slider from '@react-native-community/slider'
+import { router, useLocalSearchParams } from 'expo-router'
+import Container from '@/components/Container'
+import Section from '@/components/Section'
+import SectionCard from '@/components/SectionCard'
+import { Button } from '@/components/ui/button'
 import useCategories from '@/hooks/useCategories'
-import { useLocalSearchParams } from 'expo-router'
 
 const CategoryPicker = () => {
   const { categoriesData } = useCategories()
-  const { expense } = useLocalSearchParams()
+  const { expense, path, budgetId } = useLocalSearchParams()
+  const amount = expense ? Number(expense) : 0
+  const [values, setValues] = useState<number[]>(categoriesData.map(() => 0))
+
+  const totalAssigned = values.reduce((acc, val) => acc + val, 0)
+  const remaining = amount - totalAssigned
+
+  const handleValueChange = (value: number, index: number) => {
+    const newValues = [...values]
+    const currentTotal = newValues.reduce((acc, v) => acc + v, 0)
+    const difference = value - newValues[index]
+
+    if (currentTotal + difference > amount) return
+
+    newValues[index] = value
+    setValues(newValues)
+  }
+
+  const handleAccept = () => {
+    const catValues = categoriesData
+      .map((category, index) => ({
+        categoriaId: category.id,
+        monto: values[index],
+      }))
+      .filter((cat) => cat.monto > 0)
+
+    router.dismissTo({
+      pathname: path as any,
+      params: { catValues: JSON.stringify(catValues), budgetId: budgetId },
+    })
+  }
+
   return (
-    <View className="w-full h-screen bg-background items-center py-4">
-      <SliderCard categories={categoriesData} amount={Number(expense)} />
-    </View>
+    <Container>
+      <Section>
+        <View className="position-absolute left-0 items-center">
+          <Text className="text-xl font-bold text-center">
+            Monto total: ${amount.toFixed(0)}
+          </Text>
+          <Text className="text-m text-center text-gray-600">
+            Restante: ${remaining.toFixed(0)}
+          </Text>
+        </View>
+
+        {categoriesData.map((category, index) => (
+          <View key={category.id} className="mb-1">
+            <Text className="text-lg font-medium mb-2">
+              {category.nombre}: ${values[index].toFixed(0)}
+            </Text>
+            <SectionCard className="p-5">
+              <Slider
+                style={{ width: '100%', height: 20 }}
+                minimumValue={0}
+                maximumValue={amount}
+                step={1}
+                value={values[index]}
+                onValueChange={(value) => handleValueChange(value, index)}
+                minimumTrackTintColor={category.color}
+                maximumTrackTintColor="#E0E0E0"
+                thumbTintColor={category.color}
+              />
+            </SectionCard>
+          </View>
+        ))}
+
+        <Button className="w-full bg-pink-300" onPress={handleAccept}>
+          <Text>Aceptar</Text>
+        </Button>
+      </Section>
+    </Container>
   )
 }
 
