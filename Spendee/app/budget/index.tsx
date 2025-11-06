@@ -2,14 +2,12 @@ import Container from '@/components/Container'
 import IconButton from '@/components/IconButton'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import { getIcon } from '@/lib/getIcon'
-import { BudgetResponse } from '@/services/budget.service'
 import { router } from 'expo-router'
 import { ChevronRight } from 'lucide-react-native'
 import React from 'react'
@@ -17,14 +15,7 @@ import { View } from 'react-native'
 
 const Budget = () => {
   const { user } = useAuth()
-  const {
-    currentBudget,
-    futureBudgets,
-    pastBudgets,
-    budgetDates,
-    deleteBudget,
-    modifyBudget,
-  } = useBudgets(user ? user.uid : '')
+  const { currentBudget } = useBudgets(user ? user.uid : '')
   const { categoriesData } = useCategories()
   const montoPresupuestado = currentBudget?.monto
   const montoTotalGastado = currentBudget?.PresupuestoCategoria.reduce(

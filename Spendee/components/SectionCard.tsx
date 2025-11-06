@@ -7,12 +7,14 @@ const SectionCard = ({
   activity,
   onPress,
   justify = 'center',
+  items = 'center',
   flex = 'col',
   className,
 }: PropsWithChildren & {
   activity?: boolean
   onPress?: () => void
   justify?: 'center' | 'between' | 'around' | 'evenly' | 'end'
+  items?: 'center' | 'start' | 'end'
   flex?: 'row' | 'col'
   className?: string
 }) => {
@@ -24,7 +26,9 @@ const SectionCard = ({
       {activity ? (
         <ActivityIndicator className="self-center" size={48} color="white" />
       ) : (
-        <View className={`flex-${flex} items-center justify-${justify} gap-4`}>
+        <View
+          className={`flex-${flex} items-${items} justify-${justify} gap-4`}
+        >
           {children}
         </View>
       )}
