@@ -112,7 +112,7 @@ export default function AddBudgetPage() {
                   onPress={() =>
                     router.push({
                       pathname: '/budget/modal/category-picker',
-                      params: { expense: amount },
+                      params: { expense: amount, path: '/budget/modal/add' },
                     })
                   }
                 >
