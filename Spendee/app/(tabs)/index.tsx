@@ -1,6 +1,7 @@
 import BudgetCard from '@/components/BudgetCard'
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
+import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
@@ -182,6 +183,29 @@ export default function HomePage() {
           </Text>
         </SectionCard>
       )}
+      <Section
+        title="Acciones Rápidas"
+        /*actionIcon={Pencil}
+        actionText="Editar"
+        onActionPress={() => {}}*/
+      >
+        <SectionCard flex="row">
+          <FlatList
+            contentContainerStyle={{ justifyContent: 'space-between' }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={actions}
+            renderItem={({ item }) => (
+              <IconButton
+                text={item.text}
+                textColor={item.textColor}
+                icon={item.icon}
+                onPress={item.onPress}
+              />
+            )}
+          />
+        </SectionCard>
+      </Section>
 
       <Section
         title="Presupuesto Actual"
@@ -190,7 +214,13 @@ export default function HomePage() {
         onActionPress={() => router.push('/budget')}
         activity={isFetching || isRefetching}
       >
-        <BudgetCard budget={currentBudget} />
+        {currentBudget ? (
+          <BudgetCard budget={currentBudget} />
+        ) : (
+          <Text className="text-center text-muted-foreground text-lg mt-4">
+            No tenés un presupuesto activos
+          </Text>
+        )}
       </Section>
       <Section
         title={`Mis Gastos de ${monthLabel}`}
