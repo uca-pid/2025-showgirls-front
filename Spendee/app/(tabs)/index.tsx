@@ -1,15 +1,13 @@
+import BudgetCard from '@/components/BudgetCard'
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
-import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useBalance from '@/hooks/useBalance'
-import useBudget from '@/hooks/useBudget'
 import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
@@ -53,9 +51,13 @@ const actions = [
 export default function HomePage() {
   const { user } = useAuth()
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
-  const { futureBudgets, currentBudgets, pastBudgets } = useBudgets(
-    user?.uid ?? '',
-  )
+  const {
+    futureBudgets,
+    currentBudget,
+    pastBudgets,
+    isFetching,
+    isRefetching,
+  } = useBudgets(user?.uid ?? '')
   const monthNames = useMemo(
     () => [
       'Enero',
@@ -182,37 +184,13 @@ export default function HomePage() {
       )}
 
       <Section
-        title="Acciones Rápidas"
-        /*actionIcon={Pencil}
-        actionText="Editar"
-        onActionPress={() => {}}*/
-      >
-        <SectionCard flex="row">
-          <FlatList
-            contentContainerStyle={{ justifyContent: 'space-between' }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={actions}
-            renderItem={({ item }) => (
-              <IconButton
-                text={item.text}
-                textColor={item.textColor}
-                icon={item.icon}
-                onPress={item.onPress}
-              />
-            )}
-          />
-        </SectionCard>
-      </Section>
-      <Section
         title="Presupuesto Actual"
         actionText="Ver más"
         actionIcon={ChevronRight}
         onActionPress={() => router.push('/budget')}
+        activity={isFetching || isRefetching}
       >
-        <SectionCard onPress={() => router.push('/budget')}>
-          <Progress value={50} />
-        </SectionCard>
+        <BudgetCard budget={currentBudget} />
       </Section>
       <Section
         title={`Mis Gastos de ${monthLabel}`}
