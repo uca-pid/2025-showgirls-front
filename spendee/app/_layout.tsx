@@ -129,9 +129,9 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
-        name="budget/index"
+        name="budget/[id]"
         options={{
-          title: 'Presupuestos',
+          title: 'Presupuesto',
           headerBackTitle: 'Atrás',
           headerBackVisible: true,
         }}

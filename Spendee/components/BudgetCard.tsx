@@ -1,4 +1,5 @@
 import { BudgetResponse } from '@/services/budget.service'
+import { router } from 'expo-router'
 import React from 'react'
 import { View } from 'react-native'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
@@ -16,8 +17,10 @@ export default function BudgetCard({
     fechaFin: new Date(),
     monto: 0,
     PresupuestoCategoria: [],
+    id: 0,
   },
 }: BudgetCardProps) {
+  console.log(budget.id)
   const montoPresupuestado = budget?.monto
   const montoTotalGastado = budget?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
@@ -39,7 +42,11 @@ export default function BudgetCard({
       : {},
   )
   const diasRestantes =
-    new Date(budget?.fechaFin).getDate() - new Date().getDate()
+    new Date(budget.fechaFin) < new Date()
+      ? 0
+      : new Date(budget.fechaInicio) > new Date()
+        ? new Date().getDate() - new Date(budget?.fechaInicio).getDate()
+        : new Date(budget?.fechaFin).getDate() - new Date().getDate()
   const porcentajePresupuesto =
     ((montoTotalGastado ?? 0) / (montoPresupuestado ?? 0)) * 100
 
@@ -49,6 +56,12 @@ export default function BudgetCard({
       className="gap-[5px]"
       flex="row"
       justify="between"
+      onPress={() =>
+        router.push({
+          pathname: '/budget/[id]',
+          params: { id: budget.id },
+        })
+      }
     >
       <View>
         <Text className="text-2xl font-semibold">
@@ -58,7 +71,11 @@ export default function BudgetCard({
           {fechaInicio} - {fechaFin}
         </Text>
         <Text className="text-base text-muted-foreground">
-          {diasRestantes} días restantes
+          {diasRestantes === 0
+            ? `Gastado: ${montoTotalGastado.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
+            : diasRestantes < 0
+              ? `${-diasRestantes} días para comenzar`
+              : `${diasRestantes} días restantes`}
         </Text>
       </View>
       <View className="items-center gap-2">
@@ -70,15 +87,15 @@ export default function BudgetCard({
           tintColor={
             porcentajePresupuesto >= 100
               ? 'darkred'
-              : porcentajePresupuesto >= 75 && porcentajePresupuesto < 100
+              : porcentajePresupuesto >= 80 && porcentajePresupuesto < 100
                 ? 'orange'
-                : 'white'
+                : '#16a34a'
           }
           backgroundColor="#FFFFFF30"
           lineCap="round"
           children={() => (
             <Text
-              className={`${porcentajePresupuesto >= 100 ? 'text-red-600' : porcentajePresupuesto >= 75 && porcentajePresupuesto < 100 ? 'text-orange-300' : 'text-primary'} text-lg`}
+              className={`${porcentajePresupuesto >= 100 ? 'text-red-600' : porcentajePresupuesto >= 80 && porcentajePresupuesto < 100 ? 'text-orange-300' : 'text-green-600'} text-lg`}
               numberOfLines={1}
               adjustsFontSizeToFit
             >

@@ -52,13 +52,9 @@ const actions = [
 export default function HomePage() {
   const { user } = useAuth()
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
-  const {
-    futureBudgets,
-    currentBudget,
-    pastBudgets,
-    isFetching,
-    isRefetching,
-  } = useBudgets(user?.uid ?? '')
+  const { currentBudget, isFetching, isRefetching } = useBudgets(
+    user?.uid ?? '',
+  )
   const monthNames = useMemo(
     () => [
       'Enero',
@@ -133,6 +129,7 @@ export default function HomePage() {
       ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
       : chartData
 
+  console.log(currentBudget)
   return (
     <Container
       activity={refreshing}
@@ -211,7 +208,7 @@ export default function HomePage() {
         title="Presupuesto Actual"
         actionText="Ver más"
         actionIcon={ChevronRight}
-        onActionPress={() => router.push('/budget')}
+        onActionPress={() => router.push('/budget/history')}
         activity={isFetching || isRefetching}
       >
         {currentBudget ? (

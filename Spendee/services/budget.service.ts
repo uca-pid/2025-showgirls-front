@@ -8,7 +8,7 @@ export interface BudgetCategoryResponse {
 }
 
 export interface BudgetResponse {
-  budgetId?: number
+  id: number
   usuarioId: string
   monto: number
   fechaInicio: Date

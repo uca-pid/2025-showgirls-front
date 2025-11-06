@@ -9,6 +9,7 @@ const SectionCard = ({
   justify = 'center',
   items = 'center',
   flex = 'col',
+  backgroundColor,
   className,
 }: PropsWithChildren & {
   activity?: boolean
@@ -17,10 +18,12 @@ const SectionCard = ({
   items?: 'center' | 'start' | 'end'
   flex?: 'row' | 'col'
   className?: string
+  backgroundColor?: string
 }) => {
   return (
     <Card
       className={`w-full border-0 rounded-[30px] p-6 justify-center ${className}`}
+      style={backgroundColor && { backgroundColor: backgroundColor }}
       onPress={onPress}
     >
       {activity ? (
@@ -28,6 +31,11 @@ const SectionCard = ({
       ) : (
         <View
           className={`flex-${flex} items-${items} justify-${justify} gap-4`}
+          style={{
+            width: '100%',
+            flexShrink: 1,
+            flexGrow: 1,
+          }}
         >
           {children}
         </View>
