@@ -58,7 +58,7 @@ export default function AddBudgetPage() {
         toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
-        router.push('/budget')
+        router.push('/budget/history')
       } catch (error) {
         console.log(error)
       }

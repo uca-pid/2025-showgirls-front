@@ -20,6 +20,7 @@ import {
   BanknoteArrowUp,
   ChevronRight,
   Info,
+  PiggyBank,
 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import {
@@ -45,6 +46,14 @@ const actions = [
     icon: BanknoteArrowDown,
     onPress: () => {
       router.push('/expense/modal/add')
+    },
+  },
+  {
+    text: 'Presupuesto',
+    textColor: 'white',
+    icon: PiggyBank,
+    onPress: () => {
+      router.push('/budget/modal/add')
     },
   },
 ]
@@ -129,7 +138,6 @@ export default function HomePage() {
       ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
       : chartData
 
-  console.log(currentBudget)
   return (
     <Container
       activity={refreshing}

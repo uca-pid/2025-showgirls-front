@@ -9,6 +9,7 @@ export default function useBudgets(usuarioId: string) {
 
   function onMutationSuccess() {
     queryClient.invalidateQueries({ queryKey: ['budgets', usuarioId] })
+    queryClient.invalidateQueries({ queryKey: ['budgetDetail'], exact: false })
   }
 
   const {

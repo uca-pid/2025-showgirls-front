@@ -111,8 +111,7 @@ const EditBudget = () => {
 
       toastService.show('Presupuesto modificado con éxito', 'success')
       router.dismissAll()
-      router.replace('/')
-      router.push('/budget')
+      router.push('/budget/history')
     } catch (err) {
       console.log(err)
     }

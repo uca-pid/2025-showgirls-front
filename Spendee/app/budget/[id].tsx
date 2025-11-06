@@ -5,21 +5,25 @@ import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Progress } from '@/components/ui/progress'
 import { Text } from '@/components/ui/text'
+import { useAuth } from '@/context/AuthContext'
+import { toastService } from '@/context/ToastContext'
+import useBudgets from '@/hooks/useBudget'
 import useBudgetDetail from '@/hooks/useBudgetDetail'
 import useCategories from '@/hooks/useCategories'
 import { getIcon } from '@/lib/getIcon'
 import { router, useGlobalSearchParams, useNavigation } from 'expo-router'
-import { History, Pencil, Trash2 } from 'lucide-react-native'
+import { History, Pencil, Plus, Trash2 } from 'lucide-react-native'
 import React, { useLayoutEffect } from 'react'
-import { View } from 'react-native'
+import { Alert, View } from 'react-native'
 
 const Budget = () => {
+  const { user } = useAuth()
   const { id } = useGlobalSearchParams()
   const { budgetDetailData, isRefetching, isFetching } = useBudgetDetail(
     Number(id),
   )
+  const { deleteBudget, refetch } = useBudgets(user ? user.uid : '')
   const { categoriesData } = useCategories()
-  console.log(budgetDetailData)
   const montoPresupuestado = budgetDetailData?.monto
   const montoTotalGastado = budgetDetailData?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
@@ -61,17 +65,23 @@ const Budget = () => {
               onPress: () => router.push('/budget/history'),
             },
             {
+              value: 'add',
+              label: 'Agregar',
+              icon: Plus,
+              onPress: () => router.push('/budget/modal/add'),
+            },
+            {
               value: 'edit',
               label: 'Editar',
               icon: Pencil,
-              onPress: () => {},
+              onPress: () => handleEditBudget(),
             },
             {
               value: 'delete',
               label: 'Eliminar',
               icon: Trash2,
               destructive: true,
-              onPress: () => {},
+              onPress: () => handleDeleteBudget(),
             },
           ]}
           onChange={() => {}}
@@ -80,6 +90,38 @@ const Budget = () => {
       ),
     })
   }, [])
+
+  async function handleEditBudget() {
+    router.push({
+      pathname: '/budget/edit-budget',
+      params: { budgetId: id },
+    })
+  }
+
+  async function handleDeleteBudget() {
+    Alert.alert(
+      '¿Estás seguro que deseas eliminar este presupuesto?',
+      'Esta acción es IRREVERSIBLE',
+      [
+        { text: 'Cancelar' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteBudget(Number(id))
+              refetch()
+              router.dismissAll()
+              router.push('/budget/history')
+            } catch (error) {
+              console.log(error)
+              toastService.show('Error al eliminar presupuesto', 'error')
+            }
+          },
+        },
+      ],
+    )
+  }
 
   return (
     <Container activity={isRefetching || isFetching}>

@@ -20,7 +20,6 @@ export default function BudgetCard({
     id: 0,
   },
 }: BudgetCardProps) {
-  console.log(budget.id)
   const montoPresupuestado = budget?.monto
   const montoTotalGastado = budget?.PresupuestoCategoria.reduce(
     (acc, presupuestoCategoria) => acc + (presupuestoCategoria.gastado ?? 0),
