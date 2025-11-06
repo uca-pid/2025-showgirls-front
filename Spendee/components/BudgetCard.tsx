@@ -39,8 +39,7 @@ export default function BudgetCard({
       : {},
   )
   const diasRestantes =
-    new Date(budget?.fechaFin).getDate() -
-    new Date(budget?.fechaInicio).getDate()
+    new Date(budget?.fechaFin).getDate() - new Date().getDate()
   const porcentajePresupuesto =
     ((montoTotalGastado ?? 0) / (montoPresupuestado ?? 0)) * 100
 
@@ -68,12 +67,18 @@ export default function BudgetCard({
           size={90}
           width={10}
           rotation={270}
-          tintColor={porcentajePresupuesto >= 100 ? 'darkred' : 'white'}
+          tintColor={
+            porcentajePresupuesto >= 100
+              ? 'darkred'
+              : porcentajePresupuesto >= 75 && porcentajePresupuesto < 100
+                ? 'orange'
+                : 'white'
+          }
           backgroundColor="#FFFFFF30"
           lineCap="round"
           children={() => (
             <Text
-              className={`${porcentajePresupuesto >= 100 ? 'text-red-600' : ' text-primary'} text-lg`}
+              className={`${porcentajePresupuesto >= 100 ? 'text-red-600' : porcentajePresupuesto >= 75 && porcentajePresupuesto < 100 ? 'text-orange-300' : 'text-primary'} text-lg`}
               numberOfLines={1}
               adjustsFontSizeToFit
             >

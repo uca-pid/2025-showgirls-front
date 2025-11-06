@@ -1,4 +1,5 @@
 import Container from '@/components/Container'
+import Dropdown from '@/components/Dropdown'
 import IconButton from '@/components/IconButton'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
@@ -8,14 +9,16 @@ import { useAuth } from '@/context/AuthContext'
 import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import { getIcon } from '@/lib/getIcon'
-import { router } from 'expo-router'
-import { ChevronRight } from 'lucide-react-native'
-import React from 'react'
+import { router, useNavigation } from 'expo-router'
+import { ChevronRight, History, Pencil, Trash2 } from 'lucide-react-native'
+import React, { useLayoutEffect } from 'react'
 import { View } from 'react-native'
 
 const Budget = () => {
   const { user } = useAuth()
-  const { currentBudget } = useBudgets(user ? user.uid : '')
+  const { currentBudget, isFetching, isRefetching } = useBudgets(
+    user ? user.uid : '',
+  )
   const { categoriesData } = useCategories()
   const montoPresupuestado = currentBudget?.monto
   const montoTotalGastado = currentBudget?.PresupuestoCategoria.reduce(
@@ -41,12 +44,47 @@ const Budget = () => {
   )
   const porcentajePresupuesto =
     ((montoTotalGastado ?? 0) / (montoPresupuestado ?? 0)) * 100
+
+  const navigation = useNavigation()
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Dropdown
+          width={200}
+          data={[
+            {
+              value: 'history',
+              label: 'Ver historial',
+              icon: History,
+              onPress: () => router.push('/budget/history'),
+            },
+            {
+              value: 'edit',
+              label: 'Editar',
+              icon: Pencil,
+              onPress: () => {},
+            },
+            {
+              value: 'delete',
+              label: 'Eliminar',
+              icon: Trash2,
+              destructive: true,
+              onPress: () => {},
+            },
+          ]}
+          onChange={() => {}}
+          type="button"
+        />
+      ),
+    })
+  }, [])
+
   return (
-    <Container>
+    <Container activity={isRefetching || isFetching}>
       <Section>
         <SectionCard className="bg-transparent">
           <Text className="text-muted-foreground text-lg">Llevás gastado</Text>
-          <Text className="text-4xl">
+          <Text className="text-4xl font-semibold">
             ${montoTotalGastado?.toLocaleString('GB-gb')}
           </Text>
           <Text className="text-muted-foreground">
@@ -66,7 +104,7 @@ const Budget = () => {
               </Text>
             </View>
             <Text
-              className={`${porcentajePresupuesto >= 100 && 'text-red-800'} text-2xl`}
+              className={`${porcentajePresupuesto >= 100 ? 'text-red-800' : porcentajePresupuesto >= 75 && porcentajePresupuesto < 100 ? 'text-orange-300' : ''} text-2xl`}
             >
               {porcentajePresupuesto.toFixed(0)}%
             </Text>

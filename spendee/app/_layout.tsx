@@ -147,6 +147,14 @@ function RootNavigator() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="budget/history"
+        options={{
+          title: 'Historial',
+          headerBackTitle: 'Atrás',
+          headerBackVisible: true,
+        }}
+      />
     </Stack>
   )
 }

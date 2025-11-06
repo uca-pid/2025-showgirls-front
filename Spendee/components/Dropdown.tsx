@@ -154,6 +154,7 @@ const Dropdown = forwardRef<DropdownRef, DropDownProps>(
       <View ref={buttonRef} style={{ width: 20 }}>
         {type === 'select' ? (
           <TouchableOpacity
+            hitSlop={30}
             style={styles.button}
             activeOpacity={0.8}
             onPress={expanded ? closeDropdown : openDropdown}

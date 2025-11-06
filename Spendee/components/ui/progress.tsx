@@ -70,7 +70,14 @@ function NativeIndicator({ value, className, color }: IndicatorProps) {
         `${interpolate(progress.value, [0, 100], [1, 100], Extrapolation.CLAMP)}%`,
         { overshootClamping: true },
       ),
-      backgroundColor: value && value >= 100 ? 'darkred' : color || 'white',
+      backgroundColor:
+        (value &&
+          (value >= 100
+            ? 'darkred'
+            : value >= 75 && value < 100
+              ? 'orange'
+              : color)) ||
+        'white',
     }
   }, [value])
 
