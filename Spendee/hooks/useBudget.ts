@@ -42,7 +42,11 @@ export default function useBudgets(usuarioId: string) {
     }) => {
       return budgetService.modifyBudget(budgetId, body)
     },
-    onSuccess: onMutationSuccess,
+    onSuccess: (data, variables) => {
+      const { budgetId } = variables
+      onMutationSuccess()
+      queryClient.invalidateQueries({ queryKey: ['budgetDetail', budgetId] })
+    },
   })
   return {
     futureBudgets: budgetsData?.futureBudgets,
