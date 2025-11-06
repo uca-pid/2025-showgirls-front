@@ -31,6 +31,12 @@ class BudgetService {
       `/budgets?usuarioId=${userId}`,
     )
   }
+  public async deleteBudget(budgetId: number) {
+    return await ApiService.delete(`/budget/${budgetId}`)
+  }
+  public async modifyBudget(budgetId: number, body: Partial<BudgetResponse>) {
+    return await ApiService.put(`/budget/${budgetId}`, body)
+  }
 }
 
 const budgetService = new BudgetService()
