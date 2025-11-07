@@ -34,7 +34,7 @@ import {
 const actions = [
   {
     text: 'Ingreso',
-    textColor: 'white',
+    textColor: 'text-muted-foreground',
     icon: BanknoteArrowUp,
     onPress: () => {
       router.push('/income/modal/add')
@@ -42,7 +42,7 @@ const actions = [
   },
   {
     text: 'Egreso',
-    textColor: 'white',
+    textColor: 'text-muted-foreground',
     icon: BanknoteArrowDown,
     onPress: () => {
       router.push('/expense/modal/add')
@@ -50,7 +50,7 @@ const actions = [
   },
   {
     text: 'Presupuesto',
-    textColor: 'white',
+    textColor: 'text-muted-foreground',
     icon: PiggyBank,
     onPress: () => {
       router.push('/budget/modal/add')
@@ -269,7 +269,6 @@ export default function HomePage() {
                     />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}

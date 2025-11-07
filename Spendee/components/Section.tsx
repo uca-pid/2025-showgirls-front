@@ -1,9 +1,10 @@
 import { LucideIcon } from 'lucide-react-native'
 import React, { PropsWithChildren } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import Container from './Container'
 import DollarSignSpinner from './ui/DollarSignSpinner'
 import { Icon } from './ui/icon'
+import { Text } from './ui/text'
 
 const Section = ({
   children,
@@ -33,7 +34,7 @@ const Section = ({
         <View className={`gap-4 w-full ${className}`}>
           {title && (
             <View className="flex-row items-center justify-between">
-              <Text className="text-white text-2xl text-left">{title}</Text>
+              <Text className="text-2xl text-left">{title}</Text>
               <Pressable onPress={onActionPress}>
                 <View className="flex-row items-center gap-1">
                   <Text className="text-muted-foreground text-base text-right">

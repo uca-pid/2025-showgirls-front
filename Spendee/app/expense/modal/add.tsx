@@ -97,7 +97,6 @@ export default function AddExpensePage() {
                   <TextInput
                     style={{
                       fontSize: 42,
-                      color: 'white',
                       textAlign: 'center',
                       width: '100%',
                       height: '100%',

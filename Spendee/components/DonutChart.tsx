@@ -81,10 +81,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
             backgroundColor: 'transparent',
           }}
         >
-          <Text
-            className={`text-${centerTextColor}`}
-            style={{ fontSize: centerText.length > 9 ? 20 : 24 }}
-          >
+          <Text style={{ fontSize: centerText.length > 9 ? 20 : 24 }}>
             {centerText}
           </Text>
         </View>

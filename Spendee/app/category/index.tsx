@@ -96,20 +96,20 @@ const index = () => {
   }
   return (
     <Section className="p-4" activity={isLoading}>
-      <Text className="text-white">Nombre</Text>
+      <Text>Nombre</Text>
       <Input
         placeholder="Nombre de la categoría"
         value={categoryName}
         onChangeText={setCategoryName}
       />
 
-      <Text className="text-white">Descripcion</Text>
+      <Text>Descripcion</Text>
       <Input
         placeholder="Descripción"
         value={description}
         onChangeText={setDescription}
       />
-      <Text className="text-white">Seleccionar color</Text>
+      <Text>Seleccionar color</Text>
 
       <FlatList
         horizontal
@@ -134,29 +134,31 @@ const index = () => {
         }}
       />
 
-      <Text className="text-white">Seleccionar ícono</Text>
-      <View className="flex-row items-center justify-center h-[250px]">
-        <FlatList
-          data={iconOptions}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <IconButton
-              icon={item.icon}
-              text=""
-              onPress={() => setIcon(item.name)}
-              className={
-                icon === item.name ? 'rounded-full bg-pink-300/50' : ''
-              }
-            />
-          )}
-          contentContainerStyle={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        />
-      </View>
+      <Text>Seleccionar ícono</Text>
+
+      <FlatList
+        data={iconOptions}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <IconButton
+            icon={item.icon}
+            text=""
+            onPress={() => setIcon(item.name)}
+            className={
+              icon === item.name
+                ? 'rounded-full bg-pink-300/50 border-2 border-white'
+                : ''
+            }
+          />
+        )}
+        contentContainerStyle={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}
+      />
+
       <Button onPress={() => handleAddCategory()}>
         <Text>Agregar categoría</Text>
       </Button>

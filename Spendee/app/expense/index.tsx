@@ -194,7 +194,6 @@ const ExpensesPage = () => {
                     />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}
