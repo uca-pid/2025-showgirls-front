@@ -48,7 +48,7 @@ export default function ProfilePage() {
   return (
     <View className="items-center justify-center bg-background h-full">
       {user ? (
-        <View className="items-center bg-primary relative h-[130px] w-screen">
+        <View className="items-center relative border-b border-muted border-30 h-[130px] w-screen">
           <Avatar
             alt={`${user?.displayName}'s Avatar`}
             className="h-24 w-24 border-2 border-primary bg-black absolute top-[60%]"

@@ -13,6 +13,7 @@ import useCategories from '@/hooks/useCategories'
 import { getIcon } from '@/lib/getIcon'
 import { router, useGlobalSearchParams, useNavigation } from 'expo-router'
 import { History, Pencil, Plus, Trash2 } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
 import React, { useLayoutEffect } from 'react'
 import { Alert, View } from 'react-native'
 
@@ -187,7 +188,10 @@ const Budget = () => {
               <Text>${montoPresupuestado?.toLocaleString('GB-gb')}</Text>
             </View>
           </View>
-          <Progress value={porcentajePresupuesto} />
+          <Progress
+            value={porcentajePresupuesto}
+            color={useColorScheme().colorScheme === 'dark' ? 'white' : 'black'}
+          />
         </SectionCard>
         {budgetDetailData?.PresupuestoCategoria.map(
           (presupuestoCategoria, index) => {

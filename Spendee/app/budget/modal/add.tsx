@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
 import { useState } from 'react'
 import {
   Keyboard,
@@ -88,7 +89,10 @@ export default function AddBudgetPage() {
                   <TextInput
                     style={{
                       fontSize: 42,
-                      color: 'white',
+                      color:
+                        useColorScheme().colorScheme === 'dark'
+                          ? 'white'
+                          : 'black',
                       textAlign: 'center',
                       width: '100%',
                       height: '100%',
@@ -100,7 +104,11 @@ export default function AddBudgetPage() {
                     onChangeText={setAmount}
                     value={amount}
                     placeholder="0"
-                    placeholderTextColor="white"
+                    placeholderTextColor={
+                      useColorScheme().colorScheme === 'dark'
+                        ? 'white'
+                        : 'black'
+                    }
                   />
                 </View>
               </View>
@@ -124,7 +132,14 @@ export default function AddBudgetPage() {
                       Seleccionar
                     </Text>
                   )}
-                  <ChevronDown color="white" size={18} />
+                  <ChevronDown
+                    color={
+                      useColorScheme().colorScheme === 'dark'
+                        ? 'white'
+                        : 'black'
+                    }
+                    size={18}
+                  />
                 </Button>
                 <DateTimePicker
                   mode="range"

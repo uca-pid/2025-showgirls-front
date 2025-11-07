@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useIncomes from '@/hooks/useIncomes'
 import balanceService from '@/services/balance.service'
 import { useRouter } from 'expo-router'
+import { useColorScheme } from 'nativewind'
 import React, { useState } from 'react'
 import {
   Keyboard,
@@ -96,7 +97,10 @@ export default function AddExpensePage() {
                   <TextInput
                     style={{
                       fontSize: 42,
-                      color: 'white',
+                      color:
+                        useColorScheme().colorScheme === 'dark'
+                          ? 'white'
+                          : 'black',
                       textAlign: 'center',
                       width: '100%',
                       height: '100%',
@@ -108,7 +112,11 @@ export default function AddExpensePage() {
                     onChangeText={setAmount}
                     value={amount}
                     placeholder="0"
-                    placeholderTextColor="white"
+                    placeholderTextColor={
+                      useColorScheme().colorScheme === 'dark'
+                        ? 'white'
+                        : 'black'
+                    }
                   />
                 </View>
               </View>
