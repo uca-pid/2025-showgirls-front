@@ -4,6 +4,7 @@ import React from 'react'
 import { Pressable, View } from 'react-native'
 import { Badge } from './ui/badge'
 import { Text } from './ui/text'
+import { useColorScheme } from 'nativewind'
 
 export interface ItemButtonProps {
   text: string
@@ -40,7 +41,7 @@ const ItemButton = ({
         >
           <IconLeft color={iconLeftColor} />
           <Text
-            className={`text-lg text-${background === 'foreground' ? 'black' : 'white'}`}
+            className={`text-lg text-${useColorScheme().colorScheme === 'dark' ? 'white' : 'black'}`}
           >
             {text}
           </Text>

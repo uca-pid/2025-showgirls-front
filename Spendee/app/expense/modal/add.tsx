@@ -8,6 +8,7 @@ import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
 import { useState } from 'react'
 import {
   Keyboard,
@@ -96,6 +97,10 @@ export default function AddExpensePage() {
                 <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
                   <TextInput
                     style={{
+                      color:
+                        useColorScheme().colorScheme === 'dark'
+                          ? 'white'
+                          : 'black',
                       fontSize: 42,
                       textAlign: 'center',
                       width: '100%',
@@ -108,7 +113,11 @@ export default function AddExpensePage() {
                     onChangeText={setAmount}
                     value={amount}
                     placeholder="0"
-                    placeholderTextColor="white"
+                    placeholderTextColor={
+                      useColorScheme().colorScheme === 'dark'
+                        ? 'white'
+                        : 'black'
+                    }
                   />
                 </View>
               </View>
@@ -137,7 +146,12 @@ export default function AddExpensePage() {
                     Seleccionar
                   </Text>
                 )}
-                <ChevronDown color="white" size={18} />
+                <ChevronDown
+                  color={
+                    useColorScheme().colorScheme === 'dark' ? 'white' : 'black'
+                  }
+                  size={18}
+                />
               </Button>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
               <Button className="w-full bg-pink-300" onPress={onSubmit}>

@@ -2,6 +2,7 @@ import ItemButton from '@/components/ItemButton'
 import { Text } from '@/components/ui/text'
 import useCategories from '@/hooks/useCategories'
 import { router, useLocalSearchParams } from 'expo-router'
+import { useColorScheme } from 'nativewind'
 import {
   BookOpen,
   Bus,
@@ -54,6 +55,7 @@ const iconNameToEmoji: Record<string, LucideIcon> = {
 const CategoriesList = () => {
   const { categoriesData } = useCategories()
   const { expense } = useLocalSearchParams()
+  const { colorScheme } = useColorScheme()
 
   return (
     <View className="w-full h-screen bg-background items-center py-4">
@@ -71,7 +73,7 @@ const CategoriesList = () => {
               iconLeft={iconNameToEmoji[item.icono]}
               iconLeftColor={item.color}
               iconRight={ChevronRight}
-              iconRightColor="white"
+              iconRightColor={colorScheme === 'dark' ? 'white' : 'black'}
               background="background"
               text={item.nombre}
               badgeText={`$ ${item.totalGastos.toString()}`}
