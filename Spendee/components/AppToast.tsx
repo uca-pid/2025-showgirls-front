@@ -65,7 +65,6 @@ const AppToast = ({ message, icon: Icon, type = 'error' }: AppToastProps) => {
           style={{
             color: color,
             fontWeight: 300,
-            lineHeight: 0,
           }}
         >
           {message}
