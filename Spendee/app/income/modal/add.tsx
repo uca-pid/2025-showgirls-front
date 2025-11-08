@@ -104,6 +104,7 @@ export default function AddExpensePage() {
                       textAlign: 'center',
                       width: '100%',
                       height: '100%',
+                      paddingBottom: 10,
                     }}
                     maxLength={9}
                     keyboardType="number-pad"
