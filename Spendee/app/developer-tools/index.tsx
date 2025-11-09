@@ -187,7 +187,7 @@ export default function EditProfilePage() {
                   <Text>{hasAPISecret? "Regenerar Secret" : "Generar Secret"}</Text>
                 )}
               </Button>
-              <Button onPress={handleDeleteSecret} variant={'destructive'}>
+              <Button onPress={handleDeleteSecret} variant={'destructive'} disabled={!hasAPISecret}>
                 <Trash2 size={20} color="white" />
                 <Text>Eliminar Secret</Text>
               </Button>
