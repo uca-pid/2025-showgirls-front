@@ -58,6 +58,10 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="developer-tools/index"
+        options={{ title: 'Herramientas de Desarrollador', headerBackTitle: 'Perfil' }}
+      />
+      <Stack.Screen
         name="edit-profile/index"
         options={{ title: 'Editar Perfil', headerBackTitle: 'Perfil' }}
       />

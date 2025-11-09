@@ -9,6 +9,7 @@ import {
 import * as SecureStore from 'expo-secure-store'
 import { router } from 'expo-router'
 import { toastService } from '@/context/ToastContext'
+import ApiService from './api.service'
 
 const showErrorToast = (title: string) => {
   toastService.show(title)
@@ -162,6 +163,36 @@ export class UserService {
       })
     router.replace('/sign-in')
   }
+
+  public async generateApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.post<string>('/generateApiSecret',)
+  }
+
+  public async deleteApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.delete('/deleteApiSecret')
+  }
+
+  //hasApiSecret
+  public async hasApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.get<{ hasSecret: boolean }>('/hasApiSecret')
+  }
+
+  public async getAPIId(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.get<{ apiId: string }>('/getApiId')
+  }
+
 }
 const userService = new UserService()
 export default userService
