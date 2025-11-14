@@ -87,6 +87,29 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="expense/modal/add-service"
+        options={{
+          headerShown: false,
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.5],
+          sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="expense/modal/workshops-list"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="expense/modal/services-list"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
         name="expense/modal/categories-list"
         options={{
           headerShown: false,

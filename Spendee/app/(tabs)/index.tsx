@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Info,
   PiggyBank,
+  Car,
 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import {
@@ -52,8 +53,16 @@ const actions = [
     text: 'Presupuesto',
     textColor: 'text-muted-foreground',
     icon: PiggyBank,
-    onPress: () => {
+    onPress: () => { 
       router.push('/budget/modal/add')
+    },
+  },
+  {
+    text: 'Estaller',
+    textColor: 'text-muted-foreground',
+    icon: Car,
+    onPress: () => {
+      router.push('/expense/modal/add-service')
     },
   },
 ]
