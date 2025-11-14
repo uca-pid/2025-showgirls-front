@@ -26,6 +26,10 @@ const Budget = () => {
   const { deleteBudget, refetch } = useBudgets(user ? user.uid : '')
   const { categoriesData } = useCategories()
 
+  const isCurrentBudget =
+    new Date() >= new Date(budgetDetailData?.fechaInicio!) &&
+    new Date() <= new Date(budgetDetailData?.fechaFin!)
+
   const isNotFuture =
     new Date(budgetDetailData?.fechaFin!) < new Date() ||
     (new Date() <= new Date(budgetDetailData?.fechaFin!) &&
@@ -158,7 +162,9 @@ const Budget = () => {
     <Container activity={isRefetching || isFetching}>
       <Section>
         <SectionCard className="bg-transparent">
-          <Text className="text-muted-foreground text-lg">Llevás gastado</Text>
+          <Text className="text-muted-foreground text-lg">
+            {isCurrentBudget ? 'Llevás gastado' : 'Gastado'}
+          </Text>
           <Text className="text-4xl font-semibold">
             ${montoTotalGastado?.toLocaleString('GB-gb')}
           </Text>
