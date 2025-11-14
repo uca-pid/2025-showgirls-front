@@ -1,7 +1,6 @@
+import { ChartLineIcon, LucideIcon } from 'lucide-react-native'
 import React from 'react'
 import { View } from 'react-native'
-
-import { ChartLineIcon, LucideIcon } from 'lucide-react-native'
 import Svg, { Circle, G } from 'react-native-svg'
 import { Text } from './ui/text'
 
@@ -27,7 +26,6 @@ const DonutChart: React.FC<DonutChartProps> = ({
   strokeWidth = 15,
   data,
   centerText = '',
-  centerTextColor = 'black',
   showIcons = true,
   showWhen = true,
 }) => {
@@ -81,10 +79,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
             backgroundColor: 'transparent',
           }}
         >
-          <Text
-            className={`text-${centerTextColor}`}
-            style={{ fontSize: centerText.length > 9 ? 20 : 24 }}
-          >
+          <Text style={{ fontSize: centerText.length > 9 ? 20 : 24 }}>
             {centerText}
           </Text>
         </View>

@@ -1,11 +1,11 @@
+import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 import { LucideIcon } from 'lucide-react-native'
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 
 export interface IconButtonProps {
   text?: string
-  textColor?: string
   icon: LucideIcon
   iconColor?: string
   onPress?: () => void
@@ -15,7 +15,6 @@ export interface IconButtonProps {
 
 const IconButton = ({
   text,
-  textColor = 'black',
   icon: Icon,
   iconColor = '#F9A8D4',
   onPress,
@@ -37,11 +36,7 @@ const IconButton = ({
             size={size === 'sm' ? 15 : size === 'md' ? 22 : 26}
           />
         </View>
-        {text && (
-          <Text className={`text-${textColor}`} numberOfLines={1}>
-            {text}
-          </Text>
-        )}
+        {text && <Text numberOfLines={1}>{text}</Text>}
       </Pressable>
     </View>
   )

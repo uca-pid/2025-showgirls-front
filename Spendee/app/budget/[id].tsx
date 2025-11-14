@@ -157,13 +157,17 @@ const Budget = () => {
     <Container activity={isRefetching || isFetching}>
       <Section>
         <SectionCard className="bg-transparent">
-          <Text className="text-muted-foreground text-lg">Llevás gastado</Text>
-          <Text className="text-4xl font-semibold">
-            ${montoTotalGastado?.toLocaleString('GB-gb')}
-          </Text>
-          <Text className="text-muted-foreground">
-            {fechaInicio} - {fechaFin}
-          </Text>
+          <View className="gap-4 items-center w-full">
+            <Text className="text-muted-foreground text-lg">
+              Llevás gastado
+            </Text>
+            <Text className="text-4xl font-semibold">
+              ${montoTotalGastado?.toLocaleString('GB-gb')}
+            </Text>
+            <Text className="text-muted-foreground">
+              {fechaInicio} - {fechaFin}
+            </Text>
+          </View>
         </SectionCard>
       </Section>
       <Section>
