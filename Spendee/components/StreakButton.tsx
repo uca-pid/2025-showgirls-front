@@ -1,33 +1,35 @@
-import { View, Pressable } from 'react-native'
 import { Text } from '@/components/ui/text'
-import React, { use } from 'react'
+import { useAuth } from '@/context/AuthContext'
+import useStreak from '@/hooks/useStreak'
+import { getStreakAnimation } from '@/lib/streakFiles'
 import { router } from 'expo-router'
 import LottieView from 'lottie-react-native'
-import useStreak from '@/hooks/useStreak'
-import { useAuth } from '@/context/AuthContext'
+import React from 'react'
+import { Pressable, View } from 'react-native'
 
 const StreakButton = () => {
   const { user } = useAuth()
-  const { streakData, refetch, isLoading } = useStreak(user?.uid ?? '')
-  const rachaActual = streakData?.data.rachaActual ?? 0
+  const { streakData } = useStreak(user?.uid ?? '')
+  const streak = streakData?.rachaActual ?? 0
+  const streakAnimationFile = getStreakAnimation(streak)
+
   return (
-    <View>
-      <Pressable
-        onPress={() => {
-          router.push('/streak')
-        }}
-      >
-        <View className="items-center">
-          <LottieView
-            source={require('@/assets/lottie/Fire animation.json')}
-            autoPlay
-            loop
-            style={{ width: 50, height: 50 }}
-          />
-          <Text>{rachaActual}</Text>
-        </View>
-      </Pressable>
-    </View>
+    <Pressable
+      onPress={() => {
+        router.push('/streak')
+      }}
+    >
+      <View className="items-center">
+        <LottieView
+          source={streakAnimationFile}
+          autoPlay
+          loop
+          style={{ width: 50, height: 50 }}
+          colorFilters={[]}
+        />
+        <Text>{streak}</Text>
+      </View>
+    </Pressable>
   )
 }
 

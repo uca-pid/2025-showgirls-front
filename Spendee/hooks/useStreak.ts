@@ -9,7 +9,10 @@ export default function useStreak(userId: string) {
     ...rest
   } = useQuery({
     queryKey: ['streak', userId],
-    queryFn: () => streakService.findByUserId(userId),
+    queryFn: async () => {
+      const res = await streakService.findByUserId(userId)
+      return res.data
+    },
     enabled: !!userId,
   })
   return { streakData, refetch, isLoading, ...rest }
