@@ -31,6 +31,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import StreakButton from '@/components/StreakButton'
 
 const actions = [
   {
@@ -53,7 +54,7 @@ const actions = [
     text: 'Presupuesto',
     textColor: 'text-muted-foreground',
     icon: PiggyBank,
-    onPress: () => { 
+    onPress: () => {
       router.push('/budget/modal/add')
     },
   },
@@ -175,17 +176,7 @@ export default function HomePage() {
               </Text>
             </Pressable>
           </View>
-          <Avatar
-            alt="avatar"
-            className="size-16"
-            onTouchEnd={() => router.push('/profile')}
-          >
-            <AvatarImage
-              source={{
-                uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
-              }}
-            />
-          </Avatar>
+          <StreakButton></StreakButton>
         </SectionCard>
       </Section>
 
