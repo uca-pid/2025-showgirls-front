@@ -3,6 +3,7 @@ import {
   initializeAuth,
   getReactNativePersistence,
   getAuth,
+  GoogleAuthProvider
 } from 'firebase/auth'
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'
 
