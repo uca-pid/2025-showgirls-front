@@ -4,6 +4,8 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
   signInWithEmailAndPassword,
+  signInWithCredential,
+  GoogleAuthProvider,
   updateProfile,
 } from 'firebase/auth'
 import * as SecureStore from 'expo-secure-store'
@@ -162,6 +164,31 @@ export class UserService {
         return
       })
     router.replace('/sign-in')
+  }
+
+  public async loginWithGoogle(auth: Auth, idToken: string | undefined, accessToken?: string) {
+    if (!idToken) {
+      showErrorToast('No se pudo obtener token de Google')
+      return
+    }
+    try {
+      const credential = GoogleAuthProvider.credential(idToken, accessToken)
+      const userCredential = await signInWithCredential(auth, credential)
+      const user = userCredential.user
+      const idTok = await user.getIdToken()
+      await SecureStore.setItemAsync('jwt', idTok)
+      const publicProfile = {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      }
+      await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
+      router.replace('/(tabs)')
+    } catch (err: any) {
+      const friendly = getFriendlyAuthMessage(err)
+      showErrorToast(friendly)
+    }
   }
 
   public async generateApiSecret(auth: Auth) {
