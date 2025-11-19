@@ -1,4 +1,10 @@
-export function getStreakAnimation(days: number) {
+import { StreakResponse } from '@/services/streak.service'
+
+export function getStreakAnimation(streakData: StreakResponse | undefined) {
+  if (!streakData) return require('@/assets/lottie/Fire animation gray.json')
+  const days = streakData.rachaActual
+  const lastActiveDate = streakData.lastActiveDate
+
   switch (true) {
     case days === 0:
       return require('@/assets/lottie/Fire animation gray.json')
@@ -17,7 +23,5 @@ export function getStreakAnimation(days: number) {
 
     case days >= 365:
       require('@/assets/lottie/Fire animation fifth.json')
-    default:
-      return require('@/assets/lottie/Fire animation gray.json')
   }
 }

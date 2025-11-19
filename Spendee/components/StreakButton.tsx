@@ -10,8 +10,7 @@ import { Pressable, View } from 'react-native'
 const StreakButton = () => {
   const { user } = useAuth()
   const { streakData } = useStreak(user?.uid ?? '')
-  const streak = streakData?.rachaActual ?? 0
-  const streakAnimationFile = getStreakAnimation(streak)
+  const streakAnimationFile = getStreakAnimation(streakData)
 
   return (
     <Pressable
@@ -27,7 +26,8 @@ const StreakButton = () => {
           style={{ width: 50, height: 50 }}
           colorFilters={[]}
         />
-        <Text>{streak}</Text>
+        <Text>{streakData?.rachaActual ?? 0}</Text>
+        <Text>{streakData?.lastActiveDate}</Text>
       </View>
     </Pressable>
   )
