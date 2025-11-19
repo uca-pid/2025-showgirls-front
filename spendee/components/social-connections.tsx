@@ -1,9 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useColorScheme } from 'nativewind';
-<<<<<<< Updated upstream
-import { Image, Platform, View } from 'react-native';
-=======
 import { Image, Platform, View, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -16,7 +13,6 @@ import { auth } from '../firebase.config'
 
 // Ensure the browser auth flow completes (Expo recommended)
 WebBrowser.maybeCompleteAuthSession()
->>>>>>> Stashed changes
 
 const SOCIAL_CONNECTION_STRATEGIES = [
   {
@@ -38,9 +34,7 @@ const SOCIAL_CONNECTION_STRATEGIES = [
 
 export function SocialConnections() {
   const { colorScheme } = useColorScheme();
-<<<<<<< Updated upstream
 
-=======
   const [request, response, promptAsync] = Google.useAuthRequest({
     // Use the web/expo client ID as the primary clientId. For native standalone apps
     // you can add the platform-specific client IDs in env and adjust if needed.
@@ -54,7 +48,6 @@ export function SocialConnections() {
       userService.loginWithGoogle(auth, id_token, access_token)
     }
   }, [response])
->>>>>>> Stashed changes
   return (
     <View className="gap-2 sm:flex-row sm:gap-3">
       {SOCIAL_CONNECTION_STRATEGIES.map((strategy) => {
