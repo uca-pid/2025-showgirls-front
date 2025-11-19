@@ -21,14 +21,6 @@ export default function ProfilePage() {
       icon: User2,
       action: () => router.push('../edit-profile'),
     },
-
-    {
-      title: 'Herramientas de Desarrollador',
-      description: 'API setup y más',
-      icon: User2,
-      action: () => router.push('../developer-tools'),
-    },
-
     {
       title: 'Cerrar Sesión',
       description: 'Salir de la cuenta',
