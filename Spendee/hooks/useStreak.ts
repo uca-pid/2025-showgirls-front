@@ -13,7 +13,6 @@ export default function useStreak(userId: string) {
       const res = await streakService.findByUserId(userId)
       return res.data
     },
-    enabled: !!userId,
   })
   return { streakData, refetch, isLoading, ...rest }
 }

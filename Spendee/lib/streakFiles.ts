@@ -3,10 +3,10 @@ import { StreakResponse } from '@/services/streak.service'
 export function getStreakAnimation(streakData: StreakResponse | undefined) {
   if (!streakData) return require('@/assets/lottie/Fire animation gray.json')
   const days = streakData.rachaActual
-  const lastActiveDate = streakData.lastActiveDate
+  const isInactive = streakData.isInactive
 
   switch (true) {
-    case days === 0:
+    case days === 0 || isInactive:
       return require('@/assets/lottie/Fire animation gray.json')
 
     case days > 0 && days <= 10:

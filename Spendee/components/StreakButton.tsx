@@ -11,7 +11,6 @@ const StreakButton = () => {
   const { user } = useAuth()
   const { streakData } = useStreak(user?.uid ?? '')
   const streakAnimationFile = getStreakAnimation(streakData)
-
   return (
     <Pressable
       onPress={() => {
@@ -19,15 +18,17 @@ const StreakButton = () => {
       }}
     >
       <View className="items-center">
-        <LottieView
-          source={streakAnimationFile}
-          autoPlay
-          loop
-          style={{ width: 50, height: 50 }}
-          colorFilters={[]}
-        />
-        <Text>{streakData?.rachaActual ?? 0}</Text>
-        <Text>{streakData?.lastActiveDate}</Text>
+        {streakData && (
+          <>
+            <LottieView
+              source={streakAnimationFile}
+              loop={!streakData?.isInactive}
+              autoPlay={!streakData?.isInactive}
+              style={{ width: 50, height: 50 }}
+            />
+            <Text>{streakData?.rachaActual}</Text>
+          </>
+        )}
       </View>
     </Pressable>
   )
