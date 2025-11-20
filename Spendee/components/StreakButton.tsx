@@ -7,10 +7,16 @@ import LottieView from 'lottie-react-native'
 import React from 'react'
 import { Pressable, View } from 'react-native'
 
-const StreakButton = () => {
+type StreakButtonProps = {
+  size?: number
+  showStreak?: boolean
+}
+
+const StreakButton = ({ size = 50, showStreak = true }: StreakButtonProps) => {
   const { user } = useAuth()
   const { streakData } = useStreak(user?.uid ?? '')
   const streakAnimationFile = getStreakAnimation(streakData)
+  const COMPLETE_ANIMATION_FRAME = 0.39
   return (
     <Pressable
       onPress={() => {
@@ -24,9 +30,10 @@ const StreakButton = () => {
               source={streakAnimationFile}
               loop={!streakData?.isInactive}
               autoPlay={!streakData?.isInactive}
-              style={{ width: 50, height: 50 }}
+              progress={streakData.isInactive ? COMPLETE_ANIMATION_FRAME : 1}
+              style={{ width: size, height: size }}
             />
-            <Text>{streakData?.rachaActual}</Text>
+            {showStreak && <Text>{streakData?.rachaActual}</Text>}
           </>
         )}
       </View>
