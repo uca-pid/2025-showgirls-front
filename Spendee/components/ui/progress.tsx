@@ -14,10 +14,13 @@ function Progress({
   value,
   indicatorClassName,
   color,
+  progressiveColors = true,
   ...props
 }: ProgressPrimitive.RootProps &
   React.RefAttributes<ProgressPrimitive.RootRef> & {
     indicatorClassName?: string
+    color?: string
+    progressiveColors?: boolean
   }) {
   return (
     <ProgressPrimitive.Root
@@ -27,7 +30,12 @@ function Progress({
       )}
       {...props}
     >
-      <Indicator value={value} className={indicatorClassName} color={color} />
+      <Indicator
+        value={value}
+        className={indicatorClassName}
+        color={color}
+        progressiveColors={progressiveColors}
+      />
     </ProgressPrimitive.Root>
   )
 }
@@ -44,6 +52,7 @@ type IndicatorProps = {
   value: number | undefined | null
   className?: string
   color?: string
+  progressiveColors?: boolean
 }
 
 function WebIndicator({ value, className }: IndicatorProps) {
@@ -61,7 +70,12 @@ function WebIndicator({ value, className }: IndicatorProps) {
   )
 }
 
-function NativeIndicator({ value, className, color }: IndicatorProps) {
+function NativeIndicator({
+  value,
+  className,
+  color,
+  progressiveColors,
+}: IndicatorProps) {
   const progress = useDerivedValue(() => value ?? 0)
 
   const indicator = useAnimatedStyle(() => {
@@ -71,13 +85,14 @@ function NativeIndicator({ value, className, color }: IndicatorProps) {
         { overshootClamping: true },
       ),
       backgroundColor:
-        (value &&
+        (progressiveColors &&
+          value &&
           (value >= 100
             ? 'darkred'
             : value >= 75 && value < 100
               ? 'orange'
               : color)) ||
-        'white',
+        color,
     }
   }, [value])
 
