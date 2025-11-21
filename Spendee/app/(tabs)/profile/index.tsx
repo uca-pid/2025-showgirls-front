@@ -10,6 +10,7 @@ import userService from '@/services/user.service'
 import { useAuth } from '@/context/AuthContext'
 import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
+import LottieView from 'lottie-react-native'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -70,6 +71,7 @@ export default function ProfilePage() {
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
         {user?.displayName || 'Sin nombre'}
       </Text>
+
       <FlatList
         className="w-screen p-4"
         data={menuItems}
@@ -82,6 +84,16 @@ export default function ProfilePage() {
           />
         )}
       />
+      <View className="mb-20 items-center">
+        <Pressable onPress={() => router.push('/level')}>
+          <LottieView
+            source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
+            autoPlay
+            loop
+            style={{ width: 250, height: 250 }}
+          />
+        </Pressable>
+      </View>
     </View>
   )
 }

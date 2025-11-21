@@ -59,7 +59,10 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="developer-tools/index"
-        options={{ title: 'Herramientas de Desarrollador', headerBackTitle: 'Perfil' }}
+        options={{
+          title: 'Herramientas de Desarrollador',
+          headerBackTitle: 'Perfil',
+        }}
       />
       <Stack.Screen
         name="edit-profile/index"
@@ -185,6 +188,10 @@ function RootNavigator() {
       <Stack.Screen
         name="budget/edit-budget"
         options={{ title: 'Editar Presupuesto', headerBackTitle: 'Atrás' }}
+      />
+      <Stack.Screen
+        name="level/index"
+        options={{ title: 'Tu Nivel', headerBackTitle: 'Atrás' }}
       />
     </Stack>
   )
