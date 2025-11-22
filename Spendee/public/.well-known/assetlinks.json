@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.trinisuarez.spendee",
+      "sha256_cert_fingerprints": [
+        "0D:ED:F0:AE:03:9E:95:8F:D7:00:4F:C1:E1:79:94:D1:0A:54:79:BD:17:A1:90:BD:E2:CB:C3:6C:F6:DA:5F:71"
+      ]
+    }
+  }
+]

@@ -48,7 +48,9 @@ export default function RootLayout() {
 function RootNavigator() {
   const { user, loading } = useAuth()
   return (
-    <Stack>
+    <Stack
+      screenOptions={{ animation: 'ios_from_right', animationDuration: 300 }}
+    >
       <Stack.Screen name="sign-in/index" options={{ headerShown: false }} />
       <Stack.Screen name="sign-up/index" options={{ headerShown: false }} />
       <Stack.Screen
@@ -59,7 +61,10 @@ function RootNavigator() {
       />
       <Stack.Screen
         name="developer-tools/index"
-        options={{ title: 'Herramientas de Desarrollador', headerBackTitle: 'Perfil' }}
+        options={{
+          title: 'Herramientas de Desarrollador',
+          headerBackTitle: 'Perfil',
+        }}
       />
       <Stack.Screen
         name="edit-profile/index"
@@ -185,6 +190,10 @@ function RootNavigator() {
       <Stack.Screen
         name="budget/edit-budget"
         options={{ title: 'Editar Presupuesto', headerBackTitle: 'Atrás' }}
+      />
+      <Stack.Screen
+        name="streak/index"
+        options={{ title: 'Rachas', headerBackTitle: 'Atrás' }}
       />
     </Stack>
   )
