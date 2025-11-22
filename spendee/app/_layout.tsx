@@ -195,6 +195,10 @@ function RootNavigator() {
         name="streak/index"
         options={{ title: 'Rachas', headerBackTitle: 'Atrás' }}
       />
+      <Stack.Screen
+        name="level/index"
+        options={{ title: 'Tu Nivel', headerBackTitle: 'Atrás' }}
+      />
     </Stack>
   )
 }
