@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from '@/context/AuthContext'
+import { AuthProvider } from '@/context/AuthContext'
 import { ToastProvider } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import '@/global.css'
@@ -46,7 +46,6 @@ export default function RootLayout() {
 }
 
 function RootNavigator() {
-  const { user, loading } = useAuth()
   return (
     <Stack
       screenOptions={{ animation: 'ios_from_right', animationDuration: 300 }}
@@ -194,10 +193,6 @@ function RootNavigator() {
       <Stack.Screen
         name="streak/index"
         options={{ title: 'Rachas', headerBackTitle: 'Atrás' }}
-      />
-      <Stack.Screen
-        name="level/index"
-        options={{ title: 'Tu Nivel', headerBackTitle: 'Atrás' }}
       />
     </Stack>
   )

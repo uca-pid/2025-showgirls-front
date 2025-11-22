@@ -1,16 +1,13 @@
-import React from 'react'
-import { View, FlatList, Alert, Pressable } from 'react-native'
-import { Text } from '@/components/ui/text'
+import ItemCard from '@/components/ItemCard'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
-import { router } from 'expo-router'
-import { ChevronRight, LogOut, User2 } from 'lucide-react-native'
+import { Text } from '@/components/ui/text'
+import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
 import userService from '@/services/user.service'
-import { useAuth } from '@/context/AuthContext'
-import IconButton from '@/components/IconButton'
-import ItemCard from '@/components/ItemCard'
-import LottieView from 'lottie-react-native'
+import { router } from 'expo-router'
+import { LogOut, User2 } from 'lucide-react-native'
+import React from 'react'
+import { Alert, FlatList, View } from 'react-native'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -84,16 +81,6 @@ export default function ProfilePage() {
           />
         )}
       />
-      <View className="mb-20 items-center">
-        <Pressable onPress={() => router.push('/level')}>
-          <LottieView
-            source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
-            autoPlay
-            loop
-            style={{ width: 250, height: 250 }}
-          />
-        </Pressable>
-      </View>
     </View>
   )
 }
