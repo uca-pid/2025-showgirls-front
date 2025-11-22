@@ -22,11 +22,15 @@ const Streak = () => {
   const { user } = useAuth()
   const { streakData, isFetching } = useStreak(user?.uid ?? '')
   const currentStreak = streakData?.rachaActual ?? 0
-
   return (
     <Container activity={isFetching}>
       <Section className="items-center">
-        <StreakButton size={160} showStreak={false} speed={0.6} />
+        <StreakButton
+          streak={streakData}
+          size={160}
+          showStreak={false}
+          speed={0.6}
+        />
         <Text className="text-xl">Días de racha</Text>
         <Text className="text-4xl font-semibold">
           {streakData?.rachaActual}

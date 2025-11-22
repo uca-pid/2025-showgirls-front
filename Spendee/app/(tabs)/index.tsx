@@ -120,9 +120,11 @@ export default function HomePage() {
     refetch: refetchChart,
   } = useChartData({ month: currentMonthIndex + 1, year: currentYear })
 
-  const { refetch: refetchStreak, isFetching: fetchingStreak } = useStreak(
-    user?.uid ?? '',
-  )
+  const {
+    streakData,
+    refetch: refetchStreak,
+    isFetching: fetchingStreak,
+  } = useStreak(user?.uid ?? '')
 
   const formattedBalance = new Intl.NumberFormat('es-AR').format(
     balanceData.balance,
@@ -178,7 +180,7 @@ export default function HomePage() {
               {'$ ' + formattedBalance}
             </Text>
           </Pressable>
-          <StreakButton />
+          <StreakButton streak={streakData} />
         </SectionCard>
       </Section>
 
