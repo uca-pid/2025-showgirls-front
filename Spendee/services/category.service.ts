@@ -1,5 +1,4 @@
 import ApiService from './api.service'
-import { ExpenseResponse } from './expense.service'
 
 export interface CategoryResponse {
   id: number
@@ -36,10 +35,26 @@ class CategoryService {
     color: string
     descripcion: string
   }) {
-    return await ApiService.post(`/customCategory`, category)
+    // Added leading slash to ensure correct URL concatenation with baseUrl
+    return await ApiService.post(`/categories/customCategory`, category)
   }
   public async delete(categoryId: number) {
-    return await ApiService.delete(`/deleteCategory/${categoryId}`)
+    console.log('CategoryId typeof', typeof categoryId);
+    // Added leading slash for consistency
+    return await ApiService.delete(`/categories/delete/${categoryId}`)
+  }
+
+  public async update(
+    categoryId: number,
+    body: {
+      categoria: string
+      descripcion: string
+      icono: string
+      color: string
+    },
+  ) {
+    // Endpoint sin prefijo /categories según uso actual en la pantalla de edición
+    return await ApiService.put(`/categories/modify/${categoryId}`, body)
   }
 }
 

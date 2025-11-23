@@ -137,12 +137,13 @@ export default function SignInForm() {
                     </Pressable>
                   </View>
                 </View>
-                <View className="flex-row items-center">
-                  {/** 
-              <Separator className="flex-1" />
-              <Text className="text-muted-foreground px-4 text-sm">o</Text>
-              <Separator className="flex-1" />
-              <SocialConnections />*/}
+              <View className="mt-2 gap-4">
+                  <View className="flex-row items-center justify-center gap-3">
+                    <Separator className="flex-1" />
+                    <Text className="text-muted-foreground text-sm">o</Text>
+                    <Separator className="flex-1" />
+                  </View>
+                  <SocialConnections />
                 </View>
               </CardContent>
             </Card>
