@@ -36,9 +36,9 @@ export function SocialConnections() {
   const { colorScheme } = useColorScheme();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // Use the web/expo client ID as the primary clientId. For native standalone apps
-    // you can add the platform-specific client IDs in env and adjust if needed.
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    //clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     scopes: ['profile', 'email'],
   })
 
