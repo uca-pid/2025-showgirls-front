@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import { BlurView } from 'expo-blur'
-import { ArrowLeftRight, Home, LucideIcon, User } from 'lucide-react-native'
+import { Clock, Home, LucideIcon, PiggyBank, User } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import React from 'react'
 import { Pressable } from 'react-native'
@@ -10,7 +10,8 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const icons: Record<string, LucideIcon> = {
     index: Home,
     'profile/index': User,
-    movements: ArrowLeftRight,
+    movements: Clock,
+    piggy: PiggyBank,
   }
   return (
     <BlurView

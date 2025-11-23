@@ -57,10 +57,6 @@ export function SocialConnections() {
             variant="outline"
             size="sm"
             className="sm:flex-1"
-<<<<<<< Updated upstream
-            onPress={() => {
-              // TODO: Authenticate with social provider and navigate to protected screen if successful
-=======
             onPress={async () => {
               try {
                 if (strategy.type === 'oauth_google') {
@@ -70,7 +66,6 @@ export function SocialConnections() {
               } catch (error) {
                 Alert.alert('Authentication Error', 'Failed to authenticate with ' + strategy.type.replace('oauth_', '') + '. Please try again.');
               }
->>>>>>> Stashed changes
             }}>
             <Image
               className={cn('size-4', strategy.useTint && Platform.select({ web: 'dark:invert' }))}

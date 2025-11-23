@@ -6,9 +6,7 @@ import useLevel from '@/hooks/useLevel'
 import { useAuth } from '@/context/AuthContext'
 import ItemCard from '@/components/ItemCard'
 
-const Level = () => {
-  const { user } = useAuth()
-  const { levelData, objectiveData } = useLevel(user?.uid ?? '')
+const Piggy = () => {
   return (
     <View className="items-center">
       <LottieView
@@ -32,4 +30,4 @@ const Level = () => {
   )
 }
 
-export default Level
+export default Piggy

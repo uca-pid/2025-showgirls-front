@@ -1,36 +1,54 @@
 import { Text } from '@/components/ui/text'
-import { useAuth } from '@/context/AuthContext'
-import useStreak from '@/hooks/useStreak'
 import { getStreakAnimation } from '@/lib/streakFiles'
+import { StreakResponse } from '@/services/streak.service'
 import { router } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import React from 'react'
-import { Pressable, View } from 'react-native'
+import { ActivityIndicator, Pressable, View } from 'react-native'
 
-const StreakButton = () => {
-  const { user } = useAuth()
-  const { streakData } = useStreak(user?.uid ?? '')
-  const streakAnimationFile = getStreakAnimation(streakData)
+type StreakButtonProps = {
+  streak: StreakResponse | undefined
+  size?: number
+  showStreak?: boolean
+  speed?: number
+}
 
-  return (
-    <Pressable
-      onPress={() => {
-        router.push('/streak')
-      }}
-    >
-      <View className="items-center">
-        <LottieView
-          source={streakAnimationFile}
-          autoPlay
-          loop
-          style={{ width: 50, height: 50 }}
-          colorFilters={[]}
-        />
-        <Text>{streakData?.rachaActual ?? 0}</Text>
-        <Text>{streakData?.lastActiveDate}</Text>
-      </View>
-    </Pressable>
-  )
+const StreakButton = ({
+  size = 50,
+  showStreak = true,
+  speed = 1,
+  streak,
+}: StreakButtonProps) => {
+  const COMPLETE_ANIMATION_FRAME = 0.39
+  if (streak) {
+    var streakAnimation = getStreakAnimation(streak)
+    return (
+      <Pressable
+        onPress={() => {
+          router.push('/streak')
+        }}
+      >
+        <View className="items-center">
+          {streak && (
+            <>
+              <LottieView
+                renderMode="HARDWARE"
+                speed={speed}
+                source={streakAnimation?.animation}
+                loop={!streak?.isInactive}
+                autoPlay={!streak?.isInactive}
+                progress={streak.isInactive ? COMPLETE_ANIMATION_FRAME : 1}
+                style={{ width: size, height: size }}
+              />
+              {showStreak && <Text>{streak?.rachaActual}</Text>}
+            </>
+          )}
+        </View>
+      </Pressable>
+    )
+  } else {
+    return <ActivityIndicator />
+  }
 }
 
 export default StreakButton

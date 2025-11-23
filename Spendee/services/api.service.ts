@@ -11,6 +11,7 @@ interface ApiError {
   message: string
   status?: number
   statusText?: string
+  url?: string
 }
 
 interface RequestConfig extends RequestInit {
@@ -40,6 +41,7 @@ class ApiService {
         message: 'An error occurred during the request',
         status: response.status,
         statusText: response.statusText,
+        url: response.url,
       }
 
       try {

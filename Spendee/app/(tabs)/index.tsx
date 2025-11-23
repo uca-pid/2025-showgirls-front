@@ -5,7 +5,7 @@ import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import StreakButton from '@/components/StreakButton'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import useBalance from '@/hooks/useBalance'
@@ -13,15 +13,16 @@ import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
+import useStreak from '@/hooks/useStreak'
 import { getIcon } from '@/lib/getIcon'
 import { router } from 'expo-router'
 import {
   BanknoteArrowDown,
   BanknoteArrowUp,
+  Car,
   ChevronRight,
   Info,
   PiggyBank,
-  Car,
 } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import {
@@ -31,7 +32,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import StreakButton from '@/components/StreakButton'
 
 const actions = [
   {
@@ -120,10 +120,15 @@ export default function HomePage() {
     refetch: refetchChart,
   } = useChartData({ month: currentMonthIndex + 1, year: currentYear })
 
-  const formattedBalance = new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(balanceData.balance)
+  const {
+    streakData,
+    refetch: refetchStreak,
+    isFetching: fetchingStreak,
+  } = useStreak(user?.uid ?? '')
+
+  const formattedBalance = new Intl.NumberFormat('es-AR').format(
+    balanceData.balance,
+  )
 
   const refreshing =
     fetchingBalance || fetchingCategories || fetchingExpenses || fetchingChart
@@ -133,6 +138,7 @@ export default function HomePage() {
     refetchCategories()
     refetchExpenses()
     refetchChart()
+    refetchStreak()
   }
 
   function toggleCategory(categoryId: number) {
@@ -161,22 +167,20 @@ export default function HomePage() {
     >
       <Section>
         <SectionCard justify="between" flex="row">
-          <View>
-            <Pressable onPress={() => router.push('/movements')}>
-              <Text className="text-muted-foreground">Tu balance</Text>
-              <Text
-                className={
-                  balanceData.balance.toString().length > 8
-                    ? 'text-2xl'
-                    : 'text-4xl'
-                }
-                numberOfLines={1}
-              >
-                {'$ ' + formattedBalance}
-              </Text>
-            </Pressable>
-          </View>
-          <StreakButton></StreakButton>
+          <Pressable onPress={() => router.push('/movements')}>
+            <Text className="text-muted-foreground">Tu balance</Text>
+            <Text
+              className={
+                balanceData.balance.toString().length > 8
+                  ? 'text-2xl'
+                  : 'text-4xl'
+              }
+              numberOfLines={1}
+            >
+              {'$ ' + formattedBalance}
+            </Text>
+          </Pressable>
+          <StreakButton streak={streakData} />
         </SectionCard>
       </Section>
 

@@ -20,8 +20,15 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="movements"
         options={{
-          title: 'Mis Movimientos',
-          tabBarLabel: 'Movimientos',
+          title: 'Historial de Movimientos',
+          tabBarLabel: 'Historial',
+        }}
+      />
+      <Tabs.Screen
+        name="piggy"
+        options={{
+          title: 'Piggy',
+          tabBarLabel: 'Piggy',
         }}
       />
       <Tabs.Screen

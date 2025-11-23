@@ -3,6 +3,7 @@ import ApiService from './api.service'
 export interface StreakResponse {
   rachaActual: number
   lastActiveDate: string
+  isInactive: boolean
 }
 
 class StreakService {

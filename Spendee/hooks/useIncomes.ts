@@ -35,6 +35,7 @@ export default function useIncomes(
     mutationFn: incomeService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', userId] })
+      queryClient.invalidateQueries({ queryKey: ['streak', userId] })
     },
   })
 
