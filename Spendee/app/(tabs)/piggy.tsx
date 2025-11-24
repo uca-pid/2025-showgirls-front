@@ -1,28 +1,39 @@
-import { FlatList, View } from 'react-native'
-import React from 'react'
+import { FlatList, Pressable, View } from 'react-native'
+import React, { useRef } from 'react'
 import LottieView from 'lottie-react-native'
 import { Text } from '@/components/ui/text'
-import useLevel from '@/hooks/useLevel'
-import { useAuth } from '@/context/AuthContext'
 import ItemCard from '@/components/ItemCard'
+import usePiggy from '@/hooks/usePiggy'
 
 const Piggy = () => {
+  const { piggyData } = usePiggy()
+  const animationRef = useRef<any>(null)
+  const level = piggyData?.xp ? Math.floor(piggyData.xp / 5) : 0
+
+  const playAnimation = () => {
+    animationRef.current?.reset()
+    animationRef.current?.play()
+  }
   return (
     <View className="items-center">
-      <LottieView
-        source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
-        autoPlay
-        loop={false}
-        style={{ width: 250, height: 250 }}
-      />
-      <Text className="text-lg font-semibold">Nivel: {levelData?.level}</Text>
+      <Pressable onPress={playAnimation}>
+        <LottieView
+          ref={animationRef}
+          source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
+          autoPlay={false}
+          loop={false}
+          style={{ width: 250, height: 250 }}
+        />
+      </Pressable>
+      <Text className="text-lg font-semibold">{piggyData?.nombre}</Text>
+      <Text className="text-lg font-semibold">Nivel: {level}</Text>
       <FlatList
-        data={Array.isArray(objectiveData) ? (objectiveData as any[]) : []}
+        data={piggyData?.objetivos || []}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ItemCard
             title={`Objetivo: ${item.id.toString()}`}
-            description={item.descripcion}
+            description={`Progreso: ${item.progreso}%`}
           />
         )}
       />
