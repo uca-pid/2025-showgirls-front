@@ -26,6 +26,7 @@ const Piggy = () => {
         />
       </Pressable>
       <Text className="text-lg font-semibold">{piggyData?.nombre}</Text>
+      <Text className="text-lg font-semibold">XP: {piggyData?.xp}</Text>
       <Text className="text-lg font-semibold">Nivel: {level}</Text>
       <FlatList
         data={piggyData?.objetivos || []}
@@ -33,7 +34,7 @@ const Piggy = () => {
         renderItem={({ item }) => (
           <ItemCard
             title={`Objetivo: ${item?.objetivo.descripcion}`}
-            description={`Progreso: ${item.progreso}%`}
+            description={`Progreso: ${((item.progreso / item?.objetivo.maxProgreso) * 100).toFixed(2)}%`}
           />
         )}
       />
