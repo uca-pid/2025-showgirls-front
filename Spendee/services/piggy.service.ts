@@ -18,11 +18,17 @@ export interface ObjetivoUsuarioResponse {
 export interface ObjetivoResponse {
   id: number
   descripcion: string
+  maxProgreso: number
 }
 
 class PiggyService {
   public async findByUserId() {
     return await ApiService.get<PiggyResponse>('/piggy')
+  }
+  public async checkObjective(action: string) {
+    return await ApiService.get('/piggy/checkObjective', {
+      params: { action },
+    })
   }
 }
 
