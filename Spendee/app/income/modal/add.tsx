@@ -54,7 +54,6 @@ export default function AddExpensePage() {
           montoAnterior: (await balanceData).data.balance,
         })
         await piggyService.checkObjective('income')
-
         toastService.show('Ingreso añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')

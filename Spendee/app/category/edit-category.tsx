@@ -14,6 +14,7 @@ import { Trash2 } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { Alert, FlatList, Pressable, View } from 'react-native'
 import ApiService from '../../services/api.service'
+import piggyService from '@/services/piggy.service'
 
 const EditCategory = () => {
   const { user } = useAuth()
@@ -61,6 +62,7 @@ const EditCategory = () => {
         icono: icon,
         color: colorOptions[color].hex,
       })
+      await piggyService.checkObjective('category_edit')
 
       alert('Categoría modificada con éxito')
 
