@@ -12,6 +12,12 @@ export interface ObjetivoUsuarioResponse {
   id: number
   objetivoId: number
   progreso: number
+  objetivo: ObjetivoResponse
+}
+
+export interface ObjetivoResponse {
+  id: number
+  descripcion: string
 }
 
 class PiggyService {

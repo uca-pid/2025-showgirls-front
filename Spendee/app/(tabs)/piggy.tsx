@@ -32,7 +32,7 @@ const Piggy = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ItemCard
-            title={`Objetivo: ${item.id.toString()}`}
+            title={`Objetivo: ${item?.objetivo.descripcion}`}
             description={`Progreso: ${item.progreso}%`}
           />
         )}
