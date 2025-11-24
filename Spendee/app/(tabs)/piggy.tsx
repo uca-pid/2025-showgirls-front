@@ -28,7 +28,7 @@ const Piggy = () => {
   const onSubmit = async () => {
     try {
       await piggyService.updatePiggyName(name)
-      console.log('Nombre actualizado con éxito')
+      await piggyService.checkObjective('piggy_edit')
       refetch()
     } catch (error) {
       console.log(error)
