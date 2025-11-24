@@ -8,6 +8,7 @@ import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
 import { getIcon } from '@/lib/getIcon'
+import piggyService from '@/services/piggy.service'
 import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react-native'
 import React, { useLayoutEffect } from 'react'
@@ -73,6 +74,7 @@ const ExpenseDetailPage = () => {
           onPress: async () => {
             try {
               await deleteExpense(Number(id))
+              await piggyService.checkObjective('delete_expense')
               router.back()
             } catch (error) {
               console.log(error)

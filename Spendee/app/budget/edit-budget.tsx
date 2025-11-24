@@ -5,6 +5,7 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
 import useBudgetsDetail from '@/hooks/useBudgetDetail'
+import piggyService from '@/services/piggy.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
@@ -108,6 +109,7 @@ const EditBudget = () => {
           PresupuestoCategoria: JSON.parse(categoriesValues),
         },
       })
+      await piggyService.checkObjective('budget_update')
 
       toastService.show('Presupuesto modificado con éxito', 'success')
       router.dismissAll()

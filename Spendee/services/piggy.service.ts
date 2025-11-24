@@ -30,6 +30,9 @@ class PiggyService {
       params: { action },
     })
   }
+  public async updatePiggyName(name: string) {
+    return await ApiService.put('/piggy/updatePiggy', { nombre: name })
+  }
 }
 
 const piggyService = new PiggyService()

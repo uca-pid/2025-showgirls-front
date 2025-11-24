@@ -17,6 +17,7 @@ import { Trash2 } from 'lucide-react-native'
 import userService from '../../services/user.service'
 import { auth } from '../../firebase.config'
 import { router } from 'expo-router'
+import piggyService from '@/services/piggy.service'
 
 export default function EditProfilePage() {
   const [newName, setNewName] = useState<string>('')
@@ -38,6 +39,7 @@ export default function EditProfilePage() {
   async function editName(newName: string) {
     setLoading(true)
     await userService.update(auth, newName)
+    await piggyService.checkObjective('profile_edit')
     setLoading(false)
   }
 

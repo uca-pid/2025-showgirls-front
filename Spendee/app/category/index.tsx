@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
+import piggyService from '@/services/piggy.service'
 import { router } from 'expo-router'
 import {
   Paperclip,
@@ -88,6 +89,7 @@ const index = () => {
         color: colorOptions[color].hex,
         descripcion: description,
       })
+      await piggyService.checkObjective('category')
       showToast('Categoría agregada correctamente', 'success')
       router.back()
     } catch (error) {

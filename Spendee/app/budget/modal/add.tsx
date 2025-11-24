@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
+import piggyService from '@/services/piggy.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
@@ -56,6 +57,7 @@ export default function AddBudgetPage() {
           fechaFin: new Date(selectedRange.endDate as string),
           PresupuestoCategoria: JSON.parse(catValues as string),
         })
+        await piggyService.checkObjective('budget')
         toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
