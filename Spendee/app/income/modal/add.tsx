@@ -5,6 +5,7 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useIncomes from '@/hooks/useIncomes'
 import balanceService from '@/services/balance.service'
+import piggyService from '@/services/piggy.service'
 import { useRouter } from 'expo-router'
 import { useColorScheme } from 'nativewind'
 import React, { useState } from 'react'
@@ -52,6 +53,8 @@ export default function AddExpensePage() {
           ingreso: Number(amount),
           montoAnterior: (await balanceData).data.balance,
         })
+        await piggyService.checkObjective('income')
+
         toastService.show('Ingreso añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
