@@ -1,4 +1,3 @@
-import { SocialConnections } from '@/components/social-connections'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -9,9 +8,10 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
+import { useGlobalSearchParams, useRouter } from 'expo-router'
 import * as React from 'react'
+import { useState } from 'react'
 import {
   ActivityIndicator,
   Keyboard,
@@ -23,10 +23,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import userService from '../../services/user.service'
 import { auth } from '../../firebase.config'
+import userService from '../../services/user.service'
 
 export default function SignInForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
@@ -34,6 +32,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { isOAuthFlow } = useGlobalSearchParams()
 
   function onEmailSubmitEditing() {
     passwordInputRef.current?.focus()
@@ -41,7 +40,7 @@ export default function SignInForm() {
 
   async function onSubmit() {
     setLoading(true)
-    await userService.login(auth, email, password)
+    await userService.login(auth, email, password, Boolean(isOAuthFlow))
     setLoading(false)
   }
 

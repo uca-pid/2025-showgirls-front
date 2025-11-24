@@ -1,16 +1,17 @@
+import { toastService } from '@/context/ToastContext'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { router } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import {
   Auth,
   createUserWithEmailAndPassword,
   deleteUser,
-  signInWithEmailAndPassword,
-  signInWithCredential,
   GoogleAuthProvider,
+  signInWithCredential,
+  signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
-import * as SecureStore from 'expo-secure-store'
-import { router } from 'expo-router'
-import { toastService } from '@/context/ToastContext'
+import { Linking } from 'react-native'
 import ApiService from './api.service'
 
 const showErrorToast = (title: string) => {
@@ -57,29 +58,66 @@ export class UserService {
     return true
   }
 
-  public async login(auth: Auth, email: string, password: string) {
+  public async login(
+    auth: Auth,
+    email: string,
+    password: string,
+    isOAuthFlow?: boolean,
+  ) {
     if (!email || !password) {
       showErrorToast('Completá email y contraseña')
       return
     }
-    await signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user
-        const idToken = await user.getIdToken().then()
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      )
+      const user = userCredential.user
+      const idToken = await user.getIdToken()
+
+      if (!isOAuthFlow) {
         await SecureStore.setItemAsync('jwt', idToken)
+
         const publicProfile = {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
         }
+
         await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
         router.replace('/(tabs)')
-      })
-      .catch((firebaseLoginError) => {
-        const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
-        showErrorToast(friendlyMessage)
-      })
+        return
+      }
+
+      const response = await fetch(
+        'https://spendee-back.onrender.com/oauth/code',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${user.uid}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'No se pudo obtener el code')
+      }
+
+      const { code } = data
+
+      const url = `https://estaller.vschiaffino.com/profile?code=${code}`
+      Linking.openURL(url)
+    } catch (err) {
+      const friendly = getFriendlyAuthMessage(err)
+      showErrorToast(friendly)
+    }
   }
 
   public async register(
@@ -166,7 +204,11 @@ export class UserService {
     router.replace('/sign-in')
   }
 
-  public async loginWithGoogle(auth: Auth, idToken: string | undefined, accessToken?: string) {
+  public async loginWithGoogle(
+    auth: Auth,
+    idToken: string | undefined,
+    accessToken?: string,
+  ) {
     if (!idToken) {
       showErrorToast('No se pudo obtener token de Google')
       return
@@ -195,7 +237,7 @@ export class UserService {
     if (!auth.currentUser) {
       throw new Error('Usuario no autenticado')
     }
-    return await ApiService.post<string>('/generateApiSecret',)
+    return await ApiService.post<string>('/generateApiSecret')
   }
 
   public async deleteApiSecret(auth: Auth) {
@@ -219,7 +261,6 @@ export class UserService {
     }
     return await ApiService.get<{ apiId: string }>('/getApiId')
   }
-
 }
 const userService = new UserService()
 export default userService
