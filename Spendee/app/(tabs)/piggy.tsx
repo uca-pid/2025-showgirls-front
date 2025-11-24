@@ -1,12 +1,14 @@
-import { FlatList, View } from 'react-native'
-import React from 'react'
-import LottieView from 'lottie-react-native'
-import { Text } from '@/components/ui/text'
-import useLevel from '@/hooks/useLevel'
-import { useAuth } from '@/context/AuthContext'
 import ItemCard from '@/components/ItemCard'
+import { Text } from '@/components/ui/text'
+import { useAuth } from '@/context/AuthContext'
+import useLevel from '@/hooks/useLevel'
+import LottieView from 'lottie-react-native'
+import React from 'react'
+import { FlatList, View } from 'react-native'
 
 const Piggy = () => {
+  const { user } = useAuth()
+  const { levelData, objectiveData } = useLevel(user?.uid ?? '')
   return (
     <View className="items-center">
       <LottieView
