@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
+import piggyService from '@/services/piggy.service'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
@@ -47,6 +48,8 @@ export default function EditExpensePage() {
           montoAnterior: (await balanceData).data.balance,
           categoriaId: Number(categoryId),
         })
+        await piggyService.checkObjective('expense_edit')
+
         toastService.show('Gasto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')

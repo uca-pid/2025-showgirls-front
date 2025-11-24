@@ -3,6 +3,7 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
+import piggyService from '@/services/piggy.service'
 import { router, useLocalSearchParams } from 'expo-router'
 import {
   BookOpen,
@@ -83,6 +84,8 @@ const CategoriesList = () => {
                   id: Number(expenseId),
                   toCategoryId: item.id,
                 })
+                await piggyService
+                  .checkObjective('expense_edit')
                   .then(() => {
                     toastService.show('Gasto actualizado con éxito', 'success')
                     router.back()
