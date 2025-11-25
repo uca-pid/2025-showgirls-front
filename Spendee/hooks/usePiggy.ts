@@ -1,7 +1,8 @@
 import piggyService from '@/services/piggy.service'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function usePiggy() {
+  const queryClient = useQueryClient()
   const {
     data: piggyData,
     refetch,
@@ -14,11 +15,25 @@ export default function usePiggy() {
       return res.data
     },
   })
+
+  const { mutateAsync: changePiggyName } = useMutation({
+    mutationFn: async (body: any) => await piggyService.updatePiggyName(body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['piggy'] }),
+  })
+
   const updateAvatar = async (avatarId: number) => {
     await piggyService.updateAvatar(avatarId)
     await refetch()
   }
   const level = piggyData ? Math.floor(piggyData.xp / 5) : 1
 
-  return { piggyData, level, refetch, isLoading, ...rest, updateAvatar }
+  return {
+    piggyData,
+    level,
+    refetch,
+    isLoading,
+    changePiggyName,
+    updateAvatar,
+    ...rest,
+  }
 }
