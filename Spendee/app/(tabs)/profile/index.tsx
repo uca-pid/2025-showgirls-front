@@ -1,5 +1,5 @@
 import ItemCard from '@/components/ItemCard'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
@@ -11,12 +11,11 @@ import { Alert, FlatList, View } from 'react-native'
 import AvatarModal from '@/components/ModalAvatar'
 import { TouchableOpacity } from 'react-native'
 import usePiggy from '@/hooks/usePiggy'
-import piggyService from '@/services/piggy.service'
 
 export default function ProfilePage() {
   const { user } = useAuth()
   const [modalVisible, setModalVisible] = useState(false)
-  const { piggyData, level, updateAvatar } = usePiggy()
+  const { piggyData } = usePiggy()
   const AVATAR_IMAGES: Record<number, any> = {
     1: require('@/assets/avatar/avatar1.jpg'),
     2: require('@/assets/avatar/avatar2.jpg'),
