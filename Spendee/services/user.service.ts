@@ -98,7 +98,7 @@ export class UserService {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${user.uid}`,
+            Authorization: `Bearer ${idToken}`,
             'Content-Type': 'application/json',
           },
         },

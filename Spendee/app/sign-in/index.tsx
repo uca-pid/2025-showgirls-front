@@ -9,6 +9,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Text } from '@/components/ui/text'
+import { auth } from '@/firebase.config'
+import userService from '@/services/user.service'
 import { useGlobalSearchParams, useRouter } from 'expo-router'
 import * as React from 'react'
 import { useState } from 'react'
@@ -23,8 +25,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { auth } from '../../firebase.config'
-import userService from '../../services/user.service'
 
 export default function SignInForm() {
   const passwordInputRef = React.useRef<TextInput>(null)
@@ -88,18 +88,20 @@ export default function SignInForm() {
                   <View className="gap-1.5">
                     <View className="flex-row items-center">
                       <Label htmlFor="password">Contraseña</Label>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
-                        onPress={() => {
-                          router.push('/sign-in/forgot-password')
-                        }}
-                      >
-                        <Text className="font-normal leading-4">
-                          Olvidé mi contraseña
-                        </Text>
-                      </Button>
+                      {!isOAuthFlow && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="web:h-fit ml-auto h-4 px-1 py-0 sm:h-4"
+                          onPress={() => {
+                            router.push('/sign-in/forgot-password')
+                          }}
+                        >
+                          <Text className="font-normal leading-4">
+                            Olvidé mi contraseña
+                          </Text>
+                        </Button>
+                      )}
                     </View>
                     <Input
                       ref={passwordInputRef}
@@ -123,18 +125,20 @@ export default function SignInForm() {
                       <Text>Continuar</Text>
                     )}
                   </Button>
-                  <View className="flex-row items-center justify-center">
-                    <Text className="text-sm">¿No tenés cuenta? </Text>
-                    <Pressable
-                      onPress={() => {
-                        router.replace('/sign-up')
-                      }}
-                    >
-                      <Text className="text-sm underline underline-offset-4">
-                        Registrate
-                      </Text>
-                    </Pressable>
-                  </View>
+                  {!isOAuthFlow && (
+                    <View className="flex-row items-center justify-center">
+                      <Text className="text-sm">¿No tenés cuenta? </Text>
+                      <Pressable
+                        onPress={() => {
+                          router.replace('/sign-up')
+                        }}
+                      >
+                        <Text className="text-sm underline underline-offset-4">
+                          Registrate
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
                 <View className="flex-row items-center">
                   {/** 
