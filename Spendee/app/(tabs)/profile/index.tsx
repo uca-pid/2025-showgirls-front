@@ -6,12 +6,25 @@ import { auth } from '@/firebase.config'
 import userService from '@/services/user.service'
 import { router } from 'expo-router'
 import { LogOut, User2 } from 'lucide-react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Alert, FlatList, View } from 'react-native'
+import AvatarModal from '@/components/ModalAvatar'
+import { TouchableOpacity } from 'react-native'
+import usePiggy from '@/hooks/usePiggy'
+import piggyService from '@/services/piggy.service'
 
 export default function ProfilePage() {
   const { user } = useAuth()
-
+  const [modalVisible, setModalVisible] = useState(false)
+  const { piggyData, level, updateAvatar } = usePiggy()
+  const AVATAR_IMAGES: Record<number, any> = {
+    1: require('@/assets/avatar/avatar1.jpg'),
+    2: require('@/assets/avatar/avatar2.jpg'),
+    3: require('@/assets/avatar/avatar3.jpg'),
+    4: require('@/assets/avatar/avatar4.jpg'),
+    5: require('@/assets/avatar/avatar5.jpg'),
+    6: require('@/assets/avatar/avatar6.jpg'),
+  }
   const menuItems = [
     {
       title: 'Editar Perfil',
@@ -45,22 +58,18 @@ export default function ProfilePage() {
   return (
     <View className="items-center justify-center bg-background h-full">
       {user ? (
-        <View className="items-center relative border-b border-muted border-30 h-[130px] w-screen">
-          <Avatar
-            alt={`${user?.displayName}'s Avatar`}
-            className="h-24 w-24 border-2 border-primary bg-black absolute top-[60%]"
+        <View className=" items-center relative border-b border-muted border-30 h-[130px] w-screen">
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            className="w-24 h-24"
           >
-            <AvatarImage
-              source={{
-                uri: user.photoURL
-                  ? user.photoURL
-                  : 'https://github.com/mrzachnugent.png',
-              }}
-            />
-            <AvatarFallback>
-              <Text className="color-white">{user.displayName?.charAt(0)}</Text>
-            </AvatarFallback>
-          </Avatar>
+            <Avatar
+              alt="avatar"
+              className="h-24 w-24 border-2 border-primary top-20"
+            >
+              <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 1]} />
+            </Avatar>
+          </TouchableOpacity>
         </View>
       ) : (
         <Text>No hay datos de perfil almacenados.</Text>
@@ -80,6 +89,10 @@ export default function ProfilePage() {
             onPress={item.action}
           />
         )}
+      />
+      <AvatarModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
       />
     </View>
   )
