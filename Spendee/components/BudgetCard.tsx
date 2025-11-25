@@ -90,7 +90,7 @@ export default function BudgetCard({
                 ? 'orange'
                 : '#16a34a'
           }
-          backgroundColor="#e2e2e2ff"
+          backgroundColor="#FFFFFF20"
           lineCap="round"
           children={() => (
             <Text

@@ -1,9 +1,5 @@
-import { FlatList, Pressable, TextInput, View } from 'react-native'
-import React, { useRef, useState } from 'react'
-import LottieView from 'lottie-react-native'
-import { Text } from '@/components/ui/text'
 import ItemCard from '@/components/ItemCard'
-import usePiggy from '@/hooks/usePiggy'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
@@ -14,9 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useColorScheme } from 'nativewind'
+import { Text } from '@/components/ui/text'
+import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
-import { Button } from '@/components/ui/button'
+import LottieView from 'lottie-react-native'
+import { useColorScheme } from 'nativewind'
+import React, { useRef, useState } from 'react'
+import { FlatList, Pressable, TextInput, View } from 'react-native'
 
 const Piggy = () => {
   const { piggyData, refetch } = usePiggy()
@@ -38,6 +38,7 @@ const Piggy = () => {
     animationRef.current?.reset()
     animationRef.current?.play()
   }
+
   return (
     <View className="items-center">
       <Pressable onPress={playAnimation}>
