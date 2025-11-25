@@ -6,6 +6,7 @@ export interface PiggyResponse {
   nombre: string
   xp: number
   objetivos: ObjetivoUsuarioResponse[]
+  avatarId: number | 1
 }
 
 export interface ObjetivoUsuarioResponse {
@@ -32,6 +33,9 @@ class PiggyService {
   }
   public async updatePiggyName(name: string) {
     return await ApiService.put('/piggy/updatePiggy', { nombre: name })
+  }
+  public async updateAvatar(avatarId: number) {
+    return await ApiService.put('/piggy/updateAvatar', { avatarId })
   }
 }
 

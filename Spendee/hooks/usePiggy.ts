@@ -14,6 +14,11 @@ export default function usePiggy() {
       return res.data
     },
   })
+  const updateAvatar = async (avatarId: number) => {
+    await piggyService.updateAvatar(avatarId)
+    await refetch()
+  }
+  const level = piggyData ? Math.floor(piggyData.xp / 5) : 1
 
-  return { piggyData, refetch, isLoading, ...rest }
+  return { piggyData, level, refetch, isLoading, ...rest, updateAvatar }
 }
