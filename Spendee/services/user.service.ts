@@ -13,6 +13,7 @@ import {
 } from 'firebase/auth'
 import { Linking } from 'react-native'
 import ApiService from './api.service'
+import codeService from './code.service'
 
 const showErrorToast = (title: string) => {
   toastService.show(title)
@@ -77,43 +78,27 @@ export class UserService {
       )
       const user = userCredential.user
       const idToken = await user.getIdToken()
+      await SecureStore.setItemAsync('jwt', idToken)
+
+      const publicProfile = {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      }
+
+      await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
 
       if (!isOAuthFlow) {
-        await SecureStore.setItemAsync('jwt', idToken)
-
-        const publicProfile = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-        }
-
-        await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
         router.replace('/(tabs)')
         return
       }
 
-      const response = await fetch(
-        'https://spendee-back.onrender.com/oauth/code',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'No se pudo obtener el code')
+      const response = await codeService.getCode(user.uid || publicProfile.uid)
+      if (response.status === 200) {
+        const url = response.data.redirect
+        Linking.openURL(url)
       }
-
-      const { code } = data
-
-      const url = `https://estaller.vschiaffino.com/profile?code=${code}`
-      Linking.openURL(url)
     } catch (err) {
       const friendly = getFriendlyAuthMessage(err)
       showErrorToast(friendly)
