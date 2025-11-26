@@ -17,7 +17,7 @@ export default function usePiggy() {
   })
 
   const { mutateAsync: changePiggyName } = useMutation({
-    mutationFn: async (body: any) => await piggyService.updatePiggyName(body),
+    mutationFn: async (name: any) => await piggyService.updatePiggyName(name),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['piggy'] }),
   })
 
