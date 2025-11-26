@@ -1,5 +1,5 @@
 import ItemCard from '@/components/ItemCard'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
@@ -7,16 +7,20 @@ import userService from '@/services/user.service'
 import { router } from 'expo-router'
 import { LogOut, User2 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Alert, FlatList, View } from 'react-native'
+import { Alert, FlatList, Pressable, View } from 'react-native'
 import AvatarModal from '@/components/ModalAvatar'
 import { TouchableOpacity } from 'react-native'
 import usePiggy from '@/hooks/usePiggy'
-import piggyService from '@/services/piggy.service'
+import { Button } from '@/components/ui/button'
+import ModalColor from '@/components/ModalColor'
+import useThemeColor from '@/theme/useThemeColor'
 
 export default function ProfilePage() {
   const { user } = useAuth()
   const [modalVisible, setModalVisible] = useState(false)
-  const { piggyData, level, updateAvatar } = usePiggy()
+  const [colorModalVisible, setColorModalVisible] = useState(false)
+  const { piggyData } = usePiggy()
+  const { colorHex } = useThemeColor()
   const AVATAR_IMAGES: Record<number, any> = {
     1: require('@/assets/avatar/avatar1.jpg'),
     2: require('@/assets/avatar/avatar2.jpg'),
@@ -58,19 +62,24 @@ export default function ProfilePage() {
   return (
     <View className="items-center justify-center bg-background h-full">
       {user ? (
-        <View className=" items-center relative border-b border-muted border-30 h-[130px] w-screen">
+        <Pressable
+          onPress={() => setColorModalVisible(true)}
+          style={{ backgroundColor: colorHex }}
+          className="items-center relative border-b border-muted border-30 h-[130px] w-screen"
+        >
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
             className="w-24 h-24"
           >
             <Avatar
               alt="avatar"
-              className="h-24 w-24 border-2 border-primary top-20"
+              style={{ borderColor: colorHex }}
+              className="h-24 w-24 border-2 top-20"
             >
               <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 1]} />
             </Avatar>
           </TouchableOpacity>
-        </View>
+        </Pressable>
       ) : (
         <Text>No hay datos de perfil almacenados.</Text>
       )}
@@ -93,6 +102,10 @@ export default function ProfilePage() {
       <AvatarModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+      />
+      <ModalColor
+        visible={colorModalVisible}
+        onClose={() => setColorModalVisible(false)}
       />
     </View>
   )

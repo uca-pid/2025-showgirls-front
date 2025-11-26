@@ -17,35 +17,35 @@ export interface ExpensesByMonthResponse {
 
 class ExpenseService {
   public async findByUserId(userId: string, filters: ExpenseFilters) {
-    return await ApiService.get<ExpenseResponse[]>('/gasto', {
-      params: { userId, ...filters },
+    return await ApiService.get<ExpenseResponse[]>('/expense', {
+      params: { ...filters },
     })
   }
 
   public async findByExpenseId(expenseId: number) {
-    return await ApiService.get<ExpenseResponse>(`/gastoPorId/${expenseId}`)
+    return await ApiService.get<ExpenseResponse>(`/expense/byId/${expenseId}`)
   }
 
   public async findExpensesByMonth(userId: string) {
-    return await ApiService.get<ExpensesByMonthResponse[]>('/gasto/agrupado', {
+    return await ApiService.get<ExpensesByMonthResponse[]>('/expense/grouped', {
       params: { userId },
     })
   }
 
   public async create(body: any) {
-    return await ApiService.post('/gasto', body)
+    return await ApiService.post('/expense', body)
   }
 
   public async update(expenseId: number, body: any) {
-    return await ApiService.put(`/gastoPorId/${expenseId}`, body)
+    return await ApiService.put(`/expense/byId/${expenseId}`, body)
   }
 
   public async deleteExpense(expenseId: number) {
-    return await ApiService.delete(`/gasto/${expenseId}`)
+    return await ApiService.delete(`/expense/${expenseId}`)
   }
 
   public async moveExpenses(fromCategoryId: number, toCategoryId: number) {
-    return await ApiService.put(`/moverGastosCategoria/`, {
+    return await ApiService.put(`/expense/moveExpensesOfCategory/`, {
       categoriaOrigenId: fromCategoryId,
       categoriaDestinoId: toCategoryId,
     })

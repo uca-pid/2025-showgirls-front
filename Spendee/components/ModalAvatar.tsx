@@ -4,6 +4,8 @@ import { Text } from '@/components/ui/text'
 import { Lock } from 'lucide-react-native'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
+import { useColorScheme } from 'nativewind'
+import useThemeColor from '@/theme/useThemeColor'
 
 const AVATARS = [
   require('@/assets/avatar/avatar1.jpg'),
@@ -20,6 +22,7 @@ interface AvatarModalProps {
 }
 
 export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
+  const { colorHex } = useThemeColor()
   const { piggyData, level, refetch } = usePiggy()
   const selectedAvatar = piggyData?.avatarId || 0
 
@@ -39,7 +42,13 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
     <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 bg-black/50 justify-center items-center">
         <View className="bg-primary p-6 rounded-2xl w-11/12">
-          <Text className="text-xl text-center mb-4 text-black">
+          <Text
+            style={{
+              color:
+                useColorScheme().colorScheme === 'dark' ? 'black' : 'white',
+            }}
+            className="text-xl text-center mb-4 text-black"
+          >
             Elegí tu avatar
           </Text>
 
@@ -55,9 +64,14 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
                   onPress={() => handleSelectAvatar(avatarId, unlocked)}
                 >
                   <View
+                    style={
+                      isSelected
+                        ? { borderWidth: 4, borderColor: colorHex }
+                        : {}
+                    }
                     className={`rounded-xl overflow-hidden justify-center items-center ${
                       unlocked ? 'opacity-100' : 'opacity-40'
-                    } ${isSelected ? 'border-4 border-pink-500' : ''}`}
+                    }`}
                   >
                     <Image
                       source={img}
@@ -76,8 +90,12 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
             })}
           </View>
 
-          <Pressable onPress={onClose} className="mt-6 bg-black p-3 rounded-xl">
-            <Text className="text-center font-bold">Cerrar</Text>
+          <Pressable
+            onPress={onClose}
+            style={{ backgroundColor: colorHex }}
+            className="mt-6 p-3 rounded-xl"
+          >
+            <Text className="text-center font-bold text-black">Cerrar</Text>
           </Pressable>
         </View>
       </View>

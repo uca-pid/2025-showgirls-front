@@ -5,6 +5,7 @@ import { Clock, Home, LucideIcon, PiggyBank, User } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import React from 'react'
 import { Pressable } from 'react-native'
+import useThemeColor from '@/theme/useThemeColor'
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const icons: Record<string, LucideIcon> = {
@@ -13,6 +14,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     movements: Clock,
     piggy: PiggyBank,
   }
+  const { colorHex } = useThemeColor()
   return (
     <BlurView
       experimentalBlurMethod="dimezisBlurView"
@@ -60,14 +62,14 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           >
             {React.createElement(icons[route.name], {
               color: isFocused
-                ? '#f9a8d4'
+                ? colorHex
                 : useColorScheme().colorScheme === 'dark'
                   ? 'white'
                   : 'gray',
             })}
             <Text
               numberOfLines={1}
-              className={isFocused ? 'text-pink-300' : 'text-muted-foreground'}
+              style={{ color: isFocused ? colorHex : 'gray' }}
             >
               {label.toString()}
             </Text>

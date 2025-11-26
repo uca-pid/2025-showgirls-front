@@ -148,9 +148,7 @@ const index = () => {
             text=""
             onPress={() => setIcon(item.name)}
             className={
-              icon === item.name
-                ? 'rounded-full bg-pink-300/50 border-2 border-white'
-                : ''
+              icon === item.name ? 'rounded-full border-2 border-white' : ''
             }
           />
         )}

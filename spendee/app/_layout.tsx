@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { ToastProvider } from '@/context/ToastContext'
 import '@/global.css'
+import { ThemeProvider as DynamicColors } from '@/theme/themeContext'
 import {
   DarkTheme,
   DefaultTheme,
@@ -19,16 +20,18 @@ export default function RootLayout() {
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
 
   return (
-    <ThemeProvider value={theme}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <ToastProvider>
-            <AuthGate />
-          </ToastProvider>
-        </QueryClientProvider>
-        <PortalHost />
-      </AuthProvider>
-    </ThemeProvider>
+    <DynamicColors>
+      <ThemeProvider value={theme}>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <ToastProvider>
+              <AuthGate />
+            </ToastProvider>
+          </QueryClientProvider>
+          <PortalHost />
+        </AuthProvider>
+      </ThemeProvider>
+    </DynamicColors>
   )
 }
 

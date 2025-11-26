@@ -16,6 +16,7 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { UseMutateAsyncFunction } from '@tanstack/react-query'
 import LottieView from 'lottie-react-native'
 import React, { useRef, useState } from 'react'
@@ -41,6 +42,7 @@ const Piggy = () => {
     changePiggyName,
     refetch,
   } = usePiggy()
+  const { colorHex } = useThemeColor()
   const animationRef = useRef<any>(null)
 
   const playAnimation = () => {
@@ -80,6 +82,7 @@ const Piggy = () => {
         piggyName={piggyData?.nombre}
         changePiggyNameFn={changePiggyName}
       />
+
       <Text className="text-lg font-semibold">XP: {piggyData?.xp}</Text>
       <Text className="text-lg font-semibold">Nivel: {level}</Text>
       <FlatList

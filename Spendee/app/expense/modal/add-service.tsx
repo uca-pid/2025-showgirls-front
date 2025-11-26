@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
@@ -21,15 +22,19 @@ import {
 } from 'react-native'
 
 export default function AddExpensePage() {
-
   //definicion del type de datos workshop
-   type Workshop = {
+  type Workshop = {
     id: number
     name: string
   }
-  
-  const { workshopId ,workshopName, serviceId, serviceName, servicePrice = 0 } = useLocalSearchParams()
-
+  const { colorHex } = useThemeColor()
+  const {
+    workshopId,
+    workshopName,
+    serviceId,
+    serviceName,
+    servicePrice = 0,
+  } = useLocalSearchParams()
 
   const user = auth.currentUser
   if (user) {
@@ -93,13 +98,18 @@ export default function AddExpensePage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
-                className="text-lg color-pink-300"
+                style={{ color: colorHex }}
+                className="text-lg"
                 onPress={() => router.back()}
               >
                 Cerrar
               </Text>
               <Text className="font-semibold text-lg">Estaller</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
+              <Text
+                style={{ color: colorHex }}
+                className="text-lg"
+                onPress={onSubmit}
+              >
                 Agregar
               </Text>
             </CardHeader>
@@ -118,16 +128,14 @@ export default function AddExpensePage() {
                 <Text className="text-base">Taller: </Text>
                 {workshopId ? (
                   <Text className="text-base font-semibold">
-                    {
-                      workshopName
-                    }
+                    {workshopName}
                   </Text>
-                ) : ( 
+                ) : (
                   <Text className="text-muted-foreground text-base">
                     Seleccionar
                   </Text>
                 )}
-                
+
                 <ChevronDown
                   color={
                     useColorScheme().colorScheme === 'dark' ? 'white' : 'black'
@@ -141,24 +149,23 @@ export default function AddExpensePage() {
                 onPress={() =>
                   router.push({
                     pathname: '/expense/modal/services-list',
-                    params: { workshopId: workshopId, workshopName: workshopName },
+                    params: {
+                      workshopId: workshopId,
+                      workshopName: workshopName,
+                    },
                   })
                 }
                 disabled={!workshopId}
               >
                 <Text className="text-base">Servicio: </Text>
                 {serviceId ? (
-                  <Text className="text-base font-semibold">
-                    {
-                      serviceName
-                    }
-                  </Text>
-                ) : ( 
+                  <Text className="text-base font-semibold">{serviceName}</Text>
+                ) : (
                   <Text className="text-muted-foreground text-base">
                     Seleccionar
                   </Text>
                 )}
-                
+
                 <ChevronDown
                   color={
                     useColorScheme().colorScheme === 'dark' ? 'white' : 'black'
@@ -167,8 +174,13 @@ export default function AddExpensePage() {
                 />
               </Button>
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                  style={{ borderColor: colorHex }}
+                >
                   <TextInput
                     style={{
                       color:
@@ -186,7 +198,7 @@ export default function AddExpensePage() {
                     returnKeyType="next"
                     onSubmitEditing={onSubmit}
                     value={servicePrice ? String(servicePrice) : amount}
-                    placeholder={servicePrice ? `${servicePrice}`: "0"}
+                    placeholder={servicePrice ? `${servicePrice}` : '0'}
                     placeholderTextColor={
                       useColorScheme().colorScheme === 'dark'
                         ? 'white'
@@ -197,7 +209,11 @@ export default function AddExpensePage() {
                 </View>
               </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
                 <Text>Añadir Gasto</Text>
               </Button>
             </CardContent>
