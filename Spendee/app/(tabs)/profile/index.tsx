@@ -84,14 +84,6 @@ export default function ProfilePage() {
       <Button onPress={() => setColorModalVisible(true)}>
         <Text>Cambiar Color</Text>
       </Button>
-      <Pressable
-        style={{
-          backgroundColor: colorHex,
-          width: 50,
-          height: 50,
-          borderRadius: 25,
-        }}
-      ></Pressable>
 
       <FlatList
         className="w-screen p-4"

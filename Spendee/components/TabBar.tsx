@@ -14,7 +14,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     movements: Clock,
     piggy: PiggyBank,
   }
-  const { color } = useThemeColor()
+  const { colorHex } = useThemeColor()
   return (
     <BlurView
       experimentalBlurMethod="dimezisBlurView"
@@ -62,14 +62,14 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           >
             {React.createElement(icons[route.name], {
               color: isFocused
-                ? color
+                ? colorHex
                 : useColorScheme().colorScheme === 'dark'
                   ? 'white'
                   : 'gray',
             })}
             <Text
               numberOfLines={1}
-              style={{ color: isFocused ? color : 'gray' }}
+              style={{ color: isFocused ? colorHex : 'gray' }}
             >
               {label.toString()}
             </Text>
