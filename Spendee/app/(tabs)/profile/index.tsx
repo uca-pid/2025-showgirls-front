@@ -7,15 +7,20 @@ import userService from '@/services/user.service'
 import { router } from 'expo-router'
 import { LogOut, User2 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Alert, FlatList, View } from 'react-native'
+import { Alert, FlatList, Pressable, View } from 'react-native'
 import AvatarModal from '@/components/ModalAvatar'
 import { TouchableOpacity } from 'react-native'
 import usePiggy from '@/hooks/usePiggy'
+import { Button } from '@/components/ui/button'
+import ModalColor from '@/components/ModalColor'
+import useThemeColor from '@/theme/useThemeColor'
 
 export default function ProfilePage() {
   const { user } = useAuth()
   const [modalVisible, setModalVisible] = useState(false)
+  const [colorModalVisible, setColorModalVisible] = useState(false)
   const { piggyData } = usePiggy()
+  const { colorHex } = useThemeColor()
   const AVATAR_IMAGES: Record<number, any> = {
     1: require('@/assets/avatar/avatar1.jpg'),
     2: require('@/assets/avatar/avatar2.jpg'),
@@ -76,6 +81,17 @@ export default function ProfilePage() {
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
         {user?.displayName || 'Sin nombre'}
       </Text>
+      <Button onPress={() => setColorModalVisible(true)}>
+        <Text>Cambiar Color</Text>
+      </Button>
+      <Pressable
+        style={{
+          backgroundColor: colorHex,
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+        }}
+      ></Pressable>
 
       <FlatList
         className="w-screen p-4"
@@ -92,6 +108,10 @@ export default function ProfilePage() {
       <AvatarModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+      />
+      <ModalColor
+        visible={colorModalVisible}
+        onClose={() => setColorModalVisible(false)}
       />
     </View>
   )
