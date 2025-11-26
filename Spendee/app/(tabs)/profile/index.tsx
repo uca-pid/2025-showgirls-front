@@ -62,7 +62,11 @@ export default function ProfilePage() {
   return (
     <View className="items-center justify-center bg-background h-full">
       {user ? (
-        <View className=" items-center relative border-b border-muted border-30 h-[130px] w-screen">
+        <Pressable
+          onPress={() => setColorModalVisible(true)}
+          style={{ backgroundColor: colorHex }}
+          className="items-center relative border-b border-muted border-30 h-[130px] w-screen"
+        >
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
             className="w-24 h-24"
@@ -74,16 +78,13 @@ export default function ProfilePage() {
               <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 1]} />
             </Avatar>
           </TouchableOpacity>
-        </View>
+        </Pressable>
       ) : (
         <Text>No hay datos de perfil almacenados.</Text>
       )}
       <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
         {user?.displayName || 'Sin nombre'}
       </Text>
-      <Button onPress={() => setColorModalVisible(true)}>
-        <Text>Cambiar Color</Text>
-      </Button>
 
       <FlatList
         className="w-screen p-4"
