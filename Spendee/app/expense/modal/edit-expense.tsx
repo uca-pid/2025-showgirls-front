@@ -7,6 +7,7 @@ import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
 import balanceService from '@/services/balance.service'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
@@ -21,6 +22,7 @@ import {
 } from 'react-native'
 
 export default function EditExpensePage() {
+  const { colorHex } = useThemeColor()
   const user = auth.currentUser
   if (user) {
     var balanceData = balanceService.findByUserId(user.uid)
@@ -77,21 +79,36 @@ export default function EditExpensePage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
-                className="text-lg color-pink-300"
+                style={{ color: colorHex }}
+                className="text-lg"
                 onPress={() => router.back()}
               >
                 Cerrar
               </Text>
-              <Text className="font-semibold text-lg">Editar Gasto</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
+              <Text
+                style={{ color: colorHex }}
+                className="font-semibold text-lg"
+              >
+                Editar Gasto
+              </Text>
+              <Text
+                style={{ color: colorHex }}
+                className="text-lg"
+                onPress={onSubmit}
+              >
                 Editar
               </Text>
             </CardHeader>
 
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  style={{ borderColor: colorHex }}
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                >
                   <TextInput
                     style={{
                       fontSize: 42,
@@ -139,7 +156,11 @@ export default function EditExpensePage() {
                 <ChevronDown color="white" size={18} />
               </Button>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
                 <Text>Añadir Gasto</Text>
               </Button>
             </CardContent>

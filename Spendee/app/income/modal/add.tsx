@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useIncomes from '@/hooks/useIncomes'
 import balanceService from '@/services/balance.service'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useRouter } from 'expo-router'
 import { useColorScheme } from 'nativewind'
 import React, { useState } from 'react'
@@ -20,6 +21,7 @@ import {
 } from 'react-native'
 
 export default function AddExpensePage() {
+  const { colorHex } = useThemeColor()
   const user = auth.currentUser
   if (user) {
     var balanceData = balanceService.findByUserId(user.uid)
@@ -81,21 +83,36 @@ export default function AddExpensePage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
-                className="text-lg color-pink-300"
+                style={{ color: colorHex }}
+                className="text-lg"
                 onPress={() => router.back()}
               >
                 Cerrar
               </Text>
-              <Text className="font-semibold text-lg">Nuevo Ingreso</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
+              <Text
+                style={{ color: colorHex }}
+                className="font-semibold text-lg"
+              >
+                Nuevo Ingreso
+              </Text>
+              <Text
+                style={{ color: colorHex }}
+                className="text-lg"
+                onPress={onSubmit}
+              >
                 Agregar
               </Text>
             </CardHeader>
 
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  style={{ borderColor: colorHex }}
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                >
                   <TextInput
                     style={{
                       fontSize: 42,
@@ -152,7 +169,11 @@ export default function AddExpensePage() {
               {error && (
                 <Text className="text-red-700 text-base ">{error}</Text>
               )}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
                 <Text>Añadir Ingreso</Text>
               </Button>
             </CardContent>

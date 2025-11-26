@@ -13,12 +13,14 @@ import {
 import { Text } from '@/components/ui/text'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import LottieView from 'lottie-react-native'
 import { useColorScheme } from 'nativewind'
 import React, { useRef, useState } from 'react'
 import { FlatList, Pressable, TextInput, View } from 'react-native'
 
 const Piggy = () => {
+  const { colorHex } = useThemeColor()
   const { piggyData, refetch } = usePiggy()
   const animationRef = useRef<any>(null)
   const level = piggyData?.xp ? Math.floor(piggyData.xp / 5) : 0
@@ -60,7 +62,10 @@ const Piggy = () => {
           <DialogHeader>
             <DialogTitle>Nuevo Nombre</DialogTitle>
             <DialogDescription>
-              <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+              <View
+                style={{ borderBottomColor: colorHex, borderBottomWidth: 2 }}
+                className="items-center justify-center w-[250px] h-[64px]"
+              >
                 <TextInput
                   style={{
                     color:

@@ -6,6 +6,7 @@ import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
 import useBudgetsDetail from '@/hooks/useBudgetDetail'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
@@ -28,6 +29,8 @@ const EditBudget = () => {
   const userId = user?.uid
   const router = useRouter()
   const { budgetId } = useLocalSearchParams()
+
+  const { colorHex } = useThemeColor()
 
   const { budgetDetailData } = useBudgetsDetail(parseInt(budgetId as string))
   const { modifyBudget, budgetDates } = useBudgets(userId!)
@@ -136,8 +139,13 @@ const EditBudget = () => {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  style={{ borderBottomColor: colorHex, borderBottomWidth: 2 }}
+                  className="items-center justify-center w-[250px] h-[64px]"
+                >
                   <TextInput
                     style={{
                       fontSize: 42,
@@ -198,7 +206,11 @@ const EditBudget = () => {
 
               {error && <Text className="text-red-700 text-base">{error}</Text>}
 
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
                 <Text>Editar Presupuesto</Text>
               </Button>
             </CardContent>

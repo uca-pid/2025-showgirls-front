@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react-native'
 import React from 'react'
 import { Pressable, View } from 'react-native'
 import { Text } from './ui/text'
+import useThemeColor from '@/theme/useThemeColor'
 
 export interface IconButtonProps {
   text?: string
@@ -23,6 +24,8 @@ const IconButton = ({
   className,
   size = 'lg',
 }: IconButtonProps) => {
+  const { colorHex } = useThemeColor()
+  iconColor = colorHex
   return (
     <View className={`flex-col items-center ${text ? 'w-[100px]' : ''}`}>
       <Pressable onPress={onPress} className="items-center">

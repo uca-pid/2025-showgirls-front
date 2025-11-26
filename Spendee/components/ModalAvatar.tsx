@@ -5,6 +5,7 @@ import { Lock } from 'lucide-react-native'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
 import { useColorScheme } from 'nativewind'
+import useThemeColor from '@/theme/useThemeColor'
 
 const AVATARS = [
   require('@/assets/avatar/avatar1.jpg'),
@@ -21,6 +22,7 @@ interface AvatarModalProps {
 }
 
 export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
+  const { colorHex } = useThemeColor()
   const { piggyData, level, refetch } = usePiggy()
   const selectedAvatar = piggyData?.avatarId || 0
 
@@ -62,9 +64,14 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
                   onPress={() => handleSelectAvatar(avatarId, unlocked)}
                 >
                   <View
+                    style={
+                      isSelected
+                        ? { borderWidth: 4, borderColor: colorHex }
+                        : {}
+                    }
                     className={`rounded-xl overflow-hidden justify-center items-center ${
                       unlocked ? 'opacity-100' : 'opacity-40'
-                    } ${isSelected ? 'border-4 border-pink-300' : ''}`}
+                    }`}
                   >
                     <Image
                       source={img}
@@ -85,7 +92,8 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
 
           <Pressable
             onPress={onClose}
-            className="mt-6 bg-pink-300 p-3 rounded-xl"
+            style={{ backgroundColor: colorHex }}
+            className="mt-6 p-3 rounded-xl"
           >
             <Text className="text-center font-bold text-black">Cerrar</Text>
           </Pressable>

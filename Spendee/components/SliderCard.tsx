@@ -7,6 +7,7 @@ import Section from './Section'
 import SectionCard from './SectionCard'
 import { router } from 'expo-router'
 import { Button } from './ui/button'
+import useThemeColor from '@/theme/useThemeColor'
 
 export interface Category {
   nombre: string
@@ -20,6 +21,7 @@ export interface SliderCardProps {
 }
 
 const SliderCard = ({ categories, amount }: SliderCardProps) => {
+  const { colorHex } = useThemeColor()
   const [values, setValues] = useState<number[]>(categories.map(() => 0))
 
   const totalAssigned = values.reduce((acc, val) => acc + val, 0)
@@ -83,7 +85,11 @@ const SliderCard = ({ categories, amount }: SliderCardProps) => {
           </View>
         ))}
 
-        <Button className="w-full bg-pink-300" onPress={handleAccept}>
+        <Button
+          style={{ backgroundColor: colorHex }}
+          className="w-full"
+          onPress={handleAccept}
+        >
           <Text>Aceptar</Text>
         </Button>
       </Section>

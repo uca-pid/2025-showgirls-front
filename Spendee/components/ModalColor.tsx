@@ -16,6 +16,7 @@ interface ColorModalProps {
 }
 
 export default function ColorModal({ visible, onClose }: ColorModalProps) {
+  const { colorHex } = useThemeColor()
   const { piggyData, level, refetch } = usePiggy()
   const selectedColor = 0
   const { color, setColor } = useThemeColor()
@@ -71,7 +72,8 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
 
           <Pressable
             onPress={onClose}
-            className="mt-6 bg-pink-300 p-3 rounded-xl"
+            style={{ backgroundColor: colorHex }}
+            className="mt-6 p-3 rounded-xl"
           >
             <Text className="text-center font-bold text-black">Cerrar</Text>
           </Pressable>

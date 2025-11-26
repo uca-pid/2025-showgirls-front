@@ -5,6 +5,7 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
 import piggyService from '@/services/piggy.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
@@ -24,6 +25,7 @@ import DateTimePicker, {
 } from 'react-native-ui-datepicker'
 
 export default function AddBudgetPage() {
+  const { colorHex } = useThemeColor()
   const user = auth.currentUser
   if (user) {
     var userId = user.uid
@@ -86,8 +88,13 @@ export default function AddBudgetPage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                  style={{ borderColor: colorHex }}
+                >
                   <TextInput
                     style={{
                       fontSize: 42,
@@ -157,7 +164,11 @@ export default function AddBudgetPage() {
                 />
               </View>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
                 <Text>Añadir Presupuesto</Text>
               </Button>
             </CardContent>

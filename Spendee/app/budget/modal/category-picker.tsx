@@ -8,8 +8,10 @@ import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
 import { Button } from '@/components/ui/button'
 import useCategories from '@/hooks/useCategories'
+import useThemeColor from '@/theme/useThemeColor'
 
 const CategoryPicker = () => {
+  const { colorHex } = useThemeColor()
   const { categoriesData } = useCategories()
   const { expense, path, budgetId } = useLocalSearchParams()
   const amount = expense ? Number(expense) : 0
@@ -76,7 +78,11 @@ const CategoryPicker = () => {
           </View>
         ))}
 
-        <Button className="w-full bg-pink-300" onPress={handleAccept}>
+        <Button
+          style={{ backgroundColor: colorHex }}
+          className="w-full"
+          onPress={handleAccept}
+        >
           <Text>Aceptar</Text>
         </Button>
       </Section>
