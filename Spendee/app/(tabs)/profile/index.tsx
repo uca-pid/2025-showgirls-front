@@ -73,7 +73,8 @@ export default function ProfilePage() {
           >
             <Avatar
               alt="avatar"
-              className="h-24 w-24 border-2 border-primary top-20"
+              style={{ borderColor: colorHex }}
+              className="h-24 w-24 border-2 top-20"
             >
               <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 1]} />
             </Avatar>

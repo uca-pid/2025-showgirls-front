@@ -1,3 +1,4 @@
+import { SocialConnections } from '@/components/social-connections'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -8,6 +9,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { auth } from '@/firebase.config'
 import userService from '@/services/user.service'
@@ -140,7 +142,7 @@ export default function SignInForm() {
                     </View>
                   )}
                 </View>
-              <View className="mt-2 gap-4">
+                <View className="mt-2 gap-4">
                   <View className="flex-row items-center justify-center gap-3">
                     <Separator className="flex-1" />
                     <Text className="text-muted-foreground text-sm">o</Text>
