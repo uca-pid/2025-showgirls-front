@@ -1,3 +1,4 @@
+import Container from '@/components/Container'
 import ItemCard from '@/components/ItemCard'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,98 +11,79 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
+import { toastService } from '@/context/ToastContext'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
+import { UseMutateAsyncFunction } from '@tanstack/react-query'
 import LottieView from 'lottie-react-native'
-import { useColorScheme } from 'nativewind'
 import React, { useRef, useState } from 'react'
-import { FlatList, Pressable, TextInput, View } from 'react-native'
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  useColorScheme,
+  View,
+} from 'react-native'
+
+type PiggyNameDialogProps = {
+  piggyName?: string
+  changePiggyNameFn: UseMutateAsyncFunction<any, Error, string, unknown>
+}
 
 const Piggy = () => {
-  const { piggyData, refetch } = usePiggy()
+  const {
+    piggyData,
+    level,
+    isFetching,
+    isRefetching,
+    changePiggyName,
+    refetch,
+  } = usePiggy()
   const animationRef = useRef<any>(null)
-  const level = piggyData?.xp ? Math.floor(piggyData.xp / 5) : 0
-  const [name, setName] = useState(
-    piggyData ? (piggyData.nombre as string) : '',
-  )
-  const onSubmit = async () => {
-    try {
-      await piggyService.updatePiggyName(name)
-      await piggyService.checkObjective('piggy_edit')
-      refetch()
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
   const playAnimation = () => {
     animationRef.current?.reset()
     animationRef.current?.play()
   }
 
   return (
-    <View className="items-center">
+    <Container
+      activity={isFetching}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          tintColor={!isRefetching ? 'gray' : 'black'}
+        />
+      }
+    >
       <Pressable onPress={playAnimation}>
         <LottieView
           ref={animationRef}
           source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
           autoPlay={false}
           loop={false}
-          style={{ width: 250, height: 250 }}
+          style={{
+            width: 250,
+            height: 250,
+            transform: [{ translateY: -60 }],
+            borderColor: 'red',
+            borderWidth: 1,
+          }}
+          resizeMode="contain"
         />
       </Pressable>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Pressable>
-            <Text className="text-lg font-semibold">{piggyData?.nombre}</Text>
-          </Pressable>
-        </DialogTrigger>
-        <DialogContent className="width-[90%] max-w-md">
-          <DialogHeader>
-            <DialogTitle>Nuevo Nombre</DialogTitle>
-            <DialogDescription>
-              <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
-                <TextInput
-                  style={{
-                    color:
-                      useColorScheme().colorScheme === 'dark'
-                        ? 'white'
-                        : 'black',
-                    fontSize: 20,
-                    textAlign: 'center',
-                  }}
-                  returnKeyType="next"
-                  onChangeText={setName}
-                  value={name}
-                  placeholder={piggyData?.nombre}
-                  placeholderTextColor={
-                    useColorScheme().colorScheme === 'dark' ? 'white' : 'black'
-                  }
-                />
-              </View>
-            </DialogDescription>
-          </DialogHeader>
-          <View className="grid gap-4">
-            <View className="grid gap-3"></View>
-            <View className="grid gap-3"></View>
-          </View>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                onPress={() => {
-                  onSubmit()
-                }}
-              >
-                <Text>Cambiar Nombre</Text>
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
+      <PiggyNameDialog
+        piggyName={piggyData?.nombre}
+        changePiggyNameFn={changePiggyName}
+      />
       <Text className="text-lg font-semibold">XP: {piggyData?.xp}</Text>
       <Text className="text-lg font-semibold">Nivel: {level}</Text>
       <FlatList
+        scrollEnabled={false}
         data={piggyData?.objetivos || []}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -111,7 +93,64 @@ const Piggy = () => {
           />
         )}
       />
-    </View>
+    </Container>
+  )
+}
+
+const PiggyNameDialog = ({
+  piggyName,
+  changePiggyNameFn,
+}: PiggyNameDialogProps) => {
+  const colorScheme = useColorScheme()
+  const [name, setName] = useState(piggyName || 'Piggy')
+  const onSubmit = async () => {
+    try {
+      toastService.show('Cambiando nombre...', 'info')
+      await changePiggyNameFn(name)
+      await piggyService.checkObjective('piggy_edit')
+      toastService.show('Nombre cambiado con éxito', 'success')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Pressable>
+          <Text className="text-lg font-semibold">{piggyName}</Text>
+        </Pressable>
+      </DialogTrigger>
+      <DialogContent className="w-[80%]">
+        <DialogHeader>
+          <DialogTitle>Cambiar Nombre</DialogTitle>
+          <DialogDescription>
+            <View className="items-center justify-center w-[100%] h-[64px] border-b-2 border-b-pink-300">
+              <Input
+                style={{
+                  borderWidth: 0,
+                  backgroundColor: 'transparent',
+                  fontSize: 20,
+                }}
+                returnKeyType="next"
+                onChangeText={setName}
+                value={name}
+              />
+            </View>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              onPress={() => {
+                onSubmit()
+              }}
+            >
+              <Text>Cambiar Nombre</Text>
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

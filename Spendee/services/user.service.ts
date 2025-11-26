@@ -94,7 +94,7 @@ export class UserService {
         return
       }
 
-      const response = await codeService.getCode(user.uid || publicProfile.uid)
+      const response = await codeService.getCode()
       if (response.status === 200) {
         const url = response.data.redirect
         Linking.openURL(url)

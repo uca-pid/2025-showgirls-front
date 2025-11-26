@@ -5,10 +5,8 @@ export interface CodeResponse {
 }
 
 class CodeService {
-  public async getCode(userId: string) {
-    return await ApiService.post<CodeResponse>('/oauth/code', {
-      userId: userId,
-    })
+  public async getCode() {
+    return await ApiService.post<CodeResponse>('/oauth/code')
   }
 }
 
