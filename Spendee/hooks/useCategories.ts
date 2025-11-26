@@ -45,24 +45,29 @@ export default function useCategories(filters?: CategoryFilters) {
       queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
     },
   })
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['expenseDetail'], exact: false })
+    queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
+    queryClient.invalidateQueries({ queryKey: ['expensesByCategory'], exact: false })
+    queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+    queryClient.invalidateQueries({ queryKey: ['categoriesChart'], exact: false })
+    queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
+  }
+
   const { mutateAsync: deleteCategory } = useMutation({
     mutationFn: categoryService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['expenseDetail'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['expenses'], exact: false })
-      queryClient.invalidateQueries({
-        queryKey: ['expensesByCategory'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
-      queryClient.invalidateQueries({
-        queryKey: ['categoriesChart'],
-        exact: false,
-      })
-      queryClient.invalidateQueries({ queryKey: ['balance'], exact: false })
+      invalidateAll()
+    },
+  })
+
+  const { mutateAsync: updateCategory } = useMutation({
+    mutationFn: (args: {
+      id: number
+      body: { categoria: string; descripcion: string; icono: string; color: string }
+    }) => categoryService.update(args.id, args.body),
+    onSuccess: () => {
+      invalidateAll()
     },
   })
 
@@ -72,6 +77,7 @@ export default function useCategories(filters?: CategoryFilters) {
     refetch,
     addCategory,
     deleteCategory,
+    updateCategory,
     ...rest,
   }
 }

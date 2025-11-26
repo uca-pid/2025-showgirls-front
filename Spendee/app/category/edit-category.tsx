@@ -13,7 +13,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Trash2 } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { Alert, FlatList, Pressable, View } from 'react-native'
-import ApiService from '../../services/api.service'
+import categoryService from '../../services/category.service'
 import piggyService from '@/services/piggy.service'
 
 const EditCategory = () => {
@@ -39,7 +39,7 @@ const EditCategory = () => {
   const { moveExpenses, isRefetching: refetchingExpenses } = useExpenses(
     user ? user.uid : '',
   )
-  const { deleteCategory, isRefetching: refetchingCategories } = useCategories()
+  const { deleteCategory, updateCategory, isRefetching: refetchingCategories } = useCategories()
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
     toastService.show(message, type === 'success' ? 'success' : undefined)
@@ -56,11 +56,14 @@ const EditCategory = () => {
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
-      const response = await ApiService.put(`/modifyCategory/${categoryId}`, {
-        categoria: name,
-        descripcion: description,
-        icono: icon,
-        color: colorOptions[color].hex,
+      await updateCategory({
+        id: Number(categoryId),
+        body: {
+          categoria: name,
+          descripcion: description,
+          icono: icon,
+          color: colorOptions[color].hex,
+        },
       })
       await piggyService.checkObjective('category_edit')
 
@@ -84,7 +87,9 @@ const EditCategory = () => {
           text: 'Eliminar categoría',
           style: 'destructive',
           onPress: async () => {
+            console.log('Deleting category', categoryId)
             await moveExpenses(Number(categoryId))
+            console.log('CategoryId to delete', categoryId)
             await deleteCategory(Number(categoryId))
             toastService.show('Categoría eliminada con éxito', 'success')
             router.back()

@@ -16,14 +16,14 @@ WebBrowser.maybeCompleteAuthSession()
 
 const SOCIAL_CONNECTION_STRATEGIES = [
   {
-    type: 'oauth_apple',
-    source: { uri: 'https://img.clerk.com/static/apple.png?width=160' },
-    useTint: true,
-  },
-  {
     type: 'oauth_google',
     source: { uri: 'https://img.clerk.com/static/google.png?width=160' },
     useTint: false,
+  },
+  {
+    type: 'oauth_apple',
+    source: { uri: 'https://img.clerk.com/static/apple.png?width=160' },
+    useTint: true,
   },
   {
     type: 'oauth_github',
@@ -36,9 +36,9 @@ export function SocialConnections() {
   const { colorScheme } = useColorScheme();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // Use the web/expo client ID as the primary clientId. For native standalone apps
-    // you can add the platform-specific client IDs in env and adjust if needed.
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    //clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     scopes: ['profile', 'email'],
   })
 
