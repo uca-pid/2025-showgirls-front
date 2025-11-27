@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
-import piggyService from '@/services/piggy.service'
+import usePiggy from '@/hooks/usePiggy'
 import { router } from 'expo-router'
 import {
   Paperclip,
@@ -22,7 +22,7 @@ import {
   Wrench,
 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { FlatList, Pressable, View } from 'react-native'
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
 
 const iconOptions = [
   { icon: Wrench, name: 'Wrench' },
@@ -65,6 +65,8 @@ const index = () => {
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('')
   const [color, setColor] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updateObjective } = usePiggy()
 
   const { addCategory, isLoading } = useCategories()
 
@@ -80,6 +82,7 @@ const index = () => {
   }
 
   const handleAddCategory = async () => {
+    setIsSubmitting(true)
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
@@ -89,11 +92,13 @@ const index = () => {
         color: colorOptions[color].hex,
         descripcion: description,
       })
-      await piggyService.checkObjective('category')
+      await updateObjective('category')
       showToast('Categoría agregada correctamente', 'success')
       router.back()
     } catch (error) {
       showToast('Error al agregar categoría')
+    } finally {
+      setIsSubmitting(false)
     }
   }
   return (
@@ -160,7 +165,11 @@ const index = () => {
       />
 
       <Button onPress={() => handleAddCategory()}>
-        <Text>Agregar categoría</Text>
+        {isSubmitting ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          <Text className="text-white font-semibold">Agregar categoría</Text>
+        )}
       </Button>
     </Section>
   )

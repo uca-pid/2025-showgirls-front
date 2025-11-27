@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function usePiggy() {
   const queryClient = useQueryClient()
+
   const {
     data: piggyData,
     refetch,
@@ -16,6 +17,13 @@ export default function usePiggy() {
     },
   })
 
+  const { mutateAsync: updateObjective } = useMutation({
+    mutationFn: (action: string) => piggyService.checkObjective(action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['piggy'] })
+    },
+  })
+
   const { mutateAsync: changePiggyName } = useMutation({
     mutationFn: async (name: any) => await piggyService.updatePiggyName(name),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['piggy'] }),
@@ -25,15 +33,17 @@ export default function usePiggy() {
     await piggyService.updateAvatar(avatarId)
     await refetch()
   }
+
   const level = piggyData ? Math.floor(piggyData.xp / 5) : 1
 
   return {
     piggyData,
     level,
-    refetch,
     isLoading,
+    refetch,
     changePiggyName,
     updateAvatar,
+    updateObjective,
     ...rest,
   }
 }

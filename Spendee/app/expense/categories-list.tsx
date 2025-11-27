@@ -3,7 +3,7 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
-import piggyService from '@/services/piggy.service'
+import usePiggy from '@/hooks/usePiggy'
 import { router, useLocalSearchParams } from 'expo-router'
 import {
   BookOpen,
@@ -58,6 +58,7 @@ const CategoriesList = () => {
   const { categoriesData } = useCategories()
   const { expenseId } = useLocalSearchParams()
   const { updateExpense } = useExpenseDetail(Number(expenseId))
+  const { updateObjective } = usePiggy()
 
   return (
     <View className="w-full h-screen bg-background items-center py-4">
@@ -84,8 +85,7 @@ const CategoriesList = () => {
                   id: Number(expenseId),
                   toCategoryId: item.id,
                 })
-                await piggyService
-                  .checkObjective('expense_edit')
+                await updateObjective('expense_edit')
                   .then(() => {
                     toastService.show('Gasto actualizado con éxito', 'success')
                     router.back()

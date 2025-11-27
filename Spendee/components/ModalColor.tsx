@@ -34,7 +34,9 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
           >
             Elegí un color
           </Text>
-
+          <Text className="mb-4 text-center text-muted-foreground">
+            Subí de nivel para desbloquear más colores
+          </Text>
           <View className="flex-row flex-wrap justify-between">
             {COLOR_KEYS.map((colorKey, index) => {
               const colorId = index
@@ -56,7 +58,7 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
                       height: 50,
                       borderRadius: 999,
                       backgroundColor: COLORS[colorKey],
-                      borderWidth: isSelected ? 2 : 2,
+                      borderWidth: isSelected ? 2 : 0,
                       borderColor: isSelected ? 'gray' : 'white',
                     }}
                   />
@@ -75,7 +77,7 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
             style={{ backgroundColor: colorHex }}
             className="mt-6 p-3 rounded-xl"
           >
-            <Text className="text-center font-bold text-black">Cerrar</Text>
+            <Text className="text-center font-bold text-white">Cerrar</Text>
           </Pressable>
         </View>
       </View>

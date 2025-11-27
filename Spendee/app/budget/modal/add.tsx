@@ -4,13 +4,14 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
-import piggyService from '@/services/piggy.service'
+import usePiggy from '@/hooks/usePiggy'
 import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -32,15 +33,18 @@ export default function AddBudgetPage() {
   }
   const router = useRouter()
   const { addBudget, budgetDates } = useBudgets(userId!)
+  const { updateObjective } = usePiggy()
   const { expense, catValues } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const defaultStyles = useDefaultStyles()
   const [selectedRange, setSelectedRange] = useState({
     startDate: null as DateType | null,
     endDate: null as DateType | null,
   })
   const onSubmit = async () => {
+    setIsSubmitting(true)
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
@@ -59,13 +63,15 @@ export default function AddBudgetPage() {
           fechaFin: new Date(selectedRange.endDate as string),
           PresupuestoCategoria: JSON.parse(catValues as string),
         })
-        await piggyService.checkObjective('budget')
+        await updateObjective('budget')
         toastService.show('Presupuesto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
         router.push('/budget/history')
       } catch (error) {
         console.log(error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -169,7 +175,13 @@ export default function AddBudgetPage() {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>Añadir Presupuesto</Text>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    Añadir Presupuesto
+                  </Text>
+                )}
               </Button>
             </CardContent>
           </Card>

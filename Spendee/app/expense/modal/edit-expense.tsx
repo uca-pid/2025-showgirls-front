@@ -5,13 +5,14 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
+import usePiggy from '@/hooks/usePiggy'
 import balanceService from '@/services/balance.service'
-import piggyService from '@/services/piggy.service'
 import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -30,12 +31,15 @@ export default function EditExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
+  const { updateObjective } = usePiggy()
   const { addExpense } = useExpenses(user ? user.uid : '')
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onSubmit = async () => {
+    setIsSubmitting(true)
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
@@ -50,13 +54,15 @@ export default function EditExpensePage() {
           montoAnterior: (await balanceData).data.balance,
           categoriaId: Number(categoryId),
         })
-        await piggyService.checkObjective('expense_edit')
+        await updateObjective('expense_edit')
 
         toastService.show('Gasto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {
         console.log(error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -161,7 +167,11 @@ export default function EditExpensePage() {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>Añadir Gasto</Text>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">Editar gasto</Text>
+                )}
               </Button>
             </CardContent>
           </Card>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, View, Pressable, Image } from 'react-native'
+import { Modal, View, Pressable, Image, ActivityIndicator } from 'react-native'
 import { Text } from '@/components/ui/text'
 import { Lock } from 'lucide-react-native'
 import usePiggy from '@/hooks/usePiggy'
@@ -8,12 +8,12 @@ import { useColorScheme } from 'nativewind'
 import useThemeColor from '@/theme/useThemeColor'
 
 const AVATARS = [
+  require('@/assets/avatar/avatar0.jpg'),
   require('@/assets/avatar/avatar1.jpg'),
   require('@/assets/avatar/avatar2.jpg'),
   require('@/assets/avatar/avatar3.jpg'),
   require('@/assets/avatar/avatar4.jpg'),
   require('@/assets/avatar/avatar5.jpg'),
-  require('@/assets/avatar/avatar6.jpg'),
 ]
 
 interface AvatarModalProps {
@@ -24,17 +24,20 @@ interface AvatarModalProps {
 export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
   const { colorHex } = useThemeColor()
   const { piggyData, level, refetch } = usePiggy()
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
   const selectedAvatar = piggyData?.avatarId || 0
 
   const handleSelectAvatar = async (avatarId: number, unlocked: boolean) => {
+    setIsSubmitting(true)
     if (!unlocked) return
-
     try {
       await piggyService.updateAvatar(avatarId)
       await refetch()
       onClose()
     } catch (err) {
       console.log('Error updating avatar', err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -51,7 +54,9 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
           >
             Elegí tu avatar
           </Text>
-
+          <Text className="mb-4 text-center text-muted-foreground">
+            Subí de nivel para desbloquear más avatars
+          </Text>
           <View className="flex-row flex-wrap justify-between">
             {AVATARS.map((img, index) => {
               const avatarId = index
@@ -95,7 +100,13 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
             style={{ backgroundColor: colorHex }}
             className="mt-6 p-3 rounded-xl"
           >
-            <Text className="text-center font-bold text-black">Cerrar</Text>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" />
+            ) : (
+              <Text className="text-white font-semibold text-center">
+                Cerrar
+              </Text>
+            )}
           </Pressable>
         </View>
       </View>

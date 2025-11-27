@@ -1,5 +1,7 @@
 import Container from '@/components/Container'
 import ItemCard from '@/components/ItemCard'
+import SectionCard from '@/components/SectionCard'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -12,6 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Audio } from 'expo-av'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import usePiggy from '@/hooks/usePiggy'
@@ -27,11 +30,8 @@ import {
   useColorScheme,
   View,
 } from 'react-native'
-
-type PiggyNameDialogProps = {
-  piggyName?: string
-  changePiggyNameFn: UseMutateAsyncFunction<any, Error, string, unknown>
-}
+import { AnimatedCircularProgress } from 'react-native-circular-progress'
+import PiggyNameDialog from '@/components/PiggyNameModal'
 
 const Piggy = () => {
   const {
@@ -45,14 +45,19 @@ const Piggy = () => {
   const { colorHex } = useThemeColor()
   const animationRef = useRef<any>(null)
 
-  const playAnimation = () => {
+  const playAnimation = async () => {
     animationRef.current?.reset()
     animationRef.current?.play()
+    const soundObject = await Audio.Sound.createAsync(
+      require('@/assets/sounds/coinEffect.m4a'),
+    )
+    await soundObject.sound.playAsync()
   }
+  const xp = piggyData?.xp || 0
+  const xpForNextLevel = (level + 1) * 5 - xp
 
   return (
     <Container
-      activity={isFetching}
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
@@ -61,99 +66,88 @@ const Piggy = () => {
         />
       }
     >
-      <Pressable onPress={playAnimation}>
-        <LottieView
-          ref={animationRef}
-          source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
-          autoPlay={false}
-          loop={false}
-          style={{
-            width: 250,
-            height: 250,
-            transform: [{ translateY: -60 }],
-            borderColor: 'red',
-            borderWidth: 1,
-          }}
-          resizeMode="contain"
-        />
-      </Pressable>
-
-      <PiggyNameDialog
-        piggyName={piggyData?.nombre}
-        changePiggyNameFn={changePiggyName}
-      />
-
-      <Text className="text-lg font-semibold">XP: {piggyData?.xp}</Text>
-      <Text className="text-lg font-semibold">Nivel: {level}</Text>
-      <FlatList
-        scrollEnabled={false}
-        data={piggyData?.objetivos || []}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ItemCard
-            title={`Objetivo: ${item?.objetivo.descripcion}`}
-            description={`Progreso: ${((item.progreso / item?.objetivo.maxProgreso) * 100).toFixed(2)}%`}
+      <View className="flex-1 items-center">
+        <Pressable onPress={playAnimation}>
+          <LottieView
+            ref={animationRef}
+            source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
+            autoPlay={false}
+            loop={false}
+            style={{
+              width: 250,
+              height: 250,
+              transform: [{ translateY: -50 }],
+              position: 'relative',
+              alignSelf: 'center',
+            }}
+            resizeMode="contain"
           />
-        )}
-      />
-    </Container>
-  )
-}
-
-const PiggyNameDialog = ({
-  piggyName,
-  changePiggyNameFn,
-}: PiggyNameDialogProps) => {
-  const colorScheme = useColorScheme()
-  const [name, setName] = useState(piggyName || 'Piggy')
-  const onSubmit = async () => {
-    try {
-      toastService.show('Cambiando nombre...', 'info')
-      await changePiggyNameFn(name)
-      await piggyService.checkObjective('piggy_edit')
-      toastService.show('Nombre cambiado con éxito', 'success')
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Pressable>
-          <Text className="text-lg font-semibold">{piggyName}</Text>
         </Pressable>
-      </DialogTrigger>
-      <DialogContent className="w-[80%]">
-        <DialogHeader>
-          <DialogTitle>Cambiar Nombre</DialogTitle>
-          <DialogDescription>
-            <View className="items-center justify-center w-[100%] h-[64px] border-b-2 border-b-pink-300">
-              <Input
-                style={{
-                  borderWidth: 0,
-                  backgroundColor: 'transparent',
-                  fontSize: 20,
-                }}
-                returnKeyType="next"
-                onChangeText={setName}
-                value={name}
-              />
-            </View>
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button
-              onPress={() => {
-                onSubmit()
-              }}
+        <View className="mt-6 mb-4 gap-2 absolute top-40 items-center">
+          <PiggyNameDialog
+            piggyName={piggyData?.nombre}
+            changePiggyNameFn={changePiggyName}
+          />
+          <Badge variant="outline">
+            <Text className="text-base" numberOfLines={1}>
+              Nivel: {level}
+            </Text>
+          </Badge>
+          <Text className="text-muted-foreground" numberOfLines={1}>
+            {xpForNextLevel == 1
+              ? 'Completá 1 objetivo para subir de nivel'
+              : `Completá ${xpForNextLevel} objetivos para subir de nivel`}
+          </Text>
+        </View>
+        <FlatList
+          className="mt-6"
+          scrollEnabled={false}
+          data={piggyData?.objetivos || []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <SectionCard
+              items="center"
+              className="gap-[5px] p-3 mt-3"
+              flex="row"
+              justify="between"
             >
-              <Text>Cambiar Nombre</Text>
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              <View className="flex-1 mr-4">
+                <Text
+                  className="text-lg text-muted-foreground ml-2"
+                  numberOfLines={2}
+                >
+                  {item.objetivo.descripcion}
+                </Text>
+              </View>
+              <View className="items-center gap-2">
+                <AnimatedCircularProgress
+                  fill={(item.progreso / item?.objetivo.maxProgreso) * 100}
+                  size={60}
+                  width={10}
+                  rotation={270}
+                  tintColor="#16a34a"
+                  backgroundColor="#FFFFFF20"
+                  lineCap="round"
+                  children={() => (
+                    <Text
+                      className={'text-green-600 text-md'}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {(
+                        (item.progreso / item?.objetivo.maxProgreso) *
+                        100
+                      ).toFixed(0)}
+                      %
+                    </Text>
+                  )}
+                />
+              </View>
+            </SectionCard>
+          )}
+        />
+      </View>
+    </Container>
   )
 }
 
