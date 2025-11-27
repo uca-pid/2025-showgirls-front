@@ -26,7 +26,7 @@ import {
   Info,
   PiggyBank,
 } from 'lucide-react-native'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import {
   Alert,
   FlatList,
@@ -73,7 +73,8 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
-  const { oauthIncoming } = useContext(DeepLinkContext)
+  const { oauthIncoming, setOauthIncoming } = useContext(DeepLinkContext)
+
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
   const { currentBudget, isFetching, isRefetching } = useBudgets(
     user?.uid ?? '',
@@ -158,20 +159,31 @@ export default function HomePage() {
       ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
       : chartData
 
-  if (oauthIncoming) {
+  useEffect(() => {
+    if (!oauthIncoming) return
+
     Alert.alert(
       'Redirección a Estaller',
       'Serás redirigido a Estaller para terminar la integración',
       [
-        { text: 'Ok, ¡vamos!', onPress: () => redirectToEstaller() },
+        {
+          text: 'Ok, ¡vamos!',
+          onPress: () => {
+            setOauthIncoming(false)
+            redirectToEstaller()
+          },
+        },
         {
           text: 'No, quedarme aquí',
           style: 'destructive',
-          onPress: () => router.replace('/(tabs)'),
+          onPress: () => {
+            setOauthIncoming(false)
+            router.replace('/(tabs)')
+          },
         },
       ],
     )
-  }
+  }, [oauthIncoming])
 
   return (
     <Container

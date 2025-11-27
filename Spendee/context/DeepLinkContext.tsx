@@ -9,6 +9,7 @@ import React, {
 export const DeepLinkContext = createContext({
   oauthIncoming: false,
   deepParams: {},
+  setOauthIncoming: (_: boolean) => {},
 })
 
 export function DeepLinkProvider({ children }: PropsWithChildren) {
@@ -45,7 +46,9 @@ export function DeepLinkProvider({ children }: PropsWithChildren) {
   }, [])
 
   return (
-    <DeepLinkContext.Provider value={{ oauthIncoming, deepParams }}>
+    <DeepLinkContext.Provider
+      value={{ oauthIncoming, deepParams, setOauthIncoming }}
+    >
       {children}
     </DeepLinkContext.Provider>
   )
