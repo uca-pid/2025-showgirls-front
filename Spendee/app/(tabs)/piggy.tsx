@@ -1,47 +1,19 @@
 import Container from '@/components/Container'
-import ItemCard from '@/components/ItemCard'
+import PiggyNameDialog from '@/components/PiggyNameModal'
 import SectionCard from '@/components/SectionCard'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Audio } from 'expo-av'
 import { Text } from '@/components/ui/text'
-import { toastService } from '@/context/ToastContext'
 import usePiggy from '@/hooks/usePiggy'
-import piggyService from '@/services/piggy.service'
 import useThemeColor from '@/theme/useThemeColor'
-import { UseMutateAsyncFunction } from '@tanstack/react-query'
+import { Audio } from 'expo-av'
 import LottieView from 'lottie-react-native'
-import React, { useRef, useState } from 'react'
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  useColorScheme,
-  View,
-} from 'react-native'
+import React, { useRef } from 'react'
+import { FlatList, Pressable, RefreshControl, View } from 'react-native'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
-import PiggyNameDialog from '@/components/PiggyNameModal'
 
 const Piggy = () => {
-  const {
-    piggyData,
-    level,
-    isFetching,
-    isRefetching,
-    changePiggyName,
-    refetch,
-  } = usePiggy()
+  const { piggyData, level, isRefetching, changePiggyName, refetch } =
+    usePiggy()
   const { colorHex } = useThemeColor()
   const animationRef = useRef<any>(null)
 

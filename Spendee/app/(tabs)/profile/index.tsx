@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const { user } = useAuth()
   const [modalVisible, setModalVisible] = useState(false)
   const [colorModalVisible, setColorModalVisible] = useState(false)
-  const { piggyData } = usePiggy()
+  const { piggyData, isRefetching } = usePiggy()
   const { colorHex } = useThemeColor()
   const AVATAR_IMAGES: Record<number, any> = {
     0: require('@/assets/avatar/avatar0.jpg'),

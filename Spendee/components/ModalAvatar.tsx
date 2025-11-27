@@ -31,10 +31,9 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
     setIsSubmitting(true)
     if (!unlocked) return
     try {
+      onClose()
       await piggyService.updateAvatar(avatarId)
       await refetch()
-
-      onClose()
     } catch (err) {
       console.log('Error updating avatar', err)
     }
