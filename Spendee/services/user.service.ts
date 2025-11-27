@@ -78,8 +78,6 @@ export class UserService {
       )
       const user = userCredential.user
       const idToken = await user.getIdToken()
-      await SecureStore.setItemAsync('jwt', idToken)
-
       const publicProfile = {
         uid: user.uid,
         displayName: user.displayName,
@@ -90,6 +88,7 @@ export class UserService {
       await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
 
       if (!isOAuthFlow) {
+        await SecureStore.setItemAsync('jwt', idToken)
         router.replace('/(tabs)')
         return
       }
