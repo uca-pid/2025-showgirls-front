@@ -1,14 +1,13 @@
-import React from 'react'
-import { Modal, View, Pressable } from 'react-native'
 import { Text } from '@/components/ui/text'
-import { Lock } from 'lucide-react-native'
 import usePiggy from '@/hooks/usePiggy'
-import { useColorScheme } from 'nativewind'
 import { AVAILABLE_COLORS, AppColor } from '@/theme/colors'
 import useThemeColor from '@/theme/useThemeColor'
+import { Lock } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
+import React from 'react'
+import { Modal, Pressable, View } from 'react-native'
 
-const COLORS = AVAILABLE_COLORS
-const COLOR_KEYS = Object.keys(COLORS) as AppColor[]
+const COLOR_KEYS = Object.keys(AVAILABLE_COLORS) as AppColor[]
 
 interface ColorModalProps {
   visible: boolean
@@ -17,8 +16,7 @@ interface ColorModalProps {
 
 export default function ColorModal({ visible, onClose }: ColorModalProps) {
   const { colorHex } = useThemeColor()
-  const { piggyData, level, refetch } = usePiggy()
-  const selectedColor = 0
+  const { level } = usePiggy()
   const { color, setColor } = useThemeColor()
 
   return (
@@ -37,7 +35,7 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
           <Text className="mb-4 text-center text-muted-foreground">
             Subí de nivel para desbloquear más colores
           </Text>
-          <View className="flex-row flex-wrap justify-between">
+          <View className="flex-row flex-wrap justify-center gap-1">
             {COLOR_KEYS.map((colorKey, index) => {
               const colorId = index
               const unlocked = colorId === 0 || level >= colorId
@@ -57,7 +55,7 @@ export default function ColorModal({ visible, onClose }: ColorModalProps) {
                       width: 50,
                       height: 50,
                       borderRadius: 999,
-                      backgroundColor: COLORS[colorKey],
+                      backgroundColor: AVAILABLE_COLORS[colorKey],
                       borderWidth: isSelected ? 2 : 0,
                       borderColor: isSelected ? 'gray' : 'white',
                     }}
