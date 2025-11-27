@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Audio } from 'expo-av'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import usePiggy from '@/hooks/usePiggy'
@@ -48,9 +49,13 @@ const Piggy = () => {
   const { colorHex } = useThemeColor()
   const animationRef = useRef<any>(null)
 
-  const playAnimation = () => {
+  const playAnimation = async () => {
     animationRef.current?.reset()
     animationRef.current?.play()
+    const soundObject = await Audio.Sound.createAsync(
+      require('@/assets/sounds/coinEffect.m4a'),
+    )
+    await soundObject.sound.playAsync()
   }
   const xp = piggyData?.xp || 0
   const xpForNextLevel = (level + 1) * 5 - xp
