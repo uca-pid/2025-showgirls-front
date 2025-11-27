@@ -11,9 +11,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
-import { Linking } from 'react-native'
 import ApiService from './api.service'
-import codeService from './code.service'
 
 const showErrorToast = (title: string) => {
   toastService.show(title)
@@ -91,12 +89,6 @@ export class UserService {
         await SecureStore.setItemAsync('jwt', idToken)
         router.replace('/(tabs)')
         return
-      }
-
-      const response = await codeService.getCode()
-      if (response.status === 200) {
-        const url = response.data.redirect
-        Linking.openURL(url)
       }
     } catch (err) {
       const friendly = getFriendlyAuthMessage(err)
