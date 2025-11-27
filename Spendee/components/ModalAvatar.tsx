@@ -1,11 +1,11 @@
-import React from 'react'
-import { Modal, View, Pressable, Image, ActivityIndicator } from 'react-native'
 import { Text } from '@/components/ui/text'
-import { Lock } from 'lucide-react-native'
 import usePiggy from '@/hooks/usePiggy'
 import piggyService from '@/services/piggy.service'
-import { useColorScheme } from 'nativewind'
 import useThemeColor from '@/theme/useThemeColor'
+import { Lock } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
+import React from 'react'
+import { ActivityIndicator, Image, Modal, Pressable, View } from 'react-native'
 
 const AVATARS = [
   require('@/assets/avatar/avatar0.jpg'),
@@ -33,12 +33,12 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
     try {
       await piggyService.updateAvatar(avatarId)
       await refetch()
+
       onClose()
     } catch (err) {
       console.log('Error updating avatar', err)
-    } finally {
-      setIsSubmitting(false)
     }
+    setIsSubmitting(false)
   }
 
   return (
@@ -66,7 +66,11 @@ export default function AvatarModal({ visible, onClose }: AvatarModalProps) {
                 <Pressable
                   key={index}
                   className="w-[30%] aspect-square m-1"
-                  onPress={() => handleSelectAvatar(avatarId, unlocked)}
+                  onPress={() =>
+                    unlocked && !isSelected
+                      ? handleSelectAvatar(avatarId, unlocked)
+                      : {}
+                  }
                 >
                   <View
                     style={

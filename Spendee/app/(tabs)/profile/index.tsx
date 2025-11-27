@@ -1,19 +1,18 @@
+import Container from '@/components/Container'
 import ItemCard from '@/components/ItemCard'
+import AvatarModal from '@/components/ModalAvatar'
+import ModalColor from '@/components/ModalColor'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
+import usePiggy from '@/hooks/usePiggy'
 import userService from '@/services/user.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { router } from 'expo-router'
 import { LogOut, User2 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Alert, FlatList, Pressable, View } from 'react-native'
-import AvatarModal from '@/components/ModalAvatar'
-import { TouchableOpacity } from 'react-native'
-import usePiggy from '@/hooks/usePiggy'
-import { Button } from '@/components/ui/button'
-import ModalColor from '@/components/ModalColor'
-import useThemeColor from '@/theme/useThemeColor'
+import { Alert, FlatList, Pressable, TouchableOpacity } from 'react-native'
 
 export default function ProfilePage() {
   const { user } = useAuth()
@@ -60,7 +59,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <View className="items-center justify-center bg-background h-full">
+    <Container>
       {user ? (
         <Pressable
           onPress={() => setColorModalVisible(true)}
@@ -83,11 +82,12 @@ export default function ProfilePage() {
       ) : (
         <Text>No hay datos de perfil almacenados.</Text>
       )}
-      <Text className="text-lg font-semibold mt-[55px] boder-2 border-red-700">
+      <Text className="text-lg font-semibold mt-[30px]">
         {user?.displayName || 'Sin nombre'}
       </Text>
 
       <FlatList
+        scrollEnabled={false}
         className="w-screen p-4"
         data={menuItems}
         renderItem={({ item, index }) => (
@@ -107,6 +107,6 @@ export default function ProfilePage() {
         visible={colorModalVisible}
         onClose={() => setColorModalVisible(false)}
       />
-    </View>
+    </Container>
   )
 }
