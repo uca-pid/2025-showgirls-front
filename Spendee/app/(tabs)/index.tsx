@@ -8,6 +8,7 @@ import SectionCard from '@/components/SectionCard'
 import StreakButton from '@/components/StreakButton'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
+import { DeepLinkContext } from '@/context/DeepLinkContext'
 import useBalance from '@/hooks/useBalance'
 import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
@@ -15,6 +16,7 @@ import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
 import useStreak from '@/hooks/useStreak'
 import { getIcon } from '@/lib/getIcon'
+import { redirectToEstaller } from '@/lib/redirectToEstaller'
 import { router } from 'expo-router'
 import {
   BanknoteArrowDown,
@@ -24,8 +26,9 @@ import {
   Info,
   PiggyBank,
 } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import {
+  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -70,6 +73,7 @@ const actions = [
 
 export default function HomePage() {
   const { user } = useAuth()
+  const { oauthIncoming } = useContext(DeepLinkContext)
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
   const { currentBudget, isFetching, isRefetching } = useBudgets(
     user?.uid ?? '',
@@ -153,6 +157,21 @@ export default function HomePage() {
     selectedCategories.length > 0
       ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
       : chartData
+
+  if (oauthIncoming) {
+    Alert.alert(
+      'Redirección a Estaller',
+      'Serás redirigido a Estaller para terminar la integración',
+      [
+        { text: 'Ok, ¡vamos!', onPress: () => redirectToEstaller() },
+        {
+          text: 'No, quedarme aquí',
+          style: 'destructive',
+          onPress: () => router.replace('/(tabs)'),
+        },
+      ],
+    )
+  }
 
   return (
     <Container

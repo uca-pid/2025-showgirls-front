@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext'
+import { DeepLinkProvider } from '@/context/DeepLinkContext'
 import { ToastProvider } from '@/context/ToastContext'
 import '@/global.css'
 import { ThemeProvider as DynamicColors } from '@/theme/themeContext'
@@ -20,18 +21,20 @@ export default function RootLayout() {
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
 
   return (
-    <DynamicColors>
-      <ThemeProvider value={theme}>
-        <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <AuthGate />
-            </ToastProvider>
-          </QueryClientProvider>
-          <PortalHost />
-        </AuthProvider>
-      </ThemeProvider>
-    </DynamicColors>
+    <DeepLinkProvider>
+      <DynamicColors>
+        <ThemeProvider value={theme}>
+          <AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <ToastProvider>
+                <AuthGate />
+              </ToastProvider>
+            </QueryClientProvider>
+            <PortalHost />
+          </AuthProvider>
+        </ThemeProvider>
+      </DynamicColors>
+    </DeepLinkProvider>
   )
 }
 
@@ -45,6 +48,7 @@ function AuthGate() {
     const inAuth = segments[0] === 'sign-in' || segments[0] === 'sign-up'
 
     if (!user && !inAuth) {
+      console.log('entre sign-in')
       router.replace('/sign-in')
     }
 
