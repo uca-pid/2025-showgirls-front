@@ -1,5 +1,7 @@
 import Container from '@/components/Container'
 import ItemCard from '@/components/ItemCard'
+import SectionCard from '@/components/SectionCard'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -27,6 +29,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native'
+import { AnimatedCircularProgress } from 'react-native-circular-progress'
 
 type PiggyNameDialogProps = {
   piggyName?: string
@@ -49,6 +52,8 @@ const Piggy = () => {
     animationRef.current?.reset()
     animationRef.current?.play()
   }
+  const xp = piggyData?.xp || 0
+  const xpForNextLevel = (level + 1) * 5 - xp
 
   return (
     <Container
@@ -61,41 +66,87 @@ const Piggy = () => {
         />
       }
     >
-      <Pressable onPress={playAnimation}>
-        <LottieView
-          ref={animationRef}
-          source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
-          autoPlay={false}
-          loop={false}
-          style={{
-            width: 250,
-            height: 250,
-            transform: [{ translateY: -60 }],
-            borderColor: 'red',
-            borderWidth: 1,
-          }}
-          resizeMode="contain"
-        />
-      </Pressable>
-
-      <PiggyNameDialog
-        piggyName={piggyData?.nombre}
-        changePiggyNameFn={changePiggyName}
-      />
-
-      <Text className="text-lg font-semibold">XP: {piggyData?.xp}</Text>
-      <Text className="text-lg font-semibold">Nivel: {level}</Text>
-      <FlatList
-        scrollEnabled={false}
-        data={piggyData?.objetivos || []}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ItemCard
-            title={`Objetivo: ${item?.objetivo.descripcion}`}
-            description={`Progreso: ${((item.progreso / item?.objetivo.maxProgreso) * 100).toFixed(2)}%`}
+      <View className="flex-1 items-center">
+        <Pressable onPress={playAnimation}>
+          <LottieView
+            ref={animationRef}
+            source={require('@/assets/lottie/Piggy Bank - Coins Out.json')}
+            autoPlay={false}
+            loop={false}
+            style={{
+              width: 250,
+              height: 250,
+              transform: [{ translateY: -50 }],
+              position: 'relative',
+              alignSelf: 'center',
+            }}
+            resizeMode="contain"
           />
-        )}
-      />
+        </Pressable>
+        <View className="mt-6 mb-4 gap-2 absolute top-40 items-center">
+          <PiggyNameDialog
+            piggyName={piggyData?.nombre}
+            changePiggyNameFn={changePiggyName}
+          />
+          <Badge variant="outline">
+            <Text className="text-base" numberOfLines={1}>
+              Nivel: {level}
+            </Text>
+          </Badge>
+          <Text className="text-muted-foreground" numberOfLines={1}>
+            {xpForNextLevel == 1
+              ? 'Completá 1 objetivo para subir de nivel'
+              : `Completá ${xpForNextLevel} objetivos para subir de nivel`}
+          </Text>
+        </View>
+        <FlatList
+          className="mt-6"
+          scrollEnabled={false}
+          data={piggyData?.objetivos || []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <SectionCard
+              items="center"
+              className="gap-[5px] p-3 mt-3"
+              flex="row"
+              justify="between"
+            >
+              <View className="flex-1 mr-4">
+                <Text
+                  className="text-lg text-muted-foreground ml-2"
+                  numberOfLines={2}
+                >
+                  {item.objetivo.descripcion}
+                </Text>
+              </View>
+              <View className="items-center gap-2">
+                <AnimatedCircularProgress
+                  fill={(item.progreso / item?.objetivo.maxProgreso) * 100}
+                  size={60}
+                  width={10}
+                  rotation={270}
+                  tintColor="#16a34a"
+                  backgroundColor="#FFFFFF20"
+                  lineCap="round"
+                  children={() => (
+                    <Text
+                      className={'text-green-600 text-md'}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {(
+                        (item.progreso / item?.objetivo.maxProgreso) *
+                        100
+                      ).toFixed(0)}
+                      %
+                    </Text>
+                  )}
+                />
+              </View>
+            </SectionCard>
+          )}
+        />
+      </View>
     </Container>
   )
 }
@@ -104,7 +155,7 @@ const PiggyNameDialog = ({
   piggyName,
   changePiggyNameFn,
 }: PiggyNameDialogProps) => {
-  const colorScheme = useColorScheme()
+  const { colorHex } = useThemeColor()
   const [name, setName] = useState(piggyName || 'Piggy')
   const onSubmit = async () => {
     try {
@@ -119,15 +170,18 @@ const PiggyNameDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Pressable>
-          <Text className="text-lg font-semibold">{piggyName}</Text>
+        <Pressable className=" items-center justify-center">
+          <Text className="text-xl font-semibold">{piggyName}</Text>
         </Pressable>
       </DialogTrigger>
       <DialogContent className="w-[80%]">
         <DialogHeader>
           <DialogTitle>Cambiar Nombre</DialogTitle>
           <DialogDescription>
-            <View className="items-center justify-center w-[100%] h-[64px] border-b-2 border-b-pink-300">
+            <View
+              style={{ borderColor: colorHex }}
+              className="items-center justify-center w-[100%] h-[64px] border-b-2"
+            >
               <Input
                 style={{
                   borderWidth: 0,
