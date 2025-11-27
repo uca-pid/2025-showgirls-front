@@ -42,7 +42,7 @@ export default function SignInForm() {
 
   async function onSubmit() {
     setLoading(true)
-    await userService.login(auth, email, password, true)
+    await userService.login(auth, email, password, Boolean(isOAuthFlow))
     setLoading(false)
   }
 
