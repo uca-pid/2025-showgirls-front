@@ -4,13 +4,14 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useIncomes from '@/hooks/useIncomes'
+import usePiggy from '@/hooks/usePiggy'
 import balanceService from '@/services/balance.service'
-import piggyService from '@/services/piggy.service'
 import useThemeColor from '@/theme/useThemeColor'
 import { useRouter } from 'expo-router'
 import { useColorScheme } from 'nativewind'
 import React, { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -35,6 +36,8 @@ export default function AddExpensePage() {
   /* const [amount, setAmount] = useState(income ? (income as string) : '') */
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updateObjective } = usePiggy()
 
   const formatAmount = (value: string) => {
     if (!value) return ''
@@ -42,6 +45,7 @@ export default function AddExpensePage() {
   }
 
   const onSubmit = async () => {
+    setIsSubmitting(true)
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
@@ -55,12 +59,14 @@ export default function AddExpensePage() {
           ingreso: Number(amount),
           montoAnterior: (await balanceData).data.balance,
         })
-        await piggyService.checkObjective('income')
+        await updateObjective('income')
         toastService.show('Ingreso añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {
         console.log(error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -174,7 +180,13 @@ export default function AddExpensePage() {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>Añadir Ingreso</Text>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    Agregar ingreso
+                  </Text>
+                )}
               </Button>
             </CardContent>
           </Card>

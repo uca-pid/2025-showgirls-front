@@ -7,8 +7,8 @@ import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
 import useExpenseDetail from '@/hooks/useExpenseDetail'
+import usePiggy from '@/hooks/usePiggy'
 import { getIcon } from '@/lib/getIcon'
-import piggyService from '@/services/piggy.service'
 import { Link, router, useGlobalSearchParams, useNavigation } from 'expo-router'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react-native'
 import React, { useLayoutEffect } from 'react'
@@ -20,10 +20,11 @@ const ExpenseDetailPage = () => {
     Number(id),
   )
   const { categoriesData } = useCategories()
-
+  const { updateObjective } = usePiggy()
   const category = categoriesData.find(
     (cat) => cat.id === expenseDetailData.categoriaId,
   )
+  const [isSubmitting, setSubmitting] = React.useState(false)
 
   const navigation = useNavigation()
   useLayoutEffect(() => {
@@ -41,7 +42,7 @@ const ExpenseDetailPage = () => {
               },
               {
                 value: 'delete',
-                label: 'Eliminar gasto',
+                label: isSubmitting ? 'Eliminando...' : 'Eliminar gasto',
                 icon: Trash2,
                 destructive: true,
                 onPress: () => handleDeleteExpense(),
@@ -63,6 +64,7 @@ const ExpenseDetailPage = () => {
   }
 
   async function handleDeleteExpense() {
+    setSubmitting(true)
     Alert.alert(
       '¿Estás seguro que deseas eliminar este gasto?',
       'Esta acción es IRREVERSIBLE',
@@ -74,11 +76,13 @@ const ExpenseDetailPage = () => {
           onPress: async () => {
             try {
               await deleteExpense(Number(id))
-              await piggyService.checkObjective('delete_expense')
+              await updateObjective('delete_expense')
               router.back()
             } catch (error) {
               console.log(error)
               toastService.show('Error al eliminar gasto', 'error')
+            } finally {
+              setSubmitting(false)
             }
           },
         },

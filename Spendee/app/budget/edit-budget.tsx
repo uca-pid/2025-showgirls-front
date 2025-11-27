@@ -5,12 +5,13 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useBudgets from '@/hooks/useBudget'
 import useBudgetsDetail from '@/hooks/useBudgetDetail'
-import piggyService from '@/services/piggy.service'
+import usePiggy from '@/hooks/usePiggy'
 import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -29,6 +30,7 @@ const EditBudget = () => {
   const userId = user?.uid
   const router = useRouter()
   const { budgetId } = useLocalSearchParams()
+  const { updateObjective } = usePiggy()
 
   const { colorHex } = useThemeColor()
 
@@ -51,6 +53,7 @@ const EditBudget = () => {
   })
   const [amountChanged, setAmountChanged] = useState(false)
   const [error, setError] = useState('')
+  const [isSubmitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     if (budgetDetailData) {
@@ -102,6 +105,7 @@ const EditBudget = () => {
       return
     }
     try {
+      setSubmitting(true)
       await modifyBudget({
         budgetId: parseInt(budgetId as string),
         body: {
@@ -112,13 +116,15 @@ const EditBudget = () => {
           PresupuestoCategoria: JSON.parse(categoriesValues),
         },
       })
-      await piggyService.checkObjective('budget_update')
+      await updateObjective('budget_update')
 
       toastService.show('Presupuesto modificado con éxito', 'success')
       router.dismissAll()
       router.push('/budget/history')
     } catch (err) {
       console.log(err)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -211,7 +217,13 @@ const EditBudget = () => {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>Editar Presupuesto</Text>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    Editar presupuesto
+                  </Text>
+                )}
               </Button>
             </CardContent>
           </Card>

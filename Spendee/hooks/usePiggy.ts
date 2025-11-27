@@ -25,6 +25,12 @@ export default function usePiggy() {
     await piggyService.updateAvatar(avatarId)
     await refetch()
   }
+
+  const updateObjective = async (action: string) => {
+    await piggyService.checkObjective(action)
+    await refetch()
+  }
+
   const level = piggyData ? Math.floor(piggyData.xp / 5) : 1
 
   return {
@@ -34,6 +40,7 @@ export default function usePiggy() {
     isLoading,
     changePiggyName,
     updateAvatar,
+    updateObjective,
     ...rest,
   }
 }

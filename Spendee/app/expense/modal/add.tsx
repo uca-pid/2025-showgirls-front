@@ -5,14 +5,15 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
+import usePiggy from '@/hooks/usePiggy'
 import balanceService from '@/services/balance.service'
-import piggyService from '@/services/piggy.service'
 import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -35,6 +36,8 @@ export default function AddExpensePage() {
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updateObjective } = usePiggy()
 
   const formatAmount = (value: string) => {
     if (!value) return ''
@@ -48,21 +51,27 @@ export default function AddExpensePage() {
     } else if (!categoryId) {
       setError('Selecciona una categoría')
       return
-    } else {
-      try {
-        await addExpense({
-          usuarioId: userId,
-          gasto: Number(amount),
-          montoAnterior: (await balanceData).data.balance,
-          categoriaId: Number(categoryId),
-        })
-        await piggyService.checkObjective('expense')
-        toastService.show('Gasto añadido con éxito', 'success')
-        router.dismissAll()
-        router.replace('/')
-      } catch (error) {
-        console.log(error)
-      }
+    }
+
+    try {
+      setIsSubmitting(true) // <-- empieza el loading
+
+      await addExpense({
+        usuarioId: userId,
+        gasto: Number(amount),
+        montoAnterior: (await balanceData).data.balance,
+        categoriaId: Number(categoryId),
+      })
+
+      await updateObjective('expense') // <-- acá se verá el spinner
+
+      toastService.show('Gasto añadido con éxito', 'success')
+      router.dismissAll()
+      router.replace('/')
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsSubmitting(false) // <-- termina el loading sí o sí
     }
   }
 
@@ -179,7 +188,13 @@ export default function AddExpensePage() {
                 className="w-full"
                 onPress={onSubmit}
               >
-                <Text>Añadir Gasto</Text>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    Agregar gasto
+                  </Text>
+                )}
               </Button>
             </CardContent>
           </Card>
