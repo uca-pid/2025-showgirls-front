@@ -2,7 +2,7 @@ import Container from '@/components/Container'
 import ItemCard from '@/components/ItemCard'
 import AvatarModal from '@/components/ModalAvatar'
 import ModalColor from '@/components/ModalColor'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
 import { auth } from '@/firebase.config'
@@ -75,7 +75,12 @@ export default function ProfilePage() {
               style={{ borderColor: colorHex }}
               className="h-24 w-24 border-2 top-20"
             >
-              <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 0]} />
+              <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId!]} />
+              <AvatarFallback>
+                <Text className="text-3xl font-semibold">
+                  {user.displayName?.at(0)}
+                </Text>
+              </AvatarFallback>
             </Avatar>
           </TouchableOpacity>
         </Pressable>
