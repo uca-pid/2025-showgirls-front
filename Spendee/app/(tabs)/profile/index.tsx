@@ -22,12 +22,12 @@ export default function ProfilePage() {
   const { piggyData } = usePiggy()
   const { colorHex } = useThemeColor()
   const AVATAR_IMAGES: Record<number, any> = {
+    0: require('@/assets/avatar/avatar0.jpg'),
     1: require('@/assets/avatar/avatar1.jpg'),
     2: require('@/assets/avatar/avatar2.jpg'),
     3: require('@/assets/avatar/avatar3.jpg'),
     4: require('@/assets/avatar/avatar4.jpg'),
     5: require('@/assets/avatar/avatar5.jpg'),
-    6: require('@/assets/avatar/avatar6.jpg'),
   }
   const menuItems = [
     {
@@ -76,7 +76,7 @@ export default function ProfilePage() {
               style={{ borderColor: colorHex }}
               className="h-24 w-24 border-2 top-20"
             >
-              <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 1]} />
+              <AvatarImage source={AVATAR_IMAGES[piggyData?.avatarId || 0]} />
             </Avatar>
           </TouchableOpacity>
         </Pressable>
