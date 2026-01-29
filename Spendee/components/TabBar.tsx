@@ -1,16 +1,20 @@
 import { Text } from '@/components/ui/text'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import { BlurView } from 'expo-blur'
-import { ArrowLeftRight, Home, LucideIcon, User } from 'lucide-react-native'
+import { Clock, Home, LucideIcon, PiggyBank, User } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
 import React from 'react'
 import { Pressable } from 'react-native'
+import useThemeColor from '@/theme/useThemeColor'
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const icons: Record<string, LucideIcon> = {
     index: Home,
     'profile/index': User,
-    movements: ArrowLeftRight,
+    movements: Clock,
+    piggy: PiggyBank,
   }
+  const { colorHex } = useThemeColor()
   return (
     <BlurView
       experimentalBlurMethod="dimezisBlurView"
@@ -57,11 +61,15 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             className="flex-1 justify-center items-center"
           >
             {React.createElement(icons[route.name], {
-              color: isFocused ? '#f9a8d4' : '#fff',
+              color: isFocused
+                ? colorHex
+                : useColorScheme().colorScheme === 'dark'
+                  ? 'white'
+                  : 'gray',
             })}
             <Text
               numberOfLines={1}
-              className={isFocused ? 'text-pink-300' : 'text-white'}
+              style={{ color: isFocused ? colorHex : 'gray' }}
             >
               {label.toString()}
             </Text>

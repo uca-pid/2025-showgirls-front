@@ -1,26 +1,26 @@
+import { LucideIcon } from 'lucide-react-native'
 import React, { useEffect } from 'react'
 import { useColorScheme, View } from 'react-native'
-import { Text } from './ui/text'
-import { LucideIcon } from 'lucide-react-native'
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
-  withTiming,
+  useSharedValue,
   withDelay,
   withSequence,
+  withTiming,
 } from 'react-native-reanimated'
-import { DarkTheme, useTheme } from '@react-navigation/native'
+import { Text } from './ui/text'
 
 export interface AppToastProps {
   message: string
   icon: LucideIcon
-  type?: 'error' | 'success'
+  type?: 'error' | 'success' | 'info'
 }
 
 const AppToast = ({ message, icon: Icon, type = 'error' }: AppToastProps) => {
   const colorScheme = useColorScheme()
   const top = useSharedValue(-100)
-  const color = type === 'error' ? 'red' : 'green'
+  const color =
+    type === 'error' ? 'red' : type === 'success' ? 'green' : '#2F86EB'
 
   useEffect(() => {
     top.value = withSequence(
@@ -45,7 +45,7 @@ const AppToast = ({ message, icon: Icon, type = 'error' }: AppToastProps) => {
           borderRadius: 8,
           borderLeftWidth: 6,
           borderLeftColor: color,
-          backgroundColor: colorScheme === 'dark' ? 'black' : 'white',
+          backgroundColor: colorScheme === 'dark' ? '#161616' : 'white',
           shadowColor: colorScheme === 'dark' ? 'black' : undefined,
           shadowRadius: 5,
           shadowOpacity: 0.2,
@@ -65,7 +65,6 @@ const AppToast = ({ message, icon: Icon, type = 'error' }: AppToastProps) => {
           style={{
             color: color,
             fontWeight: 300,
-            lineHeight: 0,
           }}
         >
           {message}

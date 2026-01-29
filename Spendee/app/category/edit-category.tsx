@@ -12,8 +12,14 @@ import { iconOptions } from '@/lib/icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Trash2 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Alert, FlatList, Pressable, View } from 'react-native'
-import ApiService from '../../services/api.service'
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Pressable,
+  View,
+} from 'react-native'
+import usePiggy from '@/hooks/usePiggy'
 
 const EditCategory = () => {
   const { user } = useAuth()
@@ -28,6 +34,7 @@ const EditCategory = () => {
   const [description, setDescription] = useState(
     String(categoryDescription) || '',
   )
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [icon, setIcon] = useState(String(categoryIcon) || '')
   const [color, setColor] = useState(
     colorOptions.findIndex(
@@ -38,7 +45,12 @@ const EditCategory = () => {
   const { moveExpenses, isRefetching: refetchingExpenses } = useExpenses(
     user ? user.uid : '',
   )
-  const { deleteCategory, isRefetching: refetchingCategories } = useCategories()
+  const { updateObjective } = usePiggy()
+  const {
+    deleteCategory,
+    updateCategory,
+    isRefetching: refetchingCategories,
+  } = useCategories()
 
   const showToast = (message: string, type: 'error' | 'success' = 'error') => {
     toastService.show(message, type === 'success' ? 'success' : undefined)
@@ -52,21 +64,28 @@ const EditCategory = () => {
   }
 
   const modifyCategory = async () => {
+    setIsSubmitting(true)
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
-      const response = await ApiService.put(`/modifyCategory/${categoryId}`, {
-        categoria: name,
-        descripcion: description,
-        icono: icon,
-        color: colorOptions[color].hex,
+      await updateCategory({
+        id: Number(categoryId),
+        body: {
+          categoria: name,
+          descripcion: description,
+          icono: icon,
+          color: colorOptions[color].hex,
+        },
       })
+      await updateObjective('category_edit')
 
       alert('Categoría modificada con éxito')
 
       router.back()
     } catch (error) {
       alert('No se pudo modificar la categoría')
+    } finally {
+      setIsSubmitting(false)
     }
   }
   const handleDeleteCategory = async () => {
@@ -82,7 +101,9 @@ const EditCategory = () => {
           text: 'Eliminar categoría',
           style: 'destructive',
           onPress: async () => {
+            console.log('Deleting category', categoryId)
             await moveExpenses(Number(categoryId))
+            console.log('CategoryId to delete', categoryId)
             await deleteCategory(Number(categoryId))
             toastService.show('Categoría eliminada con éxito', 'success')
             router.back()
@@ -137,7 +158,7 @@ const EditCategory = () => {
               text=""
               onPress={() => setIcon(item.name)}
               className={
-                icon === item.name ? 'rounded-full bg-pink-300/50' : ''
+                icon === item.name ? 'rounded-full border-2 border-white' : ''
               }
             />
           )}
@@ -149,7 +170,11 @@ const EditCategory = () => {
         />
       </View>
       <Button onPress={() => modifyCategory()}>
-        <Text>Editar categoría</Text>
+        {isSubmitting ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          <Text className="text-white font-semibold">Editar categoría</Text>
+        )}
       </Button>
       <Button onPress={() => handleDeleteCategory()} variant={'destructive'}>
         <Trash2 size={20} color="white" />

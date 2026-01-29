@@ -1,26 +1,34 @@
+import BudgetCard from '@/components/BudgetCard'
 import Container from '@/components/Container'
 import DonutChart from '@/components/DonutChart'
 import IconButton from '@/components/IconButton'
 import ItemCard from '@/components/ItemCard'
 import Section from '@/components/Section'
 import SectionCard from '@/components/SectionCard'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import StreakButton from '@/components/StreakButton'
 import { Text } from '@/components/ui/text'
 import { useAuth } from '@/context/AuthContext'
+import { DeepLinkContext } from '@/context/DeepLinkContext'
 import useBalance from '@/hooks/useBalance'
+import useBudgets from '@/hooks/useBudget'
 import useCategories from '@/hooks/useCategories'
 import useChartData from '@/hooks/useChartData'
 import useExpenses from '@/hooks/useExpenses'
+import useStreak from '@/hooks/useStreak'
 import { getIcon } from '@/lib/getIcon'
+import { redirectToEstaller } from '@/lib/redirectToEstaller'
 import { router } from 'expo-router'
 import {
   BanknoteArrowDown,
   BanknoteArrowUp,
+  Car,
   ChevronRight,
   Info,
+  PiggyBank,
 } from 'lucide-react-native'
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import {
+  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -31,7 +39,7 @@ import {
 const actions = [
   {
     text: 'Ingreso',
-    textColor: 'white',
+    textColor: 'text-muted-foreground',
     icon: BanknoteArrowUp,
     onPress: () => {
       router.push('/income/modal/add')
@@ -39,17 +47,37 @@ const actions = [
   },
   {
     text: 'Egreso',
-    textColor: 'white',
+    textColor: 'text-muted-foreground',
     icon: BanknoteArrowDown,
     onPress: () => {
       router.push('/expense/modal/add')
+    },
+  },
+  {
+    text: 'Presupuesto',
+    textColor: 'text-muted-foreground',
+    icon: PiggyBank,
+    onPress: () => {
+      router.push('/budget/modal/add')
+    },
+  },
+  {
+    text: 'Estaller',
+    textColor: 'text-muted-foreground',
+    icon: Car,
+    onPress: () => {
+      router.push('/expense/modal/add-service')
     },
   },
 ]
 
 export default function HomePage() {
   const { user } = useAuth()
+  const { oauthIncoming } = useContext(DeepLinkContext)
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
+  const { currentBudget, isFetching, isRefetching } = useBudgets(
+    user?.uid ?? '',
+  )
   const monthNames = useMemo(
     () => [
       'Enero',
@@ -96,10 +124,15 @@ export default function HomePage() {
     refetch: refetchChart,
   } = useChartData({ month: currentMonthIndex + 1, year: currentYear })
 
-  const formattedBalance = new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(balanceData.balance)
+  const {
+    streakData,
+    refetch: refetchStreak,
+    isFetching: fetchingStreak,
+  } = useStreak(user?.uid ?? '')
+
+  const formattedBalance = new Intl.NumberFormat('es-AR').format(
+    balanceData.balance,
+  )
 
   const refreshing =
     fetchingBalance || fetchingCategories || fetchingExpenses || fetchingChart
@@ -109,6 +142,7 @@ export default function HomePage() {
     refetchCategories()
     refetchExpenses()
     refetchChart()
+    refetchStreak()
   }
 
   function toggleCategory(categoryId: number) {
@@ -124,6 +158,21 @@ export default function HomePage() {
       ? chartData.filter((c) => selectedCategories.includes(Number(c.id)))
       : chartData
 
+  if (oauthIncoming) {
+    Alert.alert(
+      'Redirección a Estaller',
+      'Serás redirigido a Estaller para terminar la integración',
+      [
+        { text: 'Ok, ¡vamos!', onPress: () => redirectToEstaller() },
+        {
+          text: 'No, quedarme aquí',
+          style: 'destructive',
+          onPress: () => router.replace('/(tabs)'),
+        },
+      ],
+    )
+  }
+
   return (
     <Container
       activity={refreshing}
@@ -137,32 +186,20 @@ export default function HomePage() {
     >
       <Section>
         <SectionCard justify="between" flex="row">
-          <View>
-            <Pressable onPress={() => router.push('/movements')}>
-              <Text className="text-muted-foreground">Tu balance</Text>
-              <Text
-                className={
-                  balanceData.balance.toString().length > 8
-                    ? 'text-2xl'
-                    : 'text-4xl'
-                }
-                numberOfLines={1}
-              >
-                {'$ ' + formattedBalance}
-              </Text>
-            </Pressable>
-          </View>
-          <Avatar
-            alt="avatar"
-            className="size-16"
-            onTouchEnd={() => router.push('/profile')}
-          >
-            <AvatarImage
-              source={{
-                uri: 'https://avatars.githubusercontent.com/u/128428130?s=400&u=154b02377441fc7a0291585f397c42ec976eebb0&v=4 ',
-              }}
-            />
-          </Avatar>
+          <Pressable onPress={() => router.push('/movements')}>
+            <Text className="text-muted-foreground">Tu balance</Text>
+            <Text
+              className={
+                balanceData.balance.toString().length > 8
+                  ? 'text-2xl'
+                  : 'text-4xl'
+              }
+              numberOfLines={1}
+            >
+              {'$ ' + formattedBalance}
+            </Text>
+          </Pressable>
+          <StreakButton streak={streakData} />
         </SectionCard>
       </Section>
 
@@ -174,7 +211,6 @@ export default function HomePage() {
           </Text>
         </SectionCard>
       )}
-
       <Section
         title="Acciones Rápidas"
         /*actionIcon={Pencil}
@@ -197,6 +233,22 @@ export default function HomePage() {
             )}
           />
         </SectionCard>
+      </Section>
+
+      <Section
+        title="Presupuesto Actual"
+        actionText="Ver más"
+        actionIcon={ChevronRight}
+        onActionPress={() => router.push('/budget/history')}
+        activity={isFetching || isRefetching}
+      >
+        {currentBudget ? (
+          <BudgetCard budget={currentBudget} />
+        ) : (
+          <Text className="text-center text-muted-foreground text-lg mt-4">
+            No tenés un presupuesto activos
+          </Text>
+        )}
       </Section>
       <Section
         title={`Mis Gastos de ${monthLabel}`}
@@ -240,7 +292,6 @@ export default function HomePage() {
                     />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}

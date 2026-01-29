@@ -5,11 +5,15 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
+import usePiggy from '@/hooks/usePiggy'
 import balanceService from '@/services/balance.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
+import { useColorScheme } from 'nativewind'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -20,6 +24,7 @@ import {
 } from 'react-native'
 
 export default function AddExpensePage() {
+  const { colorHex } = useThemeColor()
   const user = auth.currentUser
   if (user) {
     var balanceData = balanceService.findByUserId(user.uid)
@@ -31,6 +36,8 @@ export default function AddExpensePage() {
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updateObjective } = usePiggy()
 
   const formatAmount = (value: string) => {
     if (!value) return ''
@@ -44,20 +51,27 @@ export default function AddExpensePage() {
     } else if (!categoryId) {
       setError('Selecciona una categoría')
       return
-    } else {
-      try {
-        await addExpense({
-          usuarioId: userId,
-          gasto: Number(amount),
-          montoAnterior: (await balanceData).data.balance,
-          categoriaId: Number(categoryId),
-        })
-        toastService.show('Gasto añadido con éxito', 'success')
-        router.dismissAll()
-        router.replace('/')
-      } catch (error) {
-        console.log(error)
-      }
+    }
+
+    try {
+      setIsSubmitting(true) // <-- empieza el loading
+
+      await addExpense({
+        usuarioId: userId,
+        gasto: Number(amount),
+        montoAnterior: (await balanceData).data.balance,
+        categoriaId: Number(categoryId),
+      })
+
+      await updateObjective('expense') // <-- acá se verá el spinner
+
+      toastService.show('Gasto añadido con éxito', 'success')
+      router.dismissAll()
+      router.replace('/')
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsSubmitting(false) // <-- termina el loading sí o sí
     }
   }
 
@@ -79,28 +93,47 @@ export default function AddExpensePage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
-                className="text-lg color-pink-300"
+                style={{ color: colorHex }}
+                className="text-lg"
                 onPress={() => router.back()}
               >
                 Cerrar
               </Text>
-              <Text className="font-semibold text-lg">Nuevo Gasto</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
+              <Text
+                style={{ color: colorHex }}
+                className="font-semibold text-lg"
+              >
+                Nuevo Gasto
+              </Text>
+              <Text
+                style={{ color: colorHex }}
+                className="text-lg"
+                onPress={onSubmit}
+              >
                 Agregar
               </Text>
             </CardHeader>
 
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                  style={{ borderColor: colorHex }}
+                >
                   <TextInput
                     style={{
+                      color:
+                        useColorScheme().colorScheme === 'dark'
+                          ? 'white'
+                          : 'black',
                       fontSize: 42,
-                      color: 'white',
                       textAlign: 'center',
                       width: '100%',
                       height: '100%',
+                      paddingBottom: 10,
                     }}
                     maxLength={9}
                     keyboardType="number-pad"
@@ -109,7 +142,11 @@ export default function AddExpensePage() {
                     onChangeText={setAmount}
                     value={amount}
                     placeholder="0"
-                    placeholderTextColor="white"
+                    placeholderTextColor={
+                      useColorScheme().colorScheme === 'dark'
+                        ? 'white'
+                        : 'black'
+                    }
                   />
                 </View>
               </View>
@@ -138,11 +175,26 @@ export default function AddExpensePage() {
                     Seleccionar
                   </Text>
                 )}
-                <ChevronDown color="white" size={18} />
+                <ChevronDown
+                  color={
+                    useColorScheme().colorScheme === 'dark' ? 'white' : 'black'
+                  }
+                  size={18}
+                />
               </Button>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
-                <Text>Añadir Gasto</Text>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    Agregar gasto
+                  </Text>
+                )}
               </Button>
             </CardContent>
           </Card>

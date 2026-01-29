@@ -16,23 +16,23 @@ export interface IncomesByMonthResponse {
 
 class IncomeService {
   public async findById(incomeId: number) {
-    return await ApiService.get<IncomeResponse>(`/ingresoPorId/${incomeId}`)
+    return await ApiService.get<IncomeResponse>(`/income/byId/${incomeId}`)
   }
 
   public async findByUserId(userId: string, filters: IncomeFilters) {
-    return await ApiService.get<IncomeResponse[]>('/ingreso', {
+    return await ApiService.get<IncomeResponse[]>('/income', {
       params: { userId, ...filters },
     })
   }
 
   public async findIncomesByMonth(userId: string) {
-    return await ApiService.get<IncomesByMonthResponse[]>('/ingreso/agrupado', {
+    return await ApiService.get<IncomesByMonthResponse[]>('/income/grouped', {
       params: { userId },
     })
   }
 
   public async create(body: any) {
-    return await ApiService.post('/ingreso', body)
+    return await ApiService.post('/income', body)
   }
 }
 

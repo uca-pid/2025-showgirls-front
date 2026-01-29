@@ -5,11 +5,14 @@ import { toastService } from '@/context/ToastContext'
 import { auth } from '@/firebase.config'
 import useCategories from '@/hooks/useCategories'
 import useExpenses from '@/hooks/useExpenses'
+import usePiggy from '@/hooks/usePiggy'
 import balanceService from '@/services/balance.service'
+import useThemeColor from '@/theme/useThemeColor'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -20,6 +23,7 @@ import {
 } from 'react-native'
 
 export default function EditExpensePage() {
+  const { colorHex } = useThemeColor()
   const user = auth.currentUser
   if (user) {
     var balanceData = balanceService.findByUserId(user.uid)
@@ -27,12 +31,15 @@ export default function EditExpensePage() {
   }
   const router = useRouter()
   const { categoriesData } = useCategories()
+  const { updateObjective } = usePiggy()
   const { addExpense } = useExpenses(user ? user.uid : '')
   const { categoryId, expense } = useLocalSearchParams()
   const [amount, setAmount] = useState(expense ? (expense as string) : '')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onSubmit = async () => {
+    setIsSubmitting(true)
     if (!amount || Number(amount) <= 0) {
       setError('Ingresa un monto')
       return
@@ -47,11 +54,15 @@ export default function EditExpensePage() {
           montoAnterior: (await balanceData).data.balance,
           categoriaId: Number(categoryId),
         })
+        await updateObjective('expense_edit')
+
         toastService.show('Gasto añadido con éxito', 'success')
         router.dismissAll()
         router.replace('/')
       } catch (error) {
         console.log(error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -74,21 +85,36 @@ export default function EditExpensePage() {
           <Card className="bg-background w-full h-screen py-6 border-0">
             <CardHeader className="w-full justify-between flex-row">
               <Text
-                className="text-lg color-pink-300"
+                style={{ color: colorHex }}
+                className="text-lg"
                 onPress={() => router.back()}
               >
                 Cerrar
               </Text>
-              <Text className="font-semibold text-lg">Editar Gasto</Text>
-              <Text className="text-lg color-pink-300" onPress={onSubmit}>
+              <Text
+                style={{ color: colorHex }}
+                className="font-semibold text-lg"
+              >
+                Editar Gasto
+              </Text>
+              <Text
+                style={{ color: colorHex }}
+                className="text-lg"
+                onPress={onSubmit}
+              >
                 Editar
               </Text>
             </CardHeader>
 
             <CardContent className="gap-6 w-full h-full items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <Text className="text-3xl color-pink-300">$</Text>
-                <View className="items-center justify-center w-[250px] h-[64px] border-b-2 border-b-pink-300">
+                <Text style={{ color: colorHex }} className="text-3xl">
+                  $
+                </Text>
+                <View
+                  style={{ borderColor: colorHex }}
+                  className="items-center justify-center w-[250px] h-[64px] border-b-2"
+                >
                   <TextInput
                     style={{
                       fontSize: 42,
@@ -136,8 +162,16 @@ export default function EditExpensePage() {
                 <ChevronDown color="white" size={18} />
               </Button>
               {error && <Text className="text-red-700 text-base">{error}</Text>}
-              <Button className="w-full bg-pink-300" onPress={onSubmit}>
-                <Text>Añadir Gasto</Text>
+              <Button
+                style={{ backgroundColor: colorHex }}
+                className="w-full"
+                onPress={onSubmit}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" />
+                ) : (
+                  <Text className="text-white font-semibold">Editar gasto</Text>
+                )}
               </Button>
             </CardContent>
           </Card>

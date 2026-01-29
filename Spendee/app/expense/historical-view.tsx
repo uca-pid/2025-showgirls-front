@@ -56,8 +56,13 @@ export default function HistoricalExpenseView() {
       monthlyTotals[date.getMonth()] += Number(expense.gasto || 0)
     }
   })
-
-  const barData = monthlyTotals.map((value, i) => ({
+  function transformToThousands(data: number[]): number[] {
+    return data.map((value) =>
+      value >= 1000 ? Math.round(value / 1000) : value,
+    )
+  }
+  const transformedMonthlyTotals = transformToThousands(monthlyTotals)
+  const barData = transformedMonthlyTotals.map((value, i) => ({
     value,
     label: shortMonthNames[i],
     frontColor: i % 2 === 0 ? 'rgb(38, 96, 172)' : 'rgb(38, 96, 172,0.7)',
@@ -65,6 +70,7 @@ export default function HistoricalExpenseView() {
       setSelectedMonth(i)
     },
   }))
+
   const totalYear = monthlyTotals.reduce((a, b) => a + b, 0)
   const todayYear = new Date().getFullYear()
   const isNextDisabled = currentYear >= todayYear
@@ -117,6 +123,7 @@ export default function HistoricalExpenseView() {
             spacing={20}
             yAxisThickness={0}
             xAxisThickness={0}
+            yAxisLabelSuffix="K"
             roundedTop
             roundedBottom
             // autoCenterTooltip

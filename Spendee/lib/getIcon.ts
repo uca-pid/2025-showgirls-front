@@ -19,10 +19,12 @@ import {
   Utensils,
   Wine,
   Wrench,
+  Car
 } from 'lucide-react-native'
 
 const iconMap: Record<string, LucideIcon> = {
   bus: Bus,
+  Car: Car,
   utensils: Utensils,
   home: House,
   heart: Heart,

@@ -19,6 +19,8 @@ import {
 } from 'react-native'
 
 const ExpensesPage = () => {
+  const presupuesto = 2000
+  const gastos = 1500
   const [selectedCategories, setSelectedCategories] = useState<number[]>([])
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
@@ -192,7 +194,6 @@ const ExpensesPage = () => {
                     />
                     <Text
                       style={{
-                        color: isSelected ? 'white' : 'white',
                         fontWeight: isSelected ? '600' : '500',
                         fontSize: 14,
                       }}

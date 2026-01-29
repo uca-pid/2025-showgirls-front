@@ -1,14 +1,17 @@
+import { toastService } from '@/context/ToastContext'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { router } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import {
   Auth,
   createUserWithEmailAndPassword,
   deleteUser,
+  GoogleAuthProvider,
+  signInWithCredential,
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
-import * as SecureStore from 'expo-secure-store'
-import { router } from 'expo-router'
-import { toastService } from '@/context/ToastContext'
+import ApiService from './api.service'
 
 const showErrorToast = (title: string) => {
   toastService.show(title)
@@ -54,29 +57,43 @@ export class UserService {
     return true
   }
 
-  public async login(auth: Auth, email: string, password: string) {
+  public async login(
+    auth: Auth,
+    email: string,
+    password: string,
+    isOAuthFlow?: boolean,
+  ) {
     if (!email || !password) {
       showErrorToast('Completá email y contraseña')
       return
     }
-    await signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user
-        const idToken = await user.getIdToken().then()
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      )
+      const user = userCredential.user
+      const idToken = await user.getIdToken()
+      const publicProfile = {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      }
+
+      await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
+
+      if (!isOAuthFlow) {
         await SecureStore.setItemAsync('jwt', idToken)
-        const publicProfile = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-        }
-        await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
         router.replace('/(tabs)')
-      })
-      .catch((firebaseLoginError) => {
-        const friendlyMessage = getFriendlyAuthMessage(firebaseLoginError)
-        showErrorToast(friendlyMessage)
-      })
+        return
+      }
+    } catch (err) {
+      const friendly = getFriendlyAuthMessage(err)
+      showErrorToast(friendly)
+    }
   }
 
   public async register(
@@ -161,6 +178,64 @@ export class UserService {
         return
       })
     router.replace('/sign-in')
+  }
+
+  public async loginWithGoogle(
+    auth: Auth,
+    idToken: string | undefined,
+    accessToken?: string,
+  ) {
+    if (!idToken) {
+      showErrorToast('No se pudo obtener token de Google')
+      return
+    }
+    try {
+      const credential = GoogleAuthProvider.credential(idToken, accessToken)
+      const userCredential = await signInWithCredential(auth, credential)
+      const user = userCredential.user
+      const idTok = await user.getIdToken()
+      await SecureStore.setItemAsync('jwt', idTok)
+      const publicProfile = {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      }
+      await AsyncStorage.setItem('userProfile', JSON.stringify(publicProfile))
+      router.replace('/(tabs)')
+    } catch (err: any) {
+      const friendly = getFriendlyAuthMessage(err)
+      showErrorToast(friendly)
+    }
+  }
+
+  public async generateApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.post<string>('/generateApiSecret')
+  }
+
+  public async deleteApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.delete('/deleteApiSecret')
+  }
+
+  //hasApiSecret
+  public async hasApiSecret(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.get<{ hasSecret: boolean }>('/hasApiSecret')
+  }
+
+  public async getAPIId(auth: Auth) {
+    if (!auth.currentUser) {
+      throw new Error('Usuario no autenticado')
+    }
+    return await ApiService.get<{ apiId: string }>('/getApiId')
   }
 }
 const userService = new UserService()

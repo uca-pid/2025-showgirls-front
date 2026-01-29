@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { toastService } from '@/context/ToastContext'
 import useCategories from '@/hooks/useCategories'
+import usePiggy from '@/hooks/usePiggy'
 import { router } from 'expo-router'
 import {
   Paperclip,
@@ -21,7 +22,7 @@ import {
   Wrench,
 } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { FlatList, Pressable, View } from 'react-native'
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
 
 const iconOptions = [
   { icon: Wrench, name: 'Wrench' },
@@ -64,6 +65,8 @@ const index = () => {
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('')
   const [color, setColor] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updateObjective } = usePiggy()
 
   const { addCategory, isLoading } = useCategories()
 
@@ -79,6 +82,7 @@ const index = () => {
   }
 
   const handleAddCategory = async () => {
+    setIsSubmitting(true)
     const errorMsg = validateForm()
     if (errorMsg) return showToast(errorMsg)
     try {
@@ -88,28 +92,31 @@ const index = () => {
         color: colorOptions[color].hex,
         descripcion: description,
       })
+      await updateObjective('category')
       showToast('Categoría agregada correctamente', 'success')
       router.back()
     } catch (error) {
       showToast('Error al agregar categoría')
+    } finally {
+      setIsSubmitting(false)
     }
   }
   return (
     <Section className="p-4" activity={isLoading}>
-      <Text className="text-white">Nombre</Text>
+      <Text>Nombre</Text>
       <Input
         placeholder="Nombre de la categoría"
         value={categoryName}
         onChangeText={setCategoryName}
       />
 
-      <Text className="text-white">Descripcion</Text>
+      <Text>Descripcion</Text>
       <Input
         placeholder="Descripción"
         value={description}
         onChangeText={setDescription}
       />
-      <Text className="text-white">Seleccionar color</Text>
+      <Text>Seleccionar color</Text>
 
       <FlatList
         horizontal
@@ -134,31 +141,35 @@ const index = () => {
         }}
       />
 
-      <Text className="text-white">Seleccionar ícono</Text>
-      <View className="flex-row items-center justify-center h-[250px]">
-        <FlatList
-          data={iconOptions}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <IconButton
-              icon={item.icon}
-              text=""
-              onPress={() => setIcon(item.name)}
-              className={
-                icon === item.name ? 'rounded-full bg-pink-300/50' : ''
-              }
-            />
-          )}
-          contentContainerStyle={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-          }}
-        />
-      </View>
+      <Text>Seleccionar ícono</Text>
+
+      <FlatList
+        data={iconOptions}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <IconButton
+            icon={item.icon}
+            text=""
+            onPress={() => setIcon(item.name)}
+            className={
+              icon === item.name ? 'rounded-full border-2 border-white' : ''
+            }
+          />
+        )}
+        contentContainerStyle={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}
+      />
+
       <Button onPress={() => handleAddCategory()}>
-        <Text>Agregar categoría</Text>
+        {isSubmitting ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          <Text className="text-white font-semibold">Agregar categoría</Text>
+        )}
       </Button>
     </Section>
   )
